@@ -3,7 +3,7 @@ By Zach Dykstra
 
 ffmpegGUI is a Haiku application that help users to encode video easily using ffmpeg with a simple GUI. This app uses pulkomandy's [liblayout](https://github.com/pulkomandy/liblayout).
 
-![Screenshot of ffmpegGUI](https://github.com/adam-p/markdown-here/raw/master/screenshot.png "Default ffmpegGUI screen")
+![Screenshot of ffmpegGUI](/screenshot.png?raw-true "Default ffmpegGUI screen")
 
 ## Available options
 ### Output format
