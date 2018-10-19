@@ -19,4 +19,4 @@ ffmpegGUI is a Haiku application that help users to encode video easily using ff
 * Calculating PNSR of compressed frames
 * Adjusting Video Quantiser Scale
 ### Audio settings
-* Bitrate, smapling rate and audio channels.
+* Bitrate, sampling rate and audio channels.
