@@ -549,7 +549,8 @@ void ffguiwin::MessageReceived(BMessage *message)
 		{
 			printf("M_ENCODE: Encode button pressed\n");
 			char run[1200];
-			sprintf(run,"/boot/beos/apps/Terminal /boot/home/config/bin/%s",commandline->String());
+			sprintf(run,"Terminal %s",commandline->String());
+			printf("Running command: %s", commandline->String());
 			system(run);
 			break;
 		}
