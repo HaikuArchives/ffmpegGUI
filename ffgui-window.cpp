@@ -333,7 +333,8 @@ ffguiwin::ffguiwin(BRect r, char *name, window_type type, ulong mode)
 bool ffguiwin::QuitRequested()
 {
 	PostMessage(B_QUIT_REQUESTED);
-	return TRUE;
+	printf("have a nice day\n");
+	exit(0);
 }
 
 //message received
