@@ -2,21 +2,16 @@
 	ffgui-window.cpp , 1/06/03
 	Zach Dykstra
 */
-/* sample command line, for reference
-ffmpeg -i /boot/home/Desktop/VTS_01_[1-3].VOB -cropleft 12 -cropright 4 -croptop 64 -cropbottom 64 -f avi -vcodec mpeg4 -b 1000 -g 132 -bf 2 -acodec mp3 -ab 128 -ar 44100 outfile.MPEG4.avi   
-*/
 
 #include <stdio.h>
 #include "ffgui-window.h"
 #include "ffgui-application.h"
 #include "messages.h"
 #include "MenuItem.h"
-//char buff[30];
-//sprintf(buff, "%d", mydouble);
 
 void ffguiwin::BuildLine() // ask all the views what they hold, reset the command string
 {
-	char buff[30];
+	char buff[64];
 	commandline = new BString("ffmpeg -i ");
 	const char *contents (sourcefile->Text()); //append the input file name
 	commandline->Append(contents);
@@ -28,7 +23,7 @@ void ffguiwin::BuildLine() // ask all the views what they hold, reset the comman
 	{
 		sprintf(buff," -vcodec %s",outputvideoformat->MenuItem()->Label()); // grab and set the video encoder
 		commandline->Append(buff);
-		sprintf(buff," -b %d",(int)vbitrate->Value());
+		sprintf(buff," -b:v %d",(int)vbitrate->Value());
 		commandline->Append(buff);
 		sprintf(buff," -r %d",(int)framerate->Value());
 		commandline->Append(buff);
@@ -41,24 +36,26 @@ void ffguiwin::BuildLine() // ask all the views what they hold, reset the comman
 		// cropping options -- no point in cropping if we aren't encoding video...
 		if (benablecropping == true)
 		{
-			if ((int)topcrop->Value() != 0)// crop value other than 0?
+			// below should be rewritten to use only one crop, but I can't be bothered
+			// to do so as ffmpeg supports multiple filters stacked on each other
+			if ((int)topcrop->Value() != 0)
 			{
-				sprintf(buff," -croptop %d",(int)topcrop->Value());
+				sprintf(buff," -vf crop=w=in_w:h=in_h:x=0:y=%d",(int)topcrop->Value());
 				commandline->Append(buff);
 			}
 			if ((int)bottomcrop->Value() != 0)
 			{
-				sprintf(buff," -cropbottom %d",(int)bottomcrop->Value());
+				sprintf(buff," -vf crop=w=in_w:h=in_h-%d:x=0:y=0",(int)bottomcrop->Value());
 				commandline->Append(buff);	
 			}
 			if ((int)leftcrop->Value() != 0)
 			{
-				sprintf(buff," -cropleft %d",(int)leftcrop->Value());
+				sprintf(buff," -vf crop=w=in_w:h=in_h:x=%d:y=0",(int)leftcrop->Value());
 				commandline->Append(buff);
 			}
 			if ((int)rightcrop->Value() != 0)
 			{
-				sprintf(buff," -cropright %d",(int)rightcrop->Value());
+				sprintf(buff," -vf crop=w=in_w-%d:h=in_h:x=0:y=0",(int)rightcrop->Value());
 				commandline->Append(buff);
 			}
 		}
@@ -72,7 +69,7 @@ void ffguiwin::BuildLine() // ask all the views what they hold, reset the comman
 	{
 		sprintf(buff," -acodec %s",outputaudioformat->MenuItem()->Label());
 		commandline->Append(buff);
-		sprintf(buff," -ab %d",(int)ab->Value());
+		sprintf(buff," -b:a %d",(int)ab->Value());
 		commandline->Append(buff);
 		sprintf(buff," -ar %d",(int)ar->Value());
 		commandline->Append(buff);
@@ -122,9 +119,9 @@ ffguiwin::ffguiwin(BRect r, char *name, window_type type, ulong mode)
 							),
 							new HGroup
 							(
-								outputfileformat=new MPopup("Output File Format","avi","vcd","mpeg",0),
-								outputvideoformat=new MPopup("Output Video Format","mpeg4","msmpeg4v1","wmv1",0),
-								outputaudioformat=new MPopup ("Output Audio Format","mp3","ac3",0),0
+								outputfileformat=new MPopup("Output File Format","avi","vcd","mp4","mpeg","mkv","webm",0), // todo: add more formats
+								outputvideoformat=new MPopup("Output Video Format","mpeg4","vp7","vp8","vp9","wmv1",0),
+								outputaudioformat=new MPopup ("Output Audio Format","ac3","aac","opus","vorbis",0),0
 							),0
 
 						)
@@ -144,12 +141,12 @@ ffguiwin::ffguiwin(BRect r, char *name, window_type type, ulong mode)
 							new VGroup
 							(
 								enablevideo=new MCheckBox("Enable Video Encoding",0,true),
-								vbitrate = new SpinButton("Bitrate (kbit/s)",SPIN_INTEGER),
-								framerate=new SpinButton("Framerate (hz)",SPIN_INTEGER),
+								vbitrate = new SpinButton("Bitrate (Kbit/s)",SPIN_INTEGER),
+								framerate=new SpinButton("Framerate (fps)",SPIN_INTEGER),
 								new MSplitter(),
 								customres=new MCheckBox("Use Custom Resolution",0,false),
-								xres=new SpinButton("X Resolution",SPIN_INTEGER),
-								yres=new SpinButton("Y Resolution",SPIN_INTEGER),0
+								xres=new SpinButton("Width",SPIN_INTEGER),
+								yres=new SpinButton("Height",SPIN_INTEGER),0
 							)
 						),0
 					),	
@@ -178,8 +175,8 @@ ffguiwin::ffguiwin(BRect r, char *name, window_type type, ulong mode)
 							new VGroup
 							(
 								enableaudio=new MCheckBox("Enable Audio Encoding",0,true),
-								ab=new SpinButton("Bitrate (kbit/s)",SPIN_INTEGER),
-								ar=new SpinButton("Sampling Rate (hz)",SPIN_INTEGER),
+								ab=new SpinButton("Bitrate (Kbit/s)",SPIN_INTEGER),
+								ar=new SpinButton("Sampling Rate (Hz)",SPIN_INTEGER),
 								ac=new SpinButton("Audio Channels",SPIN_INTEGER),0
 							)
 						),0
@@ -290,40 +287,41 @@ ffguiwin::ffguiwin(BRect r, char *name, window_type type, ulong mode)
 	customres->SetName("customres");
 	
 	// set the min and max values for the spin controls
-	double d; // snicker
-	d = 50; vbitrate->SetMinimum(d);
-	d = 2000; vbitrate->SetMaximum(d);
-	d = 5; framerate->SetMinimum(d);
-	d = 30; framerate->SetMaximum(d);
-	d = 160; xres->SetMinimum(d);
-	d = 720; xres->SetMaximum(d);
-	d = 120; yres->SetMinimum(d);
-	d = 480; yres->SetMaximum(d);
-	d = 24; ab->SetMinimum(d);
-	d = 320; ab->SetMaximum(d);
-	d = 48000; ar->SetMaximum(d);
+	vbitrate->SetMinimum(64);
+	vbitrate->SetMaximum(50000);
+	framerate->SetMinimum(1);
+	framerate->SetMaximum(60);
+	xres->SetMinimum(160);
+	xres->SetMaximum(7680);
+	yres->SetMinimum(120);
+	yres->SetMaximum(4320);
+	ab->SetMinimum(16);
+	ab->SetMaximum(500);
+	ar->SetMaximum(192000);
 	
 	// set the initial values 
-	d = 800; vbitrate->SetValue(d);
-	d = 25; framerate->SetValue(d);
-	d = 640; xres->SetValue(d);
-	d = 480; yres->SetValue(d);
-	d = 128; ab->SetValue(d);
-	d = 44100; ar->SetValue(d);
-	d = 2; ac->SetValue(d);
+	vbitrate->SetValue(1000);
+	framerate->SetValue(30);
+	xres->SetValue(1280);
+	yres->SetValue(720);
+	ab->SetValue(128);
+	ar->SetValue(44100);
+	ac->SetValue(2);
 	
 	// set the default status for the conditional spinners
 	benablecropping = true;
 	benableaudio = true;
 	bcustomres = false;
-	benablevideo = false;
+	benablevideo = false; // changing this breaks UI enabled/disabled behaviour
 	xres->SetEnabled(false);
 	yres->SetEnabled(false);
 	
 	// set the about view text
 	abouttext->MakeEditable(false);
-	abouttext->SetText("  ffmpeg gui v1.0\n\n" "  Thanks to mmu_man, Jeremy, DeadYak, Marco, etc...\n\n" 
-					   "  md@geekport.com");
+	abouttext->SetText("  ffmpeg gui v1.0\n\n"
+					   "  Thanks to mmu_man, Jeremy, DeadYak, Marco, etc...\n\n" 
+					   "  md@geekport.com\n\n"
+					   "  made more or less usable by reds <reds@sakamoto.pl> - have fun! ");
 	// add the view
 	AddChild(dynamic_cast<BView*>(topview));
 	// set the initial command line
@@ -335,7 +333,8 @@ ffguiwin::ffguiwin(BRect r, char *name, window_type type, ulong mode)
 bool ffguiwin::QuitRequested()
 {
 	PostMessage(B_QUIT_REQUESTED);
-	return TRUE;
+	printf("have a nice day\n");
+	exit(0);
 }
 
 //message received
@@ -548,9 +547,9 @@ void ffguiwin::MessageReceived(BMessage *message)
 		case M_ENCODE:
 		{
 			printf("M_ENCODE: Encode button pressed\n");
-			char run[1200];
+			char run[4096];
 			sprintf(run,"Terminal %s",commandline->String());
-			printf("Running command: %s", commandline->String());
+			printf("Running command: %s\n", commandline->String());
 			system(run);
 			break;
 		}
