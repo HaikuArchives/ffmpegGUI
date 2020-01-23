@@ -12,6 +12,7 @@ FFmpegGUI is a Haiku graphical frontend for FFmpeg, which allows users to easily
 * Container: avi, vcd, mp4, mpeg, mkv, webm
 * Video: mpeg4, vp7, vp8, vp9, wmv1
 * Audio: ac3, aac, opus, vorbis
+
 ... and many more - ~~sky~~ FFmpeg's codec support list is the limit
 
 ## Adjustable settings
