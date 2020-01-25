@@ -1,22 +1,23 @@
-# ffmpegGUI
-By Zach Dykstra
+# FFmpegGUI
+By Zach Dykstra et al.
 
-ffmpegGUI is a Haiku application that help users to encode video easily using ffmpeg with a simple GUI. This app uses pulkomandy's [liblayout](https://github.com/pulkomandy/liblayout).
+FFmpegGUI is a Haiku graphical frontend for FFmpeg, which allows users to easily transcode video and audio files. FFmpegGUI parses user's input and produces a ready to use FFmpeg command.
+
+ This app uses [liblayout](https://github.com/diversys/liblayout) for easier arrangement of graphical elements.
 
 ![Screenshot of ffmpegGUI](/screenshot.png?raw-true "Default ffmpegGUI screen")
 
 ## Available options
 ### Output format
-* File: avi, vcd, mpeg
-* Video: mpeg4, msmepg4v1, wmv1
-* Audio: mp3, ac3
-### Video settings
-* Bitrate and framerate
-* Custom resolution and cropping
-* B-frame and GOP size
-* Four motion vector
-* Deinterlace pictures
-* Calculating PNSR of compressed frames
-* Adjusting Video Quantiser Scale
-### Audio settings
-* Bitrate, sampling rate and audio channels.
+* Container: avi, vcd, mp4, mpeg, mkv, webm
+* Video: mpeg4, vp7, vp8, vp9, wmv1
+* Audio: ac3, aac, opus, vorbis
+
+... and many more - ~~sky~~ FFmpeg's codec support list is the limit
+
+## Adjustable settings
+* Bitrate
+* Framerate
+* Audio Sampling Rate
+* Video crop
+* Video Resolution
