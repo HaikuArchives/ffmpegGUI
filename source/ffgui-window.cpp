@@ -300,13 +300,13 @@ ffguiwin::ffguiwin(BRect r, char *name, window_type type, ulong mode)
 	ar->SetMaximum(192000);
 	
 	// set the initial values 
-	vbitrate->SetValue(1000);
-	framerate->SetValue(30);
-	xres->SetValue(1280);
-	yres->SetValue(720);
-	ab->SetValue(128);
-	ar->SetValue(44100);
-	ac->SetValue(2);
+	vbitrate->SetValue(1000.0);
+	framerate->SetValue(30.0);
+	xres->SetValue(1280.0);
+	yres->SetValue(720.0);
+	ab->SetValue(128.0);
+	ar->SetValue(44100.0);
+	ac->SetValue(2.0);
 	
 	// set the default status for the conditional spinners
 	benablecropping = true;
