@@ -1,4 +1,9 @@
 /*
+ * Copyright 2003, Zach Dykstra. All rights reserved.
+ * Distributed under the terms of the MIT License.
+ */
+ 
+/*
 	ffgui-window.cpp , 1/06/03
 	Zach Dykstra
 */
