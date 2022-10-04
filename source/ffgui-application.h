@@ -8,10 +8,10 @@
  	Zach Dykstra
 */
 
-#include "MApplication.h"
+#include "Application.h"
 
 
-class ffguiapp : public MApplication
+class ffguiapp : public BApplication
 {
 	public: ffguiapp(char *);
 			virtual void MessageReceived(BMessage*);

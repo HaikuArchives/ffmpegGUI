@@ -16,7 +16,7 @@
 #include "messages.h"
 
 ffguiapp::ffguiapp(char *id)
-	: MApplication(id)
+	: BApplication(id)
 {
 	ffguiwin *window;
 	window = new ffguiwin(BRect(20,20,150,150),"ffmpeg GUI",B_TITLED_WINDOW,0);
@@ -34,7 +34,7 @@ void ffguiapp::MessageReceived(BMessage *message)
 			printf("recieved by app:\n");
 			message->PrintToStream();
 			printf("\n");
-			MApplication::MessageReceived(message);
+			BApplication::MessageReceived(message);
 			break;
 	}
 }
