@@ -8,18 +8,17 @@
 	Zach Dykstra
 */
 
-#include "View.h"
-#include "Window.h"
-#include "TextView.h"
-#include "OutlineListView.h"
-#include "TextControl.h"
-#include "Splitter.h"
-#include "Button.h"
-#include "CheckBox.h"
+#include <View.h>
+#include <Window.h>
+#include <TextView.h>
+#include <OutlineListView.h>
+#include <TextControl.h>
+#include <Button.h>
+#include <CheckBox.h>
 #include <MenuField.h>
 #include <PopUpMenu.h>
-#include "Spinner.h"
-#include "String.h"
+#include <Spinner.h>
+#include <String.h>
 
 #include <string.h>
 #include <stdio.h>

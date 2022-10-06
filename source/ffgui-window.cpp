@@ -14,6 +14,9 @@
 #include "messages.h"
 #include <MenuItem.h>
 #include <LayoutBuilder.h>
+#include <TabView.h>
+#include <View.h>
+#include <Box.h>
 
 
 void ffguiwin::BuildLine() // ask all the views what they hold, reset the command string
@@ -102,9 +105,9 @@ ffguiwin::ffguiwin(BRect r, char *name, window_type type, ulong mode)
 
 	//initialize GUI elements
 	sourcefilebutton = new BButton("Source file", new BMessage(M_SOURCE));
-	sourcefile = new BTextControl("","");
+	sourcefile = new BTextControl("", "", nullptr);
 	outputfilebutton = new BButton("Output file", new BMessage(M_OUTPUT));
-	outputfile = new BTextControl("","");
+	outputfile = new BTextControl("", "", nullptr);
 	deletesource = new BCheckBox("", "Delete source when finished", nullptr);
 	
 	outputfileformatpopup = new BPopUpMenu("");
@@ -136,7 +139,7 @@ ffguiwin::ffguiwin(BRect r, char *name, window_type type, ulong mode)
 	vbitrate = new BSpinner("", "Bitrate (Kbit/s)", nullptr);
 	framerate = new BSpinner("", "Framerate (fps)", nullptr);
 	customres = new BCheckBox("", "Use Custom Resolution", nullptr);
-	xres = new BSpinnner("", "Width", nullptr);
+	xres = new BSpinner("", "Width", nullptr);
 	yres = new BSpinner("", "Height", nullptr);
 	
 	enablecropping = new BCheckBox("", "Enable Video Cropping", nullptr);
@@ -168,8 +171,135 @@ ffguiwin::ffguiwin(BRect r, char *name, window_type type, ulong mode)
 	
 	abouttext = new BTextView("");
 	encodebutton = new BButton("Encode", new BMessage(M_ENCODE));
-	encode=new BTextControl("","");
+	encode = new BTextControl("", "", nullptr);
 	
+	// create tabs and boxes	
+	BBox *fileoptionsbox = new BBox("");
+	fileoptionsbox->SetLabel("File Options");
+	BGroupLayout *fileoptionslayout = BLayoutBuilder::Group<>(B_VERTICAL)
+		.SetInsets(5,5,5,5)
+		.AddGroup(B_HORIZONTAL)
+			.Add(sourcefilebutton)
+			.Add(sourcefile)
+		.End()
+		.AddGroup(B_HORIZONTAL)
+			.Add(outputfilebutton)
+			.Add(outputfile)
+		.End()
+		.Add(deletesource)
+		.AddGroup(B_HORIZONTAL)
+			.Add(outputfileformat)
+			.Add(outputvideoformat)
+			.Add(outputaudioformat)
+		.End();
+	fileoptionsbox->AddChild(fileoptionslayout->View());
+	
+	BBox *encodebox = new BBox("");
+	encodebox->SetLabel("Encode");
+	BGroupLayout *encodelayout = BLayoutBuilder::Group<>(B_VERTICAL)
+		.SetInsets(5,5,5,5)
+		.AddGroup(B_HORIZONTAL)
+			.Add(encodebutton)
+			.Add(encode)
+		.End();
+	encodebox->AddChild(encodelayout->View());
+	
+	BBox *videobox = new BBox("");
+	videobox->SetLabel("Video");
+	BGroupLayout *videolayout = BLayoutBuilder::Group<>(B_VERTICAL)
+		.SetInsets(5,5,5,5)
+		.Add(enablevideo)
+		.Add(vbitrate)
+		.Add(framerate)
+		.Add(customres)
+		.Add(xres)
+		.Add(yres);	
+	videobox->AddChild(videolayout->View());
+	
+	BBox *croppingoptionsbox = new BBox("");
+	croppingoptionsbox->SetLabel("Cropping Options");
+	BGroupLayout *croppingoptionslayout = BLayoutBuilder::Group<>(B_VERTICAL)
+		.SetInsets(5,5,5,5)
+		.Add(enablecropping)
+		.Add(topcrop)
+		.Add(bottomcrop)
+		.Add(leftcrop)
+		.Add(rightcrop);
+	croppingoptionsbox->AddChild(croppingoptionslayout->View());
+		
+	BBox *audiobox = new BBox("");
+	audiobox->SetLabel("Audio");
+	BGroupLayout *audiolayout = BLayoutBuilder::Group<>(B_VERTICAL)
+		.SetInsets(5,5,5,5)
+		.Add(enableaudio)
+		.Add(ab)
+		.Add(ar)
+		.Add(ac);
+	audiobox->AddChild(audiolayout->View());
+	
+	
+	BView *mainoptionsview = new BView("",B_SUPPORTS_LAYOUT);
+	BView *advancedoptionsview = new BView("",B_SUPPORTS_LAYOUT);
+	BView *outputview = new BView("",B_SUPPORTS_LAYOUT);
+	BView *aboutview = new BView("",B_SUPPORTS_LAYOUT);
+	
+	BLayoutBuilder::Group<>(mainoptionsview, B_HORIZONTAL)
+		.SetInsets(0)
+		.Add(videobox)
+		.Add(croppingoptionsbox)
+		.Add(audiobox)
+		.Layout();
+	
+	BLayoutBuilder::Group<>(advancedoptionsview, B_HORIZONTAL)
+		.SetInsets(0)
+		.AddGroup(B_VERTICAL)
+			.Add(bframes)
+			.Add(gop)
+			.Add(highquality)
+			.Add(fourmotion)
+			.Add(deinterlace)
+			.Add(calcpsnr)
+		.End()
+		.AddGroup(B_VERTICAL)
+			.Add(fixedquant)
+			.Add(minquant)
+			.Add(maxquant)
+			.Add(quantdifference)
+			.Add(quantblur)
+			.Add(quantcompression)
+		.Layout();
+
+	BLayoutBuilder::Group<>(outputview, B_HORIZONTAL)
+		.SetInsets(0)
+		.Layout();
+
+	BLayoutBuilder::Group<>(aboutview, B_HORIZONTAL)
+		.SetInsets(0)
+		.Add(abouttext)
+		.Layout();		
+	
+	BTabView *tabview = new BTabView("");
+	BTab *mainoptionstab = new BTab();
+	BTab *advancedoptionstab = new BTab();
+	BTab *outputtab = new BTab();
+	BTab *abouttab = new BTab();
+	
+	tabview->AddTab(mainoptionsview, mainoptionstab);
+	tabview->AddTab(advancedoptionsview, advancedoptionstab);
+	tabview->AddTab(outputview, outputtab);
+	tabview->AddTab(aboutview, abouttab);
+	mainoptionstab->SetLabel("Main Options");	
+	advancedoptionstab->SetLabel("Advanced Options");
+	outputtab->SetLabel("Output");
+	abouttab->SetLabel("About");
+	
+	//main layout
+	BLayoutBuilder::Group<>(this, B_VERTICAL)
+		.SetInsets(3)
+		.Add(fileoptionsbox)
+		.Add(tabview)	
+		.Add(encodebox)
+	.Layout();	
 	
 	
 	/*
@@ -337,26 +467,26 @@ ffguiwin::ffguiwin(BRect r, char *name, window_type type, ulong mode)
 	customres->SetName("customres");
 	
 	// set the min and max values for the spin controls
-	vbitrate->SetMinimum(64);
-	vbitrate->SetMaximum(50000);
-	framerate->SetMinimum(1);
-	framerate->SetMaximum(60);
-	xres->SetMinimum(160);
-	xres->SetMaximum(7680);
-	yres->SetMinimum(120);
-	yres->SetMaximum(4320);
-	ab->SetMinimum(16);
-	ab->SetMaximum(500);
-	ar->SetMaximum(192000);
+	vbitrate->SetMinValue(64);
+	vbitrate->SetMaxValue(50000);
+	framerate->SetMinValue(1);
+	framerate->SetMaxValue(60);
+	xres->SetMinValue(160);
+	xres->SetMaxValue(7680);
+	yres->SetMinValue(120);
+	yres->SetMaxValue(4320);
+	ab->SetMinValue(16);
+	ab->SetMaxValue(500);
+	ar->SetMaxValue(192000);
 	
 	// set the initial values 
-	vbitrate->SetValue(1000.0);
-	framerate->SetValue(30.0);
-	xres->SetValue(1280.0);
-	yres->SetValue(720.0);
-	ab->SetValue(128.0);
-	ar->SetValue(44100.0);
-	ac->SetValue(2.0);
+	vbitrate->SetValue(1000);
+	framerate->SetValue(30);
+	xres->SetValue(1280);
+	yres->SetValue(720);
+	ab->SetValue(128);
+	ar->SetValue(44100);
+	ac->SetValue(2);
 	
 	// set the default status for the conditional spinners
 	benablecropping = true;
@@ -609,7 +739,7 @@ void ffguiwin::MessageReceived(BMessage *message)
 			message->PrintToStream();
 			printf("\n");
 			printf("------------\n");
-			MWindow::MessageReceived(message);
+			BWindow::MessageReceived(message);
 			break;
 	}
 }
