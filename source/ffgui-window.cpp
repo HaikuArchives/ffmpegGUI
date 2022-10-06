@@ -12,7 +12,9 @@
 #include "ffgui-window.h"
 #include "ffgui-application.h"
 #include "messages.h"
-#include "MenuItem.h"
+#include <MenuItem.h>
+#include <LayoutBuilder.h>
+
 
 void ffguiwin::BuildLine() // ask all the views what they hold, reset the command string
 {
@@ -95,10 +97,82 @@ void ffguiwin::BuildLine() // ask all the views what they hold, reset the comman
 
 // new window object
 ffguiwin::ffguiwin(BRect r, char *name, window_type type, ulong mode)
-	: MWindow(r,name,type,mode)
+	: BWindow(r,name,type,mode)
 {
-//create the view for the main window gui controls
+
+	//initialize GUI elements
+	sourcefilebutton = new BButton("Source file", new BMessage(M_SOURCE));
+	sourcefile = new BTextControl("","");
+	outputfilebutton = new BButton("Output file", new BMessage(M_OUTPUT));
+	outputfile = new BTextControl("","");
+	deletesource = new BCheckBox("", "Delete source when finished", nullptr);
 	
+	outputfileformatpopup = new BPopUpMenu("");
+	outputfileformatpopup->AddItem(new BMenuItem("avi", nullptr));
+	outputfileformatpopup->AddItem(new BMenuItem("vcd", nullptr));
+	outputfileformatpopup->AddItem(new BMenuItem("mp4", nullptr));
+	outputfileformatpopup->AddItem(new BMenuItem("mpeg", nullptr));
+	outputfileformatpopup->AddItem(new BMenuItem("mkv", nullptr));
+	outputfileformatpopup->AddItem(new BMenuItem("webm", nullptr));
+	outputfileformat = new BMenuField("Output File Format", outputfileformatpopup);
+	
+	outputvideoformatpopup = new BPopUpMenu("");
+	outputvideoformatpopup->AddItem(new BMenuItem("mpeg4", nullptr));
+	outputvideoformatpopup->AddItem(new BMenuItem("vp7", nullptr));
+	outputvideoformatpopup->AddItem(new BMenuItem("vp8", nullptr));
+	outputvideoformatpopup->AddItem(new BMenuItem("vp9", nullptr));
+	outputvideoformatpopup->AddItem(new BMenuItem("wmv1", nullptr));	
+	outputvideoformat = new BMenuField("Output Video Format", outputvideoformatpopup);
+
+	outputaudioformatpopup = new BPopUpMenu("");
+	outputaudioformatpopup->AddItem(new BMenuItem("ac3", nullptr));
+	outputaudioformatpopup->AddItem(new BMenuItem("aac", nullptr));
+	outputaudioformatpopup->AddItem(new BMenuItem("opus", nullptr));
+	outputaudioformatpopup->AddItem(new BMenuItem("vorbis", nullptr));
+	outputaudioformat = new BMenuField("Output Audio Format", outputaudioformatpopup);
+	
+	enablevideo = new BCheckBox("", "Enable Video Encoding", nullptr);
+	enablevideo->SetValue(B_CONTROL_ON);
+	vbitrate = new BSpinner("", "Bitrate (Kbit/s)", nullptr);
+	framerate = new BSpinner("", "Framerate (fps)", nullptr);
+	customres = new BCheckBox("", "Use Custom Resolution", nullptr);
+	xres = new BSpinnner("", "Width", nullptr);
+	yres = new BSpinner("", "Height", nullptr);
+	
+	enablecropping = new BCheckBox("", "Enable Video Cropping", nullptr);
+	enablecropping->SetValue(B_CONTROL_ON);
+	topcrop = new BSpinner("", "Top Crop Size", nullptr);
+	bottomcrop = new BSpinner("", "Bottom Crop Size", nullptr);
+    leftcrop = new BSpinner("", "Left Crop Size", nullptr);
+	rightcrop = new BSpinner("", "Right Crop Size", nullptr);
+	
+	enableaudio = new BCheckBox("", "Enable Audio Encoding", nullptr);
+	enableaudio->SetValue(B_CONTROL_ON);
+	ab = new BSpinner("", "Bitrate (Kbit/s)", nullptr);
+	ar = new BSpinner("", "Sampling Rate (Hz)", nullptr);
+	ac = new BSpinner("", "Audio Channels", nullptr);	
+	
+	bframes = new BSpinner("", "'B' Frames", nullptr);
+	gop = new BSpinner("", "GOP Size", nullptr);
+	highquality = new BCheckBox("","Use High Quality Settings", nullptr);
+	fourmotion = new BCheckBox("", "Use four motion vector", nullptr);
+	deinterlace = new BCheckBox("", "Deinterlace Pictures", nullptr);
+	calcpsnr = new BCheckBox("", "Calculate PSNR of Compressed Frames", nullptr);
+	
+	fixedquant = new BSpinner("", "Use Fixed Video Quantiser Scale", nullptr);
+	minquant = new BSpinner("", "Min Video Quantiser Scale", nullptr);
+	maxquant = new BSpinner("", "Max Video Quantiser Scale", nullptr);
+	quantdifference = new BSpinner("", "Max Difference Between Quantiser Scale", nullptr);
+	quantblur = new BSpinner("", "Video Quantiser Scale Blur", nullptr);
+	quantcompression = new BSpinner("", "Video Quantiser Scale Compression", nullptr);	
+	
+	abouttext = new BTextView("");
+	encodebutton = new BButton("Encode", new BMessage(M_ENCODE));
+	encode=new BTextControl("","");
+	
+	
+	
+	/*
 	topview=new VGroup //top vgroup
 			(
 				new VGroup
@@ -112,21 +186,17 @@ ffguiwin::ffguiwin(BRect r, char *name, window_type type, ulong mode)
 							(
 								new HGroup
 								(
-									new MButton("Source file",new BMessage(M_SOURCE),NULL,minimax(-1,-1,-1,-1)),
-									sourcefile=new MTextControl("",""),0
+									
 								),
 								new HGroup
 								(
-									new MButton("Output file",new BMessage(M_OUTPUT),NULL,minimax(-1,-1,-1,-1)),
-									outputfile=new MTextControl("",""),0
+									
 								),
-								deletesource=new MCheckBox("Delete source when finished"),0
+								
 							),
 							new HGroup
 							(
-								outputfileformat=new MPopup("Output File Format","avi","vcd","mp4","mpeg","mkv","webm",0), // todo: add more formats
-								outputvideoformat=new MPopup("Output Video Format","mpeg4","vp7","vp8","vp9","wmv1",0),
-								outputaudioformat=new MPopup ("Output Audio Format","ac3","aac","opus","vorbis",0),0
+								
 							),0
 
 						)
@@ -145,13 +215,7 @@ ffguiwin::ffguiwin(BRect r, char *name, window_type type, ulong mode)
 							M_LABELED_BORDER,10,"Video",
 							new VGroup
 							(
-								enablevideo=new MCheckBox("Enable Video Encoding",0,true),
-								vbitrate = new SpinButton("Bitrate (Kbit/s)",SPIN_INTEGER),
-								framerate=new SpinButton("Framerate (fps)",SPIN_INTEGER),
-								new MSplitter(),
-								customres=new MCheckBox("Use Custom Resolution",0,false),
-								xres=new SpinButton("Width",SPIN_INTEGER),
-								yres=new SpinButton("Height",SPIN_INTEGER),0
+								
 							)
 						),0
 					),	
@@ -163,11 +227,7 @@ ffguiwin::ffguiwin(BRect r, char *name, window_type type, ulong mode)
 							M_LABELED_BORDER,10,"Cropping Options",
 							new VGroup
 							(
-								enablecropping=new MCheckBox("Enable Video Cropping",0,true),
-								topcrop=new SpinButton("Top Crop Size",SPIN_INTEGER),
-								bottomcrop=new SpinButton("Bottom Crop Size",SPIN_INTEGER),
-								leftcrop=new SpinButton("Left Crop Size",SPIN_INTEGER),
-								rightcrop=new SpinButton("Right Crop Size",SPIN_INTEGER),0
+								
 							)
 						),0
 					),
@@ -179,10 +239,7 @@ ffguiwin::ffguiwin(BRect r, char *name, window_type type, ulong mode)
 							M_LABELED_BORDER,10,"Audio",
 							new VGroup
 							(
-								enableaudio=new MCheckBox("Enable Audio Encoding",0,true),
-								ab=new SpinButton("Bitrate (Kbit/s)",SPIN_INTEGER),
-								ar=new SpinButton("Sampling Rate (Hz)",SPIN_INTEGER),
-								ac=new SpinButton("Audio Channels",SPIN_INTEGER),0
+								
 							)
 						),0
 					),0	
@@ -197,25 +254,13 @@ ffguiwin::ffguiwin(BRect r, char *name, window_type type, ulong mode)
 						(	
 							new VGroup
 							(
-								bframes=new SpinButton("'B' Frames",SPIN_INTEGER),
-								gop=new SpinButton("GOP Size",SPIN_INTEGER),
-								new Space(minimax(2,2,2,2)),
-								new MSplitter(),
-								highquality=new MCheckBox("Use High Quality Settings",0,false),
-								fourmotion=new MCheckBox("Use four motion vector",0,false),
-								deinterlace=new MCheckBox("Deinterlace Pictures",0,false),
-								calcpsnr=new MCheckBox("Calculate PSNR of Compressed Frames",0,false),0
+								
 
 							),
 							new MSplitter(),
 							new VGroup
 							(
-								fixedquant=new SpinButton("Use Fixed Video Quantiser Scale",SPIN_INTEGER),
-								minquant=new SpinButton("Min Video Quantiser Scale",SPIN_INTEGER),
-								maxquant=new SpinButton("Max Video Quantiser Scale",SPIN_INTEGER),
-								quantdifference=new SpinButton("Max Difference Between Quantiser Scale",SPIN_INTEGER),
-								quantblur=new SpinButton("Video Quantiser Scale Blur",SPIN_INTEGER),
-								quantcompression=new SpinButton("Video Quantiser Scale Compression",SPIN_INTEGER),
+								
 								new Space(minimax(2,2,2,2)),0
 							),0
 						)
@@ -241,7 +286,7 @@ ffguiwin::ffguiwin(BRect r, char *name, window_type type, ulong mode)
 						M_LABELED_BORDER,10,"About",
 						new VGroup
 						(
-							abouttext=new MTextView(),0
+							
 						)
 					),0
 				),0
@@ -255,8 +300,7 @@ ffguiwin::ffguiwin(BRect r, char *name, window_type type, ulong mode)
 						(
 							new HGroup
 							(
-								new MButton("Encode",new BMessage(M_ENCODE),NULL,minimax(-1,-1,-1,-1)),
-								encode=new MTextControl("",""),0
+								
 							),0
 						)
 					),0
@@ -272,6 +316,7 @@ ffguiwin::ffguiwin(BRect r, char *name, window_type type, ulong mode)
 	DivideSame(topcrop,bottomcrop,leftcrop,rightcrop,0);
 	DivideSame(fixedquant,minquant,maxquant,quantdifference,quantblur,quantcompression,0);
 	DivideSame(highquality,fourmotion,deinterlace,calcpsnr,bframes,gop,0);
+	*/
 	
 	// set the names for each control, so they can be figured out in MessageReceived
 	vbitrate->SetName("vbitrate");
@@ -328,7 +373,7 @@ ffguiwin::ffguiwin(BRect r, char *name, window_type type, ulong mode)
 					   "  md@geekport.com\n\n"
 					   "  made more or less usable by reds <reds@sakamoto.pl> - have fun! ");
 	// add the view
-	AddChild(dynamic_cast<BView*>(topview));
+	//AddChild(dynamic_cast<BView*>(topview));
 	// set the initial command line
 	BuildLine();
 
