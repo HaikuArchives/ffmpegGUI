@@ -17,6 +17,7 @@
 #include <TabView.h>
 #include <View.h>
 #include <Box.h>
+#include <SeparatorView.h>
 
 
 void ffguiwin::BuildLine() // ask all the views what they hold, reset the command string
@@ -180,7 +181,7 @@ ffguiwin::ffguiwin(BRect r, char *name, window_type type, ulong mode)
 	BBox *fileoptionsbox = new BBox("");
 	fileoptionsbox->SetLabel("File Options");
 	BGroupLayout *fileoptionslayout = BLayoutBuilder::Group<>(B_VERTICAL)
-		.SetInsets(5,5,5,5)
+		.SetInsets(3,3,3,3)
 		.AddGroup(B_HORIZONTAL)
 			.Add(sourcefilebutton)
 			.Add(sourcefile)
@@ -200,7 +201,7 @@ ffguiwin::ffguiwin(BRect r, char *name, window_type type, ulong mode)
 	BBox *encodebox = new BBox("");
 	encodebox->SetLabel("Encode");
 	BGroupLayout *encodelayout = BLayoutBuilder::Group<>(B_VERTICAL)
-		.SetInsets(5,5,5,5)
+		.SetInsets(0,0,0,0)
 		.AddGroup(B_HORIZONTAL)
 			.Add(encodebutton)
 			.Add(encode)
@@ -210,10 +211,11 @@ ffguiwin::ffguiwin(BRect r, char *name, window_type type, ulong mode)
 	BBox *videobox = new BBox("");
 	videobox->SetLabel("Video");
 	BGroupLayout *videolayout = BLayoutBuilder::Group<>(B_VERTICAL)
-		.SetInsets(5,5,5,5)
+		.SetInsets(5,5,5,5)	
 		.Add(enablevideo)
 		.Add(vbitrate)
 		.Add(framerate)
+		.Add(new BSeparatorView(B_HORIZONTAL))
 		.Add(customres)
 		.Add(xres)
 		.Add(yres);	
@@ -247,22 +249,24 @@ ffguiwin::ffguiwin(BRect r, char *name, window_type type, ulong mode)
 	BView *aboutview = new BView("",B_SUPPORTS_LAYOUT);
 	
 	BLayoutBuilder::Group<>(mainoptionsview, B_HORIZONTAL)
-		.SetInsets(0)
+		.SetInsets(5)
 		.Add(videobox)
 		.Add(croppingoptionsbox)
 		.Add(audiobox)
 		.Layout();
 	
 	BLayoutBuilder::Group<>(advancedoptionsview, B_HORIZONTAL)
-		.SetInsets(0)
+		.SetInsets(5)
 		.AddGroup(B_VERTICAL)
 			.Add(bframes)
 			.Add(gop)
+			.Add(new BSeparatorView(B_HORIZONTAL))
 			.Add(highquality)
 			.Add(fourmotion)
 			.Add(deinterlace)
 			.Add(calcpsnr)
 		.End()
+		.Add(new BSeparatorView(B_VERTICAL))
 		.AddGroup(B_VERTICAL)
 			.Add(fixedquant)
 			.Add(minquant)
@@ -298,12 +302,14 @@ ffguiwin::ffguiwin(BRect r, char *name, window_type type, ulong mode)
 	
 	//main layout
 	BLayoutBuilder::Group<>(this, B_VERTICAL)
-		.SetInsets(3)
+		.SetInsets(5)
 		.Add(fileoptionsbox)
 		.Add(tabview)	
 		.Add(encodebox)
 	.Layout();	
-		
+	
+	MoveOnScreen();
+	
 	// set the names for each control, so they can be figured out in MessageReceived
 	vbitrate->SetName("vbitrate");
 	framerate->SetName("framerate");
