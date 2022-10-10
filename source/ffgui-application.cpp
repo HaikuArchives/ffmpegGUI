@@ -19,7 +19,7 @@ ffguiapp::ffguiapp(char *id)
 	: BApplication(id)
 {
 	ffguiwin *window;
-	window = new ffguiwin(BRect(0,0,0,0),"ffmpeg GUI",B_TITLED_WINDOW,B_AUTO_UPDATE_SIZE_LIMITS);
+	window = new ffguiwin(BRect(0,0,0,0),"ffmpeg GUI",B_TITLED_WINDOW,0);
 	window->Show();	
 }
 

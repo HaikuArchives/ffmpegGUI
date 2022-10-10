@@ -308,6 +308,7 @@ ffguiwin::ffguiwin(BRect r, char *name, window_type type, ulong mode)
 		.Add(encodebox)
 	.Layout();	
 	
+	ResizeToPreferred();
 	MoveOnScreen();
 	
 	// set the names for each control, so they can be figured out in MessageReceived
