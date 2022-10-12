@@ -176,11 +176,70 @@ ffguiwin::ffguiwin(BRect r, char *name, window_type type, ulong mode)
 	abouttext = new BTextView("");
 	encodebutton = new BButton("Encode", new BMessage(M_ENCODE));
 	encode = new BTextControl("", "", nullptr);
+
+// set the names for each control, so they can be figured out in MessageReceived
+	vbitrate->SetName("vbitrate");
+	framerate->SetName("framerate");
+	xres->SetName("xres");
+	yres->SetName("yres");
+	topcrop->SetName("topcrop");
+	bottomcrop->SetName("bottomcrop");
+	leftcrop->SetName("leftcrop");
+	rightcrop->SetName("rightcrop");
+	ab->SetName("ab");
+	ar->SetName("ar");
+	ac->SetName("ac");
+	enablevideo->SetName("enablevideo");
+	enableaudio->SetName("enableaudio");
+	enablecropping->SetName("enablecropping");
+	deletesource->SetName("deletesource");
+	customres->SetName("customres");
 	
+	// set the min and max values for the spin controls
+	vbitrate->SetMinValue(64);
+	vbitrate->SetMaxValue(50000);
+	framerate->SetMinValue(1);
+	framerate->SetMaxValue(60);
+	xres->SetMinValue(160);
+	xres->SetMaxValue(7680);
+	yres->SetMinValue(120);
+	yres->SetMaxValue(4320);
+	ab->SetMinValue(16);
+	ab->SetMaxValue(500);
+	ar->SetMaxValue(192000);
+	
+	// set the initial values 
+	vbitrate->SetValue(1000);
+	framerate->SetValue(30);
+	xres->SetValue(1280);
+	yres->SetValue(720);
+	ab->SetValue(128);
+	ar->SetValue(44100);
+	ac->SetValue(2);
+	
+	// set the default status for the conditional spinners
+	benablecropping = true;
+	benableaudio = true;
+	bcustomres = false;
+	benablevideo = false; // changing this breaks UI enabled/disabled behaviour
+	xres->SetEnabled(false);
+	yres->SetEnabled(false);
+	
+	// set the about view text
+	abouttext->MakeEditable(false);
+	abouttext->SetText("  ffmpeg gui v1.0\n\n"
+					   "  Thanks to mmu_man, Jeremy, DeadYak, Marco, etc...\n\n" 
+					   "  md@geekport.com\n\n"
+					   "  made more or less usable by reds <reds@sakamoto.pl> - have fun! ");
+
+	// set the initial command line
+	BuildLine();
+
+
 	// create tabs and boxes	
 	BBox *fileoptionsbox = new BBox("");
 	fileoptionsbox->SetLabel("File Options");
-	BGroupLayout *fileoptionslayout = BLayoutBuilder::Group<>(B_VERTICAL)
+	BGroupLayout *fileoptionslayout = BLayoutBuilder::Group<>(B_VERTICAL, B_USE_SMALL_SPACING)
 		.SetInsets(3,3,3,3)
 		.AddGroup(B_HORIZONTAL)
 			.Add(sourcefilebutton)
@@ -341,64 +400,6 @@ ffguiwin::ffguiwin(BRect r, char *name, window_type type, ulong mode)
 	
 	ResizeToPreferred();
 	MoveOnScreen();
-	
-	// set the names for each control, so they can be figured out in MessageReceived
-	vbitrate->SetName("vbitrate");
-	framerate->SetName("framerate");
-	xres->SetName("xres");
-	yres->SetName("yres");
-	topcrop->SetName("topcrop");
-	bottomcrop->SetName("bottomcrop");
-	leftcrop->SetName("leftcrop");
-	rightcrop->SetName("rightcrop");
-	ab->SetName("ab");
-	ar->SetName("ar");
-	ac->SetName("ac");
-	enablevideo->SetName("enablevideo");
-	enableaudio->SetName("enableaudio");
-	enablecropping->SetName("enablecropping");
-	deletesource->SetName("deletesource");
-	customres->SetName("customres");
-	
-	// set the min and max values for the spin controls
-	vbitrate->SetMinValue(64);
-	vbitrate->SetMaxValue(50000);
-	framerate->SetMinValue(1);
-	framerate->SetMaxValue(60);
-	xres->SetMinValue(160);
-	xres->SetMaxValue(7680);
-	yres->SetMinValue(120);
-	yres->SetMaxValue(4320);
-	ab->SetMinValue(16);
-	ab->SetMaxValue(500);
-	ar->SetMaxValue(192000);
-	
-	// set the initial values 
-	vbitrate->SetValue(1000);
-	framerate->SetValue(30);
-	xres->SetValue(1280);
-	yres->SetValue(720);
-	ab->SetValue(128);
-	ar->SetValue(44100);
-	ac->SetValue(2);
-	
-	// set the default status for the conditional spinners
-	benablecropping = true;
-	benableaudio = true;
-	bcustomres = false;
-	benablevideo = false; // changing this breaks UI enabled/disabled behaviour
-	xres->SetEnabled(false);
-	yres->SetEnabled(false);
-	
-	// set the about view text
-	abouttext->MakeEditable(false);
-	abouttext->SetText("  ffmpeg gui v1.0\n\n"
-					   "  Thanks to mmu_man, Jeremy, DeadYak, Marco, etc...\n\n" 
-					   "  md@geekport.com\n\n"
-					   "  made more or less usable by reds <reds@sakamoto.pl> - have fun! ");
-
-	// set the initial command line
-	BuildLine();
 
 }
 
