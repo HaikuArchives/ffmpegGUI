@@ -174,6 +174,7 @@ ffguiwin::ffguiwin(BRect r, char *name, window_type type, ulong mode)
 	quantcompression = new BSpinner("", "Video Quantiser Scale Compression", nullptr);	
 	
 	abouttext = new BTextView("");
+	abouttext->SetViewColor(ui_color(B_PANEL_BACKGROUND_COLOR));
 	encodebutton = new BButton("Encode", new BMessage(M_ENCODE));
 	encode = new BTextControl("", "", nullptr);
 
