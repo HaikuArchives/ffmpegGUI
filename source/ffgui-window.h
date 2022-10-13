@@ -23,18 +23,6 @@
 #include <string.h>
 #include <stdio.h>
 
-//#include "VGroup.h"
-//#include "HGroup.h"
-//#include "TabGroup.h"
-//#include "LayeredGroup.h"
-//#include "MRadioGroup.h"
-//#include "Space.h"
-//#include "MBorder.h"
-//#include "MDragBar.h"
-//#include "MProgressBar.h"
-//#include "PropGadget.h"
-//#include "MScrollView.h"
-
 
 class ffguiwin : public BWindow
 {
@@ -46,7 +34,7 @@ class ffguiwin : public BWindow
 			virtual void MessageReceived(BMessage*);
 
 
-//	private:
+	private:
 			//main view
 			BView *topview; 
 			// text views
