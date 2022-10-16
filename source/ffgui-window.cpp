@@ -12,7 +12,13 @@
 #include "ffgui-window.h"
 #include "ffgui-application.h"
 #include "messages.h"
-#include "MenuItem.h"
+#include <MenuItem.h>
+#include <LayoutBuilder.h>
+#include <TabView.h>
+#include <View.h>
+#include <Box.h>
+#include <SeparatorView.h>
+
 
 void ffguiwin::BuildLine() // ask all the views what they hold, reset the command string
 {
@@ -95,185 +101,84 @@ void ffguiwin::BuildLine() // ask all the views what they hold, reset the comman
 
 // new window object
 ffguiwin::ffguiwin(BRect r, char *name, window_type type, ulong mode)
-	: MWindow(r,name,type,mode)
+	: BWindow(r,name,type,mode)
 {
-//create the view for the main window gui controls
-	
-	topview=new VGroup //top vgroup
-			(
-				new VGroup
-				(
-					new MBorder
-					(
-						M_LABELED_BORDER,10,"File Options",
-						new VGroup
-						(
-							new VGroup
-							(
-								new HGroup
-								(
-									new MButton("Source file",new BMessage(M_SOURCE),NULL,minimax(-1,-1,-1,-1)),
-									sourcefile=new MTextControl("",""),0
-								),
-								new HGroup
-								(
-									new MButton("Output file",new BMessage(M_OUTPUT),NULL,minimax(-1,-1,-1,-1)),
-									outputfile=new MTextControl("",""),0
-								),
-								deletesource=new MCheckBox("Delete source when finished"),0
-							),
-							new HGroup
-							(
-								outputfileformat=new MPopup("Output File Format","avi","vcd","mp4","mpeg","mkv","webm",0), // todo: add more formats
-								outputvideoformat=new MPopup("Output Video Format","mpeg4","vp7","vp8","vp9","wmv1",0),
-								outputaudioformat=new MPopup ("Output Audio Format","ac3","aac","opus","vorbis",0),0
-							),0
 
-						)
-					),0
-				),
-				// tab
-				new TabGroup
-				(
-					"Main Options",
-				new HGroup // lower hgroup 
-				(
-					new VGroup // video vgroup
-					(
-						new MBorder
-						(
-							M_LABELED_BORDER,10,"Video",
-							new VGroup
-							(
-								enablevideo=new MCheckBox("Enable Video Encoding",0,true),
-								vbitrate = new SpinButton("Bitrate (Kbit/s)",SPIN_INTEGER),
-								framerate=new SpinButton("Framerate (fps)",SPIN_INTEGER),
-								new MSplitter(),
-								customres=new MCheckBox("Use Custom Resolution",0,false),
-								xres=new SpinButton("Width",SPIN_INTEGER),
-								yres=new SpinButton("Height",SPIN_INTEGER),0
-							)
-						),0
-					),	
-								
-					new VGroup //cropping vgroup 
-					(
-						new MBorder
-						(
-							M_LABELED_BORDER,10,"Cropping Options",
-							new VGroup
-							(
-								enablecropping=new MCheckBox("Enable Video Cropping",0,true),
-								topcrop=new SpinButton("Top Crop Size",SPIN_INTEGER),
-								bottomcrop=new SpinButton("Bottom Crop Size",SPIN_INTEGER),
-								leftcrop=new SpinButton("Left Crop Size",SPIN_INTEGER),
-								rightcrop=new SpinButton("Right Crop Size",SPIN_INTEGER),0
-							)
-						),0
-					),
-					
-					new VGroup // audio vgroup
-					(
-						new MBorder
-						(
-							M_LABELED_BORDER,10,"Audio",
-							new VGroup
-							(
-								enableaudio=new MCheckBox("Enable Audio Encoding",0,true),
-								ab=new SpinButton("Bitrate (Kbit/s)",SPIN_INTEGER),
-								ar=new SpinButton("Sampling Rate (Hz)",SPIN_INTEGER),
-								ac=new SpinButton("Audio Channels",SPIN_INTEGER),0
-							)
-						),0
-					),0	
-				),
-				"Advanced Options",
-				new VGroup
-				(
-					new MBorder
-					(	
-						M_LABELED_BORDER,10,"Advanced Options",
-						new HGroup
-						(	
-							new VGroup
-							(
-								bframes=new SpinButton("'B' Frames",SPIN_INTEGER),
-								gop=new SpinButton("GOP Size",SPIN_INTEGER),
-								new Space(minimax(2,2,2,2)),
-								new MSplitter(),
-								highquality=new MCheckBox("Use High Quality Settings",0,false),
-								fourmotion=new MCheckBox("Use four motion vector",0,false),
-								deinterlace=new MCheckBox("Deinterlace Pictures",0,false),
-								calcpsnr=new MCheckBox("Calculate PSNR of Compressed Frames",0,false),0
+	//initialize GUI elements
+	sourcefilebutton = new BButton("Source file", new BMessage(M_SOURCE));
+	sourcefile = new BTextControl("", "", new BMessage(M_SOURCEFILE));
+	outputfilebutton = new BButton("Output file", new BMessage(M_OUTPUT));
+	outputfile = new BTextControl("", "", new BMessage(M_OUTPUTFILE));
+	deletesource = new BCheckBox("", "Delete source when finished", new BMessage(M_DELETESOURCE));
+	
+	outputfileformatpopup = new BPopUpMenu("");
+	outputfileformatpopup->AddItem(new BMenuItem("avi", new BMessage(M_OUTPUTFILEFORMAT)));
+	outputfileformatpopup->AddItem(new BMenuItem("vcd", new BMessage(M_OUTPUTFILEFORMAT)));
+	outputfileformatpopup->AddItem(new BMenuItem("mp4", new BMessage(M_OUTPUTFILEFORMAT)));
+	outputfileformatpopup->AddItem(new BMenuItem("mpeg", new BMessage(M_OUTPUTFILEFORMAT)));
+	outputfileformatpopup->AddItem(new BMenuItem("mkv", new BMessage(M_OUTPUTFILEFORMAT)));
+	outputfileformatpopup->AddItem(new BMenuItem("webm", new BMessage(M_OUTPUTFILEFORMAT)));
+	outputfileformatpopup->ItemAt(0)->SetMarked(true);
+	outputfileformat = new BMenuField("Output File Format", outputfileformatpopup);
+	
+	outputvideoformatpopup = new BPopUpMenu("");
+	outputvideoformatpopup->AddItem(new BMenuItem("mpeg4", new BMessage(M_OUTPUTVIDEOFORMAT)));
+	outputvideoformatpopup->AddItem(new BMenuItem("vp7", new BMessage(M_OUTPUTVIDEOFORMAT)));
+	outputvideoformatpopup->AddItem(new BMenuItem("vp8", new BMessage(M_OUTPUTVIDEOFORMAT)));
+	outputvideoformatpopup->AddItem(new BMenuItem("vp9", new BMessage(M_OUTPUTVIDEOFORMAT)));
+	outputvideoformatpopup->AddItem(new BMenuItem("wmv1", new BMessage(M_OUTPUTVIDEOFORMAT)));	
+	outputvideoformatpopup->ItemAt(0)->SetMarked(true);
+	outputvideoformat = new BMenuField("Output Video Format", outputvideoformatpopup);
 
-							),
-							new MSplitter(),
-							new VGroup
-							(
-								fixedquant=new SpinButton("Use Fixed Video Quantiser Scale",SPIN_INTEGER),
-								minquant=new SpinButton("Min Video Quantiser Scale",SPIN_INTEGER),
-								maxquant=new SpinButton("Max Video Quantiser Scale",SPIN_INTEGER),
-								quantdifference=new SpinButton("Max Difference Between Quantiser Scale",SPIN_INTEGER),
-								quantblur=new SpinButton("Video Quantiser Scale Blur",SPIN_INTEGER),
-								quantcompression=new SpinButton("Video Quantiser Scale Compression",SPIN_INTEGER),
-								new Space(minimax(2,2,2,2)),0
-							),0
-						)
-					),0
-				),
-				"Output",
-				new VGroup
-				(
-					new MBorder
-					(
-						M_LABELED_BORDER,10,"Output",
-						new VGroup
-						(
-							new Space(),0
-						)
-					),0
-				),
-				"About",
-				new VGroup
-				(
-					new MBorder
-					(
-						M_LABELED_BORDER,10,"About",
-						new VGroup
-						(
-							abouttext=new MTextView(),0
-						)
-					),0
-				),0
-				),
-				new VGroup // bottom encode hgroup
-				(
-					new MBorder
-					(
-						M_LABELED_BORDER,10,"Encode",
-						new VGroup
-						(
-							new HGroup
-							(
-								new MButton("Encode",new BMessage(M_ENCODE),NULL,minimax(-1,-1,-1,-1)),
-								encode=new MTextControl("",""),0
-							),0
-						)
-					),0
-				),0
-			);						
+	outputaudioformatpopup = new BPopUpMenu("");
+	outputaudioformatpopup->AddItem(new BMenuItem("ac3", new BMessage(M_OUTPUTAUDIOFORMAT)));
+	outputaudioformatpopup->AddItem(new BMenuItem("aac", new BMessage(M_OUTPUTAUDIOFORMAT)));
+	outputaudioformatpopup->AddItem(new BMenuItem("opus", new BMessage(M_OUTPUTAUDIOFORMAT)));
+	outputaudioformatpopup->AddItem(new BMenuItem("vorbis", new BMessage(M_OUTPUTAUDIOFORMAT)));
+	outputaudioformatpopup->ItemAt(0)->SetMarked(true);
+	outputaudioformat = new BMenuField("Output Audio Format", outputaudioformatpopup);
 	
-	// tell LibLayout to line things up
-	DivideSame(sourcefile,outputfile,0);
-	DivideSame(outputfileformat,outputaudioformat,outputvideoformat,0);
-	DivideSame(vbitrate,framerate,0);
-	DivideSame(xres,yres,0);
-	DivideSame(ab,ar,ac,0);
-	DivideSame(topcrop,bottomcrop,leftcrop,rightcrop,0);
-	DivideSame(fixedquant,minquant,maxquant,quantdifference,quantblur,quantcompression,0);
-	DivideSame(highquality,fourmotion,deinterlace,calcpsnr,bframes,gop,0);
+	enablevideo = new BCheckBox("", "Enable Video Encoding", new BMessage(M_ENABLEVIDEO));
+	enablevideo->SetValue(B_CONTROL_ON);
+	vbitrate = new BSpinner("", "Bitrate (Kbit/s)", new BMessage(M_VBITRATE));
+	framerate = new BSpinner("", "Framerate (fps)", new BMessage(M_FRAMERATE));
+	customres = new BCheckBox("", "Use Custom Resolution", new BMessage(M_CUSTOMRES));
+	xres = new BSpinner("", "Width", new BMessage(M_XRES));
+	yres = new BSpinner("", "Height", new BMessage(M_YRES));
 	
-	// set the names for each control, so they can be figured out in MessageReceived
+	enablecropping = new BCheckBox("", "Enable Video Cropping", new BMessage(M_ENABLECROPPING));
+	enablecropping->SetValue(B_CONTROL_ON);
+	topcrop = new BSpinner("", "Top Crop Size", new BMessage(M_TOPCROP));
+	bottomcrop = new BSpinner("", "Bottom Crop Size", new BMessage(M_BOTTOMCROP));
+    leftcrop = new BSpinner("", "Left Crop Size", new BMessage(M_LEFTCROP));
+	rightcrop = new BSpinner("", "Right Crop Size", new BMessage(M_RIGHTCROP));
+	
+	enableaudio = new BCheckBox("", "Enable Audio Encoding", new BMessage(M_ENABLEAUDIO));
+	enableaudio->SetValue(B_CONTROL_ON);
+	ab = new BSpinner("", "Bitrate (Kbit/s)", new BMessage(M_AB));
+	ar = new BSpinner("", "Sampling Rate (Hz)", new BMessage(M_AR));
+	ac = new BSpinner("", "Audio Channels", new BMessage(M_AC));	
+	
+	bframes = new BSpinner("", "'B' Frames", nullptr);
+	gop = new BSpinner("", "GOP Size", nullptr);
+	highquality = new BCheckBox("","Use High Quality Settings", new BMessage(M_HIGHQUALITY));
+	fourmotion = new BCheckBox("", "Use four motion vector", new BMessage(M_FOURMOTION));
+	deinterlace = new BCheckBox("", "Deinterlace Pictures", new BMessage(M_DEINTERLACE));
+	calcpsnr = new BCheckBox("", "Calculate PSNR of Compressed Frames", new BMessage(M_CALCPSNR));
+	
+	fixedquant = new BSpinner("", "Use Fixed Video Quantiser Scale", nullptr);
+	minquant = new BSpinner("", "Min Video Quantiser Scale", nullptr);
+	maxquant = new BSpinner("", "Max Video Quantiser Scale", nullptr);
+	quantdifference = new BSpinner("", "Max Difference Between Quantiser Scale", nullptr);
+	quantblur = new BSpinner("", "Video Quantiser Scale Blur", nullptr);
+	quantcompression = new BSpinner("", "Video Quantiser Scale Compression", nullptr);	
+	
+	abouttext = new BTextView("");
+	abouttext->SetViewColor(ui_color(B_PANEL_BACKGROUND_COLOR));
+	encodebutton = new BButton("Encode", new BMessage(M_ENCODE));
+	encode = new BTextControl("", "", nullptr);
+
+// set the names for each control, so they can be figured out in MessageReceived
 	vbitrate->SetName("vbitrate");
 	framerate->SetName("framerate");
 	xres->SetName("xres");
@@ -292,26 +197,26 @@ ffguiwin::ffguiwin(BRect r, char *name, window_type type, ulong mode)
 	customres->SetName("customres");
 	
 	// set the min and max values for the spin controls
-	vbitrate->SetMinimum(64);
-	vbitrate->SetMaximum(50000);
-	framerate->SetMinimum(1);
-	framerate->SetMaximum(60);
-	xres->SetMinimum(160);
-	xres->SetMaximum(7680);
-	yres->SetMinimum(120);
-	yres->SetMaximum(4320);
-	ab->SetMinimum(16);
-	ab->SetMaximum(500);
-	ar->SetMaximum(192000);
+	vbitrate->SetMinValue(64);
+	vbitrate->SetMaxValue(50000);
+	framerate->SetMinValue(1);
+	framerate->SetMaxValue(60);
+	xres->SetMinValue(160);
+	xres->SetMaxValue(7680);
+	yres->SetMinValue(120);
+	yres->SetMaxValue(4320);
+	ab->SetMinValue(16);
+	ab->SetMaxValue(500);
+	ar->SetMaxValue(192000);
 	
 	// set the initial values 
-	vbitrate->SetValue(1000.0);
-	framerate->SetValue(30.0);
-	xres->SetValue(1280.0);
-	yres->SetValue(720.0);
-	ab->SetValue(128.0);
-	ar->SetValue(44100.0);
-	ac->SetValue(2.0);
+	vbitrate->SetValue(1000);
+	framerate->SetValue(30);
+	xres->SetValue(1280);
+	yres->SetValue(720);
+	ab->SetValue(128);
+	ar->SetValue(44100);
+	ac->SetValue(2);
 	
 	// set the default status for the conditional spinners
 	benablecropping = true;
@@ -327,10 +232,175 @@ ffguiwin::ffguiwin(BRect r, char *name, window_type type, ulong mode)
 					   "  Thanks to mmu_man, Jeremy, DeadYak, Marco, etc...\n\n" 
 					   "  md@geekport.com\n\n"
 					   "  made more or less usable by reds <reds@sakamoto.pl> - have fun! ");
-	// add the view
-	AddChild(dynamic_cast<BView*>(topview));
+
 	// set the initial command line
 	BuildLine();
+
+
+	// create tabs and boxes	
+	BBox *fileoptionsbox = new BBox("");
+	fileoptionsbox->SetLabel("File Options");
+	BGroupLayout *fileoptionslayout = BLayoutBuilder::Group<>(B_VERTICAL, B_USE_SMALL_SPACING)
+		.SetInsets(3,3,3,3)
+		.AddGroup(B_HORIZONTAL)
+			.Add(sourcefilebutton)
+			.Add(sourcefile)
+		.End()
+		.AddGroup(B_HORIZONTAL)
+			.Add(outputfilebutton)
+			.Add(outputfile)
+		.End()
+		.Add(deletesource)
+		.AddGroup(B_HORIZONTAL)
+			.Add(outputfileformat)
+			.Add(outputvideoformat)
+			.Add(outputaudioformat)
+		.End();
+	fileoptionsbox->AddChild(fileoptionslayout->View());
+	
+	BBox *encodebox = new BBox("");
+	encodebox->SetLabel("Encode");
+	BGroupLayout *encodelayout = BLayoutBuilder::Group<>(B_VERTICAL)
+		.SetInsets(0,0,0,0)
+		.AddGroup(B_HORIZONTAL)
+			.Add(encodebutton)
+			.Add(encode)
+		.End();
+	encodebox->AddChild(encodelayout->View());
+	
+	BBox *videobox = new BBox("");
+	videobox->SetLabel("Video");
+	BGroupLayout *videolayout = BLayoutBuilder::Group<>(B_VERTICAL)
+		.SetInsets(5,5,5,5)	
+		.Add(enablevideo)
+		.AddGrid(B_USE_SMALL_SPACING,B_USE_SMALL_SPACING)
+			.Add(vbitrate->CreateLabelLayoutItem(),0,0)
+			.Add(vbitrate->CreateTextViewLayoutItem(),1,0)
+			.Add(framerate->CreateLabelLayoutItem(),0,1)
+			.Add(framerate->CreateTextViewLayoutItem(),1,1)
+		.End()	
+		.Add(new BSeparatorView(B_HORIZONTAL))
+		.Add(customres)
+		.Add(xres)
+		.Add(yres);	
+	videobox->AddChild(videolayout->View());
+	
+	BBox *croppingoptionsbox = new BBox("");
+	croppingoptionsbox->SetLabel("Cropping Options");
+	BGroupLayout *croppingoptionslayout = BLayoutBuilder::Group<>(B_VERTICAL)
+		.SetInsets(5,5,5,5)
+		.Add(enablecropping)
+		.AddGrid(B_USE_SMALL_SPACING,B_USE_SMALL_SPACING)
+			.Add(topcrop->CreateLabelLayoutItem(),0,0)
+			.Add(topcrop->CreateTextViewLayoutItem(),1,0)
+			.Add(bottomcrop->CreateLabelLayoutItem(),0,1)
+			.Add(bottomcrop->CreateTextViewLayoutItem(),1,1)
+			.Add(leftcrop->CreateLabelLayoutItem(),0,2)
+			.Add(leftcrop->CreateTextViewLayoutItem(),1,2)
+			.Add(rightcrop->CreateLabelLayoutItem(),0,3)
+			.Add(rightcrop->CreateTextViewLayoutItem(),1,3)
+		.End()
+		.AddGlue();
+	croppingoptionsbox->AddChild(croppingoptionslayout->View());
+		
+	BBox *audiobox = new BBox("");
+	audiobox->SetLabel("Audio");
+	BGroupLayout *audiolayout = BLayoutBuilder::Group<>(B_VERTICAL)
+		.SetInsets(5,5,5,5)
+		.Add(enableaudio)
+		.AddGrid(B_USE_SMALL_SPACING,B_USE_SMALL_SPACING)		
+			.Add(ab->CreateLabelLayoutItem(),0,0)
+			.Add(ab->CreateTextViewLayoutItem(),1,0)
+			.Add(ar->CreateLabelLayoutItem(),0,1)
+			.Add(ar->CreateTextViewLayoutItem(),1,1)
+			.Add(ac->CreateLabelLayoutItem(),0,2)
+			.Add(ac->CreateTextViewLayoutItem(),1,2)
+		.End()
+		.AddGlue();	
+	audiobox->AddChild(audiolayout->View());
+	
+	
+	BView *mainoptionsview = new BView("",B_SUPPORTS_LAYOUT);
+	BView *advancedoptionsview = new BView("",B_SUPPORTS_LAYOUT);
+	BView *outputview = new BView("",B_SUPPORTS_LAYOUT);
+	BView *aboutview = new BView("",B_SUPPORTS_LAYOUT);
+	
+	BLayoutBuilder::Group<>(mainoptionsview, B_HORIZONTAL)
+		.SetInsets(5)
+		.Add(videobox)
+		.Add(croppingoptionsbox)
+		.Add(audiobox)
+		.Layout();
+	
+	BLayoutBuilder::Group<>(advancedoptionsview, B_HORIZONTAL)
+		.SetInsets(5)
+		.AddGroup(B_VERTICAL)
+			.AddGrid(B_USE_SMALL_SPACING,B_USE_SMALL_SPACING)			
+				.Add(bframes->CreateLabelLayoutItem(),0,0)
+				.Add(bframes->CreateTextViewLayoutItem(),1,0)
+				.Add(gop->CreateLabelLayoutItem(),0,1)
+				.Add(gop->CreateTextViewLayoutItem(),1,1)
+			.End()	
+			.Add(new BSeparatorView(B_HORIZONTAL))
+			.Add(highquality)
+			.Add(fourmotion)
+			.Add(deinterlace)
+			.Add(calcpsnr)
+		.End()
+		.Add(new BSeparatorView(B_VERTICAL))
+		.AddGroup(B_VERTICAL)
+		.AddGrid(B_USE_SMALL_SPACING,B_USE_SMALL_SPACING)			
+			.Add(fixedquant->CreateLabelLayoutItem(),0,0)
+			.Add(fixedquant->CreateTextViewLayoutItem(),1,0)
+			.Add(minquant->CreateLabelLayoutItem(),0,1)
+			.Add(minquant->CreateTextViewLayoutItem(),1,1)
+			.Add(maxquant->CreateLabelLayoutItem(),0,2)
+			.Add(maxquant->CreateTextViewLayoutItem(),1,2)
+			.Add(quantdifference->CreateLabelLayoutItem(),0,3)
+			.Add(quantdifference->CreateTextViewLayoutItem(),1,3)
+			.Add(quantblur->CreateLabelLayoutItem(),0,4)
+			.Add(quantblur->CreateTextViewLayoutItem(),1,4)
+			.Add(quantcompression->CreateLabelLayoutItem(),0,5)
+			.Add(quantcompression->CreateTextViewLayoutItem(),1,5)
+		.End()
+		.AddGlue()	
+		.End();
+		
+
+	BLayoutBuilder::Group<>(outputview, B_HORIZONTAL)
+		.SetInsets(0)
+		.Layout();
+
+	BLayoutBuilder::Group<>(aboutview, B_HORIZONTAL)
+		.SetInsets(0)
+		.Add(abouttext)
+		.Layout();		
+	
+	BTabView *tabview = new BTabView("");
+	BTab *mainoptionstab = new BTab();
+	BTab *advancedoptionstab = new BTab();
+	BTab *outputtab = new BTab();
+	BTab *abouttab = new BTab();
+	
+	tabview->AddTab(mainoptionsview, mainoptionstab);
+	tabview->AddTab(advancedoptionsview, advancedoptionstab);
+	tabview->AddTab(outputview, outputtab);
+	tabview->AddTab(aboutview, abouttab);
+	mainoptionstab->SetLabel("Main Options");	
+	advancedoptionstab->SetLabel("Advanced Options");
+	outputtab->SetLabel("Output");
+	abouttab->SetLabel("About");
+	
+	//main layout
+	BLayoutBuilder::Group<>(this, B_VERTICAL)
+		.SetInsets(5)
+		.Add(fileoptionsbox)
+		.Add(tabview)	
+		.Add(encodebox)
+	.Layout();	
+	
+	ResizeToPreferred();
+	MoveOnScreen();
 
 }
 
@@ -346,10 +416,12 @@ bool ffguiwin::QuitRequested()
 void ffguiwin::MessageReceived(BMessage *message)
 {
 
-	message->PrintToStream();
+	//message->PrintToStream();
 	switch(message->what)
 	{
 		case M_NOMSG:
+		case M_SOURCEFILE:
+		case M_OUTPUTFILE:
 		{
 			BuildLine();
 			break;
@@ -369,7 +441,9 @@ void ffguiwin::MessageReceived(BMessage *message)
 			BuildLine();
 			break;
 		}
-*/		case '!pop':
+*/		case M_OUTPUTFILEFORMAT:
+		case M_OUTPUTVIDEOFORMAT:
+		case M_OUTPUTAUDIOFORMAT:
 		{
 			BView *view (NULL);
 			printf("!pop found\n");
@@ -380,7 +454,17 @@ void ffguiwin::MessageReceived(BMessage *message)
 			BuildLine();
 			break;
 		}	
-		case '!spn':
+		case M_VBITRATE:
+		case M_FRAMERATE:
+		case M_XRES:
+		case M_YRES:
+		case M_TOPCROP:
+		case M_BOTTOMCROP:
+		case M_LEFTCROP:
+		case M_RIGHTCROP:
+		case M_AB:
+		case M_AR:
+		case M_AC:
 		{
 			BuildLine();
 			BView *view (NULL);
@@ -392,153 +476,150 @@ void ffguiwin::MessageReceived(BMessage *message)
 			}
 			break;
 		}
-		case '!chk':
+		
+		case M_ENABLEVIDEO:
 		{
-			BView *view (NULL);
-			if( message->FindPointer("source", reinterpret_cast<void **>(&view)) == B_OK)
+			// turn all the video spin buttons off
+			if (benablevideo == true)
 			{
-				const char *name (view->Name());
-				printf(name);
-				printf("\n");
-				// actions based on which checkbox was pressed
-				if (strcmp(name,"enablevideo") == 0) // turn all the video spin buttons off
-				{
-					if (benablevideo == true)
-					{
-						vbitrate->SetEnabled(true);
-						vbitrate->ChildAt(0)->Invalidate();
-						framerate->SetEnabled(true);
-						framerate->ChildAt(0)->Invalidate();
-						customres->SetEnabled(true);
+				vbitrate->SetEnabled(true);
+				vbitrate->ChildAt(0)->Invalidate();
+				framerate->SetEnabled(true);
+				framerate->ChildAt(0)->Invalidate();
+				customres->SetEnabled(true);
 						
-						if (bcustomres == true)
-						{
-							xres->SetEnabled(true);
-							xres->ChildAt(0)->Invalidate();
-							yres->SetEnabled(true);
-							yres->ChildAt(0)->Invalidate();
-						}
+				if (bcustomres == true)
+				{
+					xres->SetEnabled(true);
+					xres->ChildAt(0)->Invalidate();
+					yres->SetEnabled(true);
+					yres->ChildAt(0)->Invalidate();
+				}
 						
-						enablecropping->SetEnabled(true);
-						if (benablecropping == true)
-						{
-							topcrop->SetEnabled(true);
-							topcrop->ChildAt(0)->Invalidate();
-							bottomcrop->SetEnabled(true);
-							bottomcrop->ChildAt(0)->Invalidate();
-							leftcrop->SetEnabled(true);
-							leftcrop->ChildAt(0)->Invalidate();
-							rightcrop->SetEnabled(true);
-							rightcrop->ChildAt(0)->Invalidate();
-						}							
-						benablevideo = false;
-						BuildLine();
-					}
-					else
-					{
-						vbitrate->SetEnabled(false);
-						vbitrate->ChildAt(0)->Invalidate();
-						framerate->SetEnabled(false);
-						framerate->ChildAt(0)->Invalidate();
-						customres->SetEnabled(false);
-						xres->SetEnabled(false);
-						xres->ChildAt(0)->Invalidate();
-						yres->SetEnabled(false);
-						yres->ChildAt(0)->Invalidate();
-						enablecropping->SetEnabled(false);
-						topcrop->SetEnabled(false);
-						topcrop->ChildAt(0)->Invalidate();
-						bottomcrop->SetEnabled(false);
-						bottomcrop->ChildAt(0)->Invalidate();
-						leftcrop->SetEnabled(false);
-						leftcrop->ChildAt(0)->Invalidate();
-						rightcrop->SetEnabled(false);
-						rightcrop->ChildAt(0)->Invalidate();
-						benablevideo = true;
-						BuildLine();
-					}
-				}
-			
-				if (strcmp(name,"customres") == 0)
+				enablecropping->SetEnabled(true);
+				if (benablecropping == true)
 				{
-					if (bcustomres == false)
-					{
-						xres->SetEnabled(true);
-						xres->ChildAt(0)->Invalidate();
-						yres->SetEnabled(true);
-						yres->ChildAt(0)->Invalidate();
-						bcustomres = true;
-						BuildLine();
-					}
-					else
-					{
-						xres->SetEnabled(false);
-						xres->ChildAt(0)->Invalidate();
-						yres->SetEnabled(false);
-						yres->ChildAt(0)->Invalidate();
-						bcustomres = false;
-						BuildLine();
-					}
-				}					
+					topcrop->SetEnabled(true);
+					topcrop->ChildAt(0)->Invalidate();
+					bottomcrop->SetEnabled(true);
+					bottomcrop->ChildAt(0)->Invalidate();
+					leftcrop->SetEnabled(true);
+					leftcrop->ChildAt(0)->Invalidate();
+					rightcrop->SetEnabled(true);
+					rightcrop->ChildAt(0)->Invalidate();
+				}							
+				benablevideo = false;
+				BuildLine();
+			}
+			else
+			{
+				vbitrate->SetEnabled(false);
+				vbitrate->ChildAt(0)->Invalidate();
+				framerate->SetEnabled(false);
+				framerate->ChildAt(0)->Invalidate();
+				customres->SetEnabled(false);
+				xres->SetEnabled(false);
+				xres->ChildAt(0)->Invalidate();
+				yres->SetEnabled(false);
+				yres->ChildAt(0)->Invalidate();
+				enablecropping->SetEnabled(false);
+				topcrop->SetEnabled(false);
+				topcrop->ChildAt(0)->Invalidate();
+				bottomcrop->SetEnabled(false);
+				bottomcrop->ChildAt(0)->Invalidate();
+				leftcrop->SetEnabled(false);
+				leftcrop->ChildAt(0)->Invalidate();
+				rightcrop->SetEnabled(false);
+				rightcrop->ChildAt(0)->Invalidate();
+				benablevideo = true;
+				BuildLine();
+			}
+			break;
+		}	
 			
-				if (strcmp(name,"enablecropping") == 0 ) //turn the cropping spinbuttons on or off, set a bool
-				{
-					if (benablecropping == false)
-					{
-						topcrop->SetEnabled(true);
-						topcrop->ChildAt(0)->Invalidate();
-						bottomcrop->SetEnabled(true);
-						bottomcrop->ChildAt(0)->Invalidate();
-						leftcrop->SetEnabled(true);
-						leftcrop->ChildAt(0)->Invalidate();
-						rightcrop->SetEnabled(true);
-						rightcrop->ChildAt(0)->Invalidate();
-						benablecropping = true;
-						BuildLine();
-					}
-					else
-					{
-						topcrop->SetEnabled(false);
-						topcrop->ChildAt(0)->Invalidate();
-						bottomcrop->SetEnabled(false);
-						bottomcrop->ChildAt(0)->Invalidate();
-						leftcrop->SetEnabled(false);
-						leftcrop->ChildAt(0)->Invalidate();
-						rightcrop->SetEnabled(false);
-						rightcrop->ChildAt(0)->Invalidate();
-						benablecropping = false;
-						BuildLine();
-					}
-				}
-					
-				if (strcmp(name,"enableaudio") == 0) //turn the audio spinbuttons on or off, set a bool
-				{		
-					if (benableaudio == true)
-					{
-						ab->SetEnabled(false);
-						ab->ChildAt(0)->Invalidate();
-						ac->SetEnabled(false);
-						ac->ChildAt(0)->Invalidate();
-						ar->SetEnabled(false);
-						ar->ChildAt(0)->Invalidate();
-						benableaudio = false;
-						BuildLine();
-					}
-					else
-					{
-						ab->SetEnabled(true);
-						ab->ChildAt(0)->Invalidate();
-						ac->SetEnabled(true);
-						ac->ChildAt(0)->Invalidate();
-						ar->SetEnabled(true);
-						ar->ChildAt(0)->Invalidate();
-						benableaudio = true;
-						BuildLine();
-					}
-				}
-			}	
+		case M_CUSTOMRES:
+		{
+			if (bcustomres == false)
+			{
+				xres->SetEnabled(true);
+				xres->ChildAt(0)->Invalidate();
+				yres->SetEnabled(true);
+				yres->ChildAt(0)->Invalidate();
+				bcustomres = true;
+				BuildLine();
+			}
+			else
+			{
+				xres->SetEnabled(false);
+				xres->ChildAt(0)->Invalidate();
+				yres->SetEnabled(false);
+				yres->ChildAt(0)->Invalidate();
+				bcustomres = false;
+				BuildLine();
+			}
+			break;
+		}	
+			
+		case M_ENABLECROPPING:
+		{
+			//turn the cropping spinbuttons on or off, set a bool
+			if (benablecropping == false)
+			{
+				topcrop->SetEnabled(true);
+				topcrop->ChildAt(0)->Invalidate();
+				bottomcrop->SetEnabled(true);
+				bottomcrop->ChildAt(0)->Invalidate();
+				leftcrop->SetEnabled(true);
+				leftcrop->ChildAt(0)->Invalidate();
+				rightcrop->SetEnabled(true);
+				rightcrop->ChildAt(0)->Invalidate();
+				benablecropping = true;
+				BuildLine();
+			}
+			else
+			{
+				topcrop->SetEnabled(false);
+				topcrop->ChildAt(0)->Invalidate();
+				bottomcrop->SetEnabled(false);
+				bottomcrop->ChildAt(0)->Invalidate();
+				leftcrop->SetEnabled(false);
+				leftcrop->ChildAt(0)->Invalidate();
+				rightcrop->SetEnabled(false);
+				rightcrop->ChildAt(0)->Invalidate();
+				benablecropping = false;
+				BuildLine();
+			}
 			break;
 		}
+					
+		case M_ENABLEAUDIO:
+		{
+			//turn the audio spinbuttons on or off, set a bool		
+			if (benableaudio == true)
+			{
+				ab->SetEnabled(false);
+				ab->ChildAt(0)->Invalidate();
+				ac->SetEnabled(false);
+				ac->ChildAt(0)->Invalidate();
+				ar->SetEnabled(false);
+				ar->ChildAt(0)->Invalidate();
+				benableaudio = false;
+				BuildLine();
+			}
+			else
+			{
+				ab->SetEnabled(true);
+				ab->ChildAt(0)->Invalidate();
+				ac->SetEnabled(true);
+				ac->ChildAt(0)->Invalidate();
+				ar->SetEnabled(true);
+				ar->ChildAt(0)->Invalidate();
+				benableaudio = true;
+				BuildLine();
+			}
+			break;
+		}
+				
 		case M_SOURCE:
 		{
 			printf("M_SOURCE: Source button pressed\n");
@@ -559,12 +640,13 @@ void ffguiwin::MessageReceived(BMessage *message)
 			break;
 		}
 		default:
-
+			/*
 			printf("recieved by window:\n");
 			message->PrintToStream();
 			printf("\n");
 			printf("------------\n");
-			MWindow::MessageReceived(message);
+			*/
+			BWindow::MessageReceived(message);
 			break;
 	}
 }

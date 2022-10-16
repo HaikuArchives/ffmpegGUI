@@ -2,9 +2,7 @@
 By Zach Dykstra et al.
 
 FFmpegGUI is a Haiku graphical frontend for FFmpeg, which allows users to easily transcode video and audio files. FFmpegGUI parses user's input and produces a ready to use FFmpeg command.
-
- This app uses [liblayout](https://github.com/diversys/liblayout) for easier arrangement of graphical elements.
-
+ 
 ![Screenshot of ffmpegGUI](/screenshot.png?raw-true "Default ffmpegGUI screen")
 
 ## Available options
