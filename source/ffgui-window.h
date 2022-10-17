@@ -19,6 +19,7 @@
 #include <PopUpMenu.h>
 #include <Spinner.h>
 #include <String.h>
+#include <FilePanel.h>
 
 #include <string.h>
 #include <stdio.h>
@@ -93,4 +94,8 @@ class ffguiwin : public BWindow
 			bool benablevideo, benableaudio, benablecropping, bdeletesource,bcustomres;
 			// bstrings
 			BString *commandline;
+			// file panels
+			BFilePanel *fSourceFilePanel;
+			BFilePanel *fOutputFilePanel;
+			
 };

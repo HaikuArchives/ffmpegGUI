@@ -18,6 +18,8 @@
 #include <View.h>
 #include <Box.h>
 #include <SeparatorView.h>
+#include <Entry.h>
+#include <Path.h>
 
 
 void ffguiwin::BuildLine() // ask all the views what they hold, reset the command string
@@ -177,6 +179,21 @@ ffguiwin::ffguiwin(BRect r, char *name, window_type type, ulong mode)
 	abouttext->SetViewColor(ui_color(B_PANEL_BACKGROUND_COLOR));
 	encodebutton = new BButton("Encode", new BMessage(M_ENCODE));
 	encode = new BTextControl("", "", nullptr);
+	
+	fSourceFilePanel = new BFilePanel(B_OPEN_PANEL,
+									new BMessenger(this),
+									NULL,
+									B_FILE_NODE,
+									false,
+									new BMessage(M_SOURCEFILE_REF));
+									
+	fOutputFilePanel = new BFilePanel(B_SAVE_PANEL,
+									new BMessenger(this),
+									NULL,
+									B_FILE_NODE,
+									false,
+									new BMessage(M_OUTPUTFILE_REF));	
+	
 
 // set the names for each control, so they can be figured out in MessageReceived
 	vbitrate->SetName("vbitrate");
@@ -618,16 +635,41 @@ void ffguiwin::MessageReceived(BMessage *message)
 				BuildLine();
 			}
 			break;
-		}
-				
+		}		
 		case M_SOURCE:
 		{
-			printf("M_SOURCE: Source button pressed\n");
+			fSourceFilePanel->Show();			
 			break;
 		}
 		case M_OUTPUT:
 		{
-			printf("M_OUTPUT: Output button pressed\n");
+			fOutputFilePanel->Show();
+			break;
+		}
+		case M_SOURCEFILE_REF:
+		{	
+			entry_ref ref;
+			message->FindRef("refs", &ref);
+			BEntry file_entry(&ref, true);
+			BPath file_path(&file_entry);
+
+			sourcefile->SetText(file_path.Path());
+			BuildLine();
+			break;
+		}
+		case M_OUTPUTFILE_REF:
+		{
+			entry_ref directory_ref;
+			message->FindRef("directory", &directory_ref);
+			BEntry directory_entry(&directory_ref, true);
+			BPath directory_path(&directory_entry);
+			BString filename;
+			message->FindString("name", &filename);
+			filename.Prepend("/");
+			filename.Prepend(directory_path.Path());
+			
+			outputfile->SetText(filename);
+			BuildLine();
 			break;
 		}
 		case M_ENCODE:
