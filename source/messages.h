@@ -47,3 +47,8 @@ const uint32 M_OUTPUTAUDIOFORMAT = 0x1402;
 const uint32 M_SOURCEFILE = 0x1500;
 const uint32 M_OUTPUTFILE = 0x1501;
 
+//File Panels
+const uint32 M_SOURCEFILE_REF = 0x1600;
+const uint32 M_OUTPUTFILE_REF = 0x1601;
+
+
