@@ -36,6 +36,7 @@ class ffguiwin : public BWindow
 
 
 	private:
+			void set_encodebutton_state();
 			//main view
 			BView *topview; 
 			// text views
@@ -92,6 +93,7 @@ class ffguiwin : public BWindow
 			//MProgressBar *encodestatus;
 			// bools
 			bool benablevideo, benableaudio, benablecropping, bdeletesource,bcustomres;
+			bool sourcefile_specified, outputfile_specified;
 			// bstrings
 			BString *commandline;
 			// file panels

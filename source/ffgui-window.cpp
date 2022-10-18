@@ -105,6 +105,8 @@ void ffguiwin::BuildLine() // ask all the views what they hold, reset the comman
 ffguiwin::ffguiwin(BRect r, char *name, window_type type, ulong mode)
 	: BWindow(r,name,type,mode)
 {
+	sourcefile_specified = false;
+	outputfile_specified = false;
 
 	//initialize GUI elements
 	sourcefilebutton = new BButton("Source file", new BMessage(M_SOURCE));
@@ -178,6 +180,7 @@ ffguiwin::ffguiwin(BRect r, char *name, window_type type, ulong mode)
 	abouttext = new BTextView("");
 	abouttext->SetViewColor(ui_color(B_PANEL_BACKGROUND_COLOR));
 	encodebutton = new BButton("Encode", new BMessage(M_ENCODE));
+	encodebutton->SetEnabled(false);
 	encode = new BTextControl("", "", nullptr);
 	
 	fSourceFilePanel = new BFilePanel(B_OPEN_PANEL,
@@ -437,12 +440,25 @@ void ffguiwin::MessageReceived(BMessage *message)
 	switch(message->what)
 	{
 		case M_NOMSG:
-		case M_SOURCEFILE:
-		case M_OUTPUTFILE:
 		{
 			BuildLine();
 			break;
-		}			
+		}
+		case M_SOURCEFILE:
+		{
+			BuildLine();
+			sourcefile_specified = !(BString(sourcefile->Text()).Trim().IsEmpty());
+			set_encodebutton_state();
+			break;	
+		}
+		case M_OUTPUTFILE:	
+		{
+			BuildLine();
+			outputfile_specified = !(BString(outputfile->Text()).Trim().IsEmpty());
+			set_encodebutton_state();
+			break;	
+		}	
+		
 /*		case '_PBL':
 		{
 			BuildLine();
@@ -652,9 +668,10 @@ void ffguiwin::MessageReceived(BMessage *message)
 			message->FindRef("refs", &ref);
 			BEntry file_entry(&ref, true);
 			BPath file_path(&file_entry);
-
 			sourcefile->SetText(file_path.Path());
 			BuildLine();
+			sourcefile_specified = true;
+			set_encodebutton_state();
 			break;
 		}
 		case M_OUTPUTFILE_REF:
@@ -670,11 +687,13 @@ void ffguiwin::MessageReceived(BMessage *message)
 			
 			outputfile->SetText(filename);
 			BuildLine();
+			outputfile_specified = true;
+			set_encodebutton_state();
 			break;
 		}
 		case M_ENCODE:
 		{
-			printf("M_ENCODE: Encode button pressed\n");
+			commandline->SetTo(encode->Text());
 			char run[4096];
 			sprintf(run,"Terminal %s",commandline->String());
 			printf("Running command: %s\n", commandline->String());
@@ -692,3 +711,21 @@ void ffguiwin::MessageReceived(BMessage *message)
 			break;
 	}
 }
+
+
+void ffguiwin::set_encodebutton_state()
+{
+	bool encodebutton_enabled;
+
+	if (sourcefile_specified && outputfile_specified)
+	{
+		encodebutton_enabled = true;
+	}
+	else
+	{
+		encodebutton_enabled = false;
+	}
+	
+	encodebutton->SetEnabled(encodebutton_enabled);
+}
+
