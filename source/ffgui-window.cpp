@@ -674,7 +674,7 @@ void ffguiwin::MessageReceived(BMessage *message)
 		}
 		case M_ENCODE:
 		{
-			printf("M_ENCODE: Encode button pressed\n");
+			commandline->SetTo(encode->Text());
 			char run[4096];
 			sprintf(run,"Terminal %s",commandline->String());
 			printf("Running command: %s\n", commandline->String());
