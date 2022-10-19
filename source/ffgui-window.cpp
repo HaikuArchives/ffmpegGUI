@@ -700,6 +700,7 @@ void ffguiwin::MessageReceived(BMessage *message)
 		case M_ENCODE:
 		{
 			commandline->SetTo(encode->Text());
+			commandline->Append(" -y");
 			BMessage start_encode_message(M_RUN_COMMAND);
 			start_encode_message.AddString("cmdline", *commandline);
 			fCommandLauncher->PostMessage(&start_encode_message);
