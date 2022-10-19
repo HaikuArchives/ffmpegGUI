@@ -44,7 +44,7 @@ void
 CommandLauncher::run_command()
 {
 
-	//redirect stdout and stderr
+	//redirect stderr
 	int stderr_pipe[2];
 	int original_stderr = dup(STDERR_FILENO);
 
@@ -88,7 +88,6 @@ CommandLauncher::run_command()
 			{
 				break;
 			}
-			std::cout << "data received" << std::endl;
 
 			BMessage progress_message(M_PROGRESS);
 			progress_message.AddString("data", buffer);
@@ -101,6 +100,7 @@ CommandLauncher::run_command()
 	status_t proc_exit_code = 0;
 	wait_for_thread(proc_id, &proc_exit_code);
 
+	//inform target that the command has finished
 	BMessage finished_message(M_COMMAND_FINISHED);
 	finished_message.AddInt32("exitcode", proc_exit_code);
 	fTargetMessenger->SendMessage(&finished_message);
