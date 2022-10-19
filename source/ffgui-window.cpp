@@ -98,7 +98,6 @@ void ffguiwin::BuildLine() // ask all the views what they hold, reset the comman
 	}
 	commandline->Append(" ");
 	commandline->Append(outputfile->Text());
-	commandline->Append(" &");
 	printf(commandline->String());
 	printf("\n");
 	encode->SetText(commandline->String());
