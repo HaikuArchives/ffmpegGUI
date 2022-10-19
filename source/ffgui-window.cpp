@@ -20,6 +20,7 @@
 #include <SeparatorView.h>
 #include <Entry.h>
 #include <Path.h>
+#include <Alert.h>
 
 #include <iostream>
 
@@ -717,7 +718,18 @@ void ffguiwin::MessageReceived(BMessage *message)
 		{
 			status_t exit_code;
 			message->FindInt32("exitcode", &exit_code);
-			std::cout << "Command finished with status " << exit_code << std::endl;
+			BString finished_message;
+			if(exit_code == 0)
+			{
+				finished_message = "The video was converted successfully";
+			}
+			else
+			{
+				finished_message << "Converting the video failed";
+			}
+
+			BAlert *finished_alert = new BAlert("", finished_message, "OK");
+			finished_alert->Go();
 
 			break;
 		}
