@@ -181,6 +181,10 @@ ffguiwin::ffguiwin(BRect r, char *name, window_type type, ulong mode)
 
 	abouttext = new BTextView("");
 	abouttext->SetViewColor(ui_color(B_PANEL_BACKGROUND_COLOR));
+	outputtext = new BTextView("");
+	outputtext->SetViewColor(ui_color(B_PANEL_BACKGROUND_COLOR));
+	outputtext->MakeEditable(false);
+
 	encodebutton = new BButton("Encode", new BMessage(M_ENCODE));
 	encodebutton->SetEnabled(false);
 	encode = new BTextControl("", "", nullptr);
@@ -391,12 +395,11 @@ ffguiwin::ffguiwin(BRect r, char *name, window_type type, ulong mode)
 
 	BLayoutBuilder::Group<>(outputview, B_HORIZONTAL)
 		.SetInsets(0)
-		.Layout();
+		.Add(outputtext);
 
 	BLayoutBuilder::Group<>(aboutview, B_HORIZONTAL)
 		.SetInsets(0)
-		.Add(abouttext)
-		.Layout();
+		.Add(abouttext);
 
 	BTabView *tabview = new BTabView("");
 	BTab *mainoptionstab = new BTab();
@@ -711,7 +714,7 @@ void ffguiwin::MessageReceived(BMessage *message)
 			BString progress_data;
 			message->FindString("data", &progress_data);
 			std::cout << "ffmpeg data: " << progress_data.String() << std::endl;
-			//outputtext->Insert(progress_data.String());
+			outputtext->Insert(progress_data.String());
 			break;
 		}
 		case M_COMMAND_FINISHED:
