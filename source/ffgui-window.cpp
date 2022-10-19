@@ -713,6 +713,14 @@ void ffguiwin::MessageReceived(BMessage *message)
 			//outputtext->Insert(progress_data.String());
 			break;
 		}
+		case M_COMMAND_FINISHED:
+		{
+			status_t exit_code;
+			message->FindInt32("exitcode", &exit_code);
+			std::cout << "Command finished with status " << exit_code << std::endl;
+
+			break;
+		}
 		default:
 			/*
 			printf("recieved by window:\n");

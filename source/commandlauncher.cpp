@@ -101,6 +101,9 @@ CommandLauncher::run_command()
 	status_t proc_exit_code = 0;
 	wait_for_thread(proc_id, &proc_exit_code);
 
+	BMessage finished_message(M_COMMAND_FINISHED);
+	finished_message.AddInt32("exitcode", proc_exit_code);
+	fTargetMessenger->SendMessage(&finished_message);
 	fBusy = false;
 
 }

@@ -54,4 +54,5 @@ const uint32 M_OUTPUTFILE_REF = 0x1601;
 //Command Launcher
 const uint32 M_RUN_COMMAND = 0x1700;
 const uint32 M_PROGRESS = 0x1701;
+const uint32 M_COMMAND_FINISHED = 0x1702;
 
