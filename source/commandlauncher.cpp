@@ -23,7 +23,7 @@ CommandLauncher::MessageReceived(BMessage *message)
 {
 	switch(message->what)
 	{
-		case M_RUN_FFMPEG:
+		case M_RUN_COMMAND:
 		{
 			if(!fBusy)
 			{
