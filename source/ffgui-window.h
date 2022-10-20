@@ -95,7 +95,11 @@ class ffguiwin : public BWindow
 			BTabView	*tabview;
 
 			//progress bar
-			//MProgressBar *encodestatus;
+			int32 encode_duration;
+			int32 encode_time;
+			bool duration_detected;
+
+
 			// bools
 			bool benablevideo, benableaudio, benablecropping, bdeletesource,bcustomres;
 			bool sourcefile_specified, outputfile_specified;

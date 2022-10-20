@@ -705,6 +705,9 @@ void ffguiwin::MessageReceived(BMessage *message)
 			BMessage start_encode_message(M_RUN_COMMAND);
 			start_encode_message.AddString("cmdline", *commandline);
 			fCommandLauncher->PostMessage(&start_encode_message);
+			encode_duration = 0;
+			encode_time = 0;
+			duration_detected = false;
 			break;
 		}
 		case M_PROGRESS:
@@ -712,6 +715,38 @@ void ffguiwin::MessageReceived(BMessage *message)
 			BString progress_data;
 			message->FindString("data", &progress_data);
 			outputtext->Insert(progress_data.String());
+
+			//calculate progress percentage
+			if (duration_detected) 	//the duration appears in the data all the time but
+			{						//we need it only once
+
+				int32 time_startpos = progress_data.FindFirst("time=");
+				if (time_startpos > -1)
+				{
+					time_startpos+=5;
+					int32 time_endpos = progress_data.FindFirst(".", time_startpos);
+					BString time_string;
+					progress_data.CopyInto(time_string, time_startpos, time_endpos-time_startpos);
+					std::cout << "Time: " << time_string.String() << std::endl;
+				}
+
+			}
+			else
+			{
+				int32 duration_startpos = progress_data.FindFirst("Duration:");
+				if (duration_startpos > -1)
+				{
+					duration_startpos+=9;
+					int32 duration_endpos = progress_data.FindFirst(".", duration_startpos);
+					BString duration_string;
+					progress_data.CopyInto(duration_string, duration_startpos, duration_endpos-duration_startpos);
+					//std::cout << "startpos: " << duration_startpos << " endpos: " << duration_endpos << std::endl;
+					std::cout << "Duration: " << duration_string.String() << std::endl;
+					duration_detected = true;
+				}
+			}
+
+
 			//outputtext->ScrollToOffset(outputtext->TextLength());
 			break;
 		}
