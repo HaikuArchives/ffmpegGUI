@@ -2,7 +2,7 @@
  * Copyright 2003, Zach Dykstra. All rights reserved.
  * Distributed under the terms of the MIT License.
  */
- 
+
 /*
 	ffgui-window.cpp , 1/06/03
 	Zach Dykstra
@@ -51,4 +51,8 @@ const uint32 M_OUTPUTFILE = 0x1501;
 const uint32 M_SOURCEFILE_REF = 0x1600;
 const uint32 M_OUTPUTFILE_REF = 0x1601;
 
+//Command Launcher
+const uint32 M_RUN_COMMAND = 0x1700;
+const uint32 M_PROGRESS = 0x1701;
+const uint32 M_COMMAND_FINISHED = 0x1702;
 
