@@ -21,6 +21,7 @@
 #include <Entry.h>
 #include <Path.h>
 #include <Alert.h>
+#include <ScrollView.h>
 
 #include <iostream>
 
@@ -348,7 +349,7 @@ ffguiwin::ffguiwin(BRect r, char *name, window_type type, ulong mode)
 
 	BView *mainoptionsview = new BView("",B_SUPPORTS_LAYOUT);
 	BView *advancedoptionsview = new BView("",B_SUPPORTS_LAYOUT);
-	BView *outputview = new BView("",B_SUPPORTS_LAYOUT);
+	BView *outputview = new BScrollView("", outputtext, B_SUPPORTS_LAYOUT, true, true);
 	BView *aboutview = new BView("",B_SUPPORTS_LAYOUT);
 
 	BLayoutBuilder::Group<>(mainoptionsview, B_HORIZONTAL)
@@ -391,11 +392,6 @@ ffguiwin::ffguiwin(BRect r, char *name, window_type type, ulong mode)
 		.End()
 		.AddGlue()
 		.End();
-
-
-	BLayoutBuilder::Group<>(outputview, B_HORIZONTAL)
-		.SetInsets(0)
-		.Add(outputtext);
 
 	BLayoutBuilder::Group<>(aboutview, B_HORIZONTAL)
 		.SetInsets(0)
