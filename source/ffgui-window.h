@@ -21,6 +21,7 @@
 #include <Spinner.h>
 #include <String.h>
 #include <FilePanel.h>
+#include <TabView.h>
 
 #include <string.h>
 #include <stdio.h>
@@ -90,6 +91,8 @@ class ffguiwin : public BWindow
 			BMenuField *outputvideoformat;
 			BPopUpMenu *outputaudioformatpopup;
 			BMenuField *outputaudioformat;
+			// tab view
+			BTabView	*tabview;
 
 			//progress bar
 			//MProgressBar *encodestatus;

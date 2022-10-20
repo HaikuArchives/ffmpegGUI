@@ -14,7 +14,6 @@
 #include "messages.h"
 #include <MenuItem.h>
 #include <LayoutBuilder.h>
-#include <TabView.h>
 #include <View.h>
 #include <Box.h>
 #include <SeparatorView.h>
@@ -397,7 +396,7 @@ ffguiwin::ffguiwin(BRect r, char *name, window_type type, ulong mode)
 		.SetInsets(0)
 		.Add(abouttext);
 
-	BTabView *tabview = new BTabView("");
+	tabview = new BTabView("");
 	BTab *mainoptionstab = new BTab();
 	BTab *advancedoptionstab = new BTab();
 	BTab *outputtab = new BTab();
@@ -700,6 +699,7 @@ void ffguiwin::MessageReceived(BMessage *message)
 		{
 			outputtext->SelectAll();
 			outputtext->Clear();
+			tabview->Select(2);
 			commandline->SetTo(encode->Text());
 			commandline->Append(" -y");
 			BMessage start_encode_message(M_RUN_COMMAND);
@@ -712,6 +712,7 @@ void ffguiwin::MessageReceived(BMessage *message)
 			BString progress_data;
 			message->FindString("data", &progress_data);
 			outputtext->Insert(progress_data.String());
+			//outputtext->ScrollToOffset(outputtext->TextLength());
 			break;
 		}
 		case M_COMMAND_FINISHED:
