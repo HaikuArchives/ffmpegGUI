@@ -711,7 +711,6 @@ void ffguiwin::MessageReceived(BMessage *message)
 		{
 			BString progress_data;
 			message->FindString("data", &progress_data);
-			std::cout << "ffmpeg data: " << progress_data.String() << std::endl;
 			outputtext->Insert(progress_data.String());
 			break;
 		}
