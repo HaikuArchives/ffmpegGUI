@@ -698,6 +698,8 @@ void ffguiwin::MessageReceived(BMessage *message)
 		}
 		case M_ENCODE:
 		{
+			outputtext->SelectAll();
+			outputtext->Clear();
 			commandline->SetTo(encode->Text());
 			commandline->Append(" -y");
 			BMessage start_encode_message(M_RUN_COMMAND);
