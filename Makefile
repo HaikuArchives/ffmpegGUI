@@ -29,6 +29,7 @@ APP_MIME_SIG =
 #	same name (source.c or source.cpp) are included from different directories.
 #	Also note that spaces in folder names do not work well with this Makefile.
 SRCS = \
+	 source/progressview.cpp  \
 	 source/commandlauncher.cpp  \
 	 source/ffgui-application.cpp  \
 	 source/ffgui-window.cpp  \
@@ -47,6 +48,8 @@ RSRCS = \
 
 # End Pe/Eddie support.
 # @<-src@ 
+#%}
+
 #%}
 
 #%}
