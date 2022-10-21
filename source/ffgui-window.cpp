@@ -205,6 +205,7 @@ ffguiwin::ffguiwin(BRect r, char *name, window_type type, ulong mode)
 									new BMessage(M_OUTPUTFILE_REF));
 
 	fStatusBar = new BStatusBar("");
+	fStatusBar->SetExplicitMinSize(BSize(B_SIZE_UNSET, 50));
 
 // set the names for each control, so they can be figured out in MessageReceived
 	vbitrate->SetName("vbitrate");
