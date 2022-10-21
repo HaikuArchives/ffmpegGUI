@@ -703,9 +703,14 @@ void ffguiwin::MessageReceived(BMessage *message)
 		{
 			outputtext->SelectAll();
 			outputtext->Clear();
-			tabview->Select(2);
+			//tabview->Select(2);
 			commandline->SetTo(encode->Text());
 			commandline->Append(" -y");
+
+			BString files_string;
+			files_string << sourcefile->Text() << " -> " << outputfile->Text();
+			fStatusBar->SetText(files_string.String());
+
 			BMessage start_encode_message(M_RUN_COMMAND);
 			start_encode_message.AddString("cmdline", *commandline);
 			fCommandLauncher->PostMessage(&start_encode_message);
@@ -734,9 +739,10 @@ void ffguiwin::MessageReceived(BMessage *message)
 					encode_time = get_seconds(time_string);
 					int32 encode_percentage = (encode_time * 100) / encode_duration;
 					BMessage progress_update_message(B_UPDATE_STATUS_BAR);
-					progress_update_message.AddFloat("delta", encode_percentage);
-					progress_update_message.AddString("text", "");
-					progress_update_message.AddString("trailing_text", "");
+					progress_update_message.AddFloat("delta", encode_percentage - fStatusBar->CurrentValue());
+					BString percentage_string;
+					percentage_string << encode_percentage << "%";
+					progress_update_message.AddString("trailing_text", percentage_string.String());
 					PostMessage(&progress_update_message, fStatusBar);
 				}
 
@@ -775,6 +781,8 @@ void ffguiwin::MessageReceived(BMessage *message)
 
 			BAlert *finished_alert = new BAlert("", finished_message, "OK");
 			finished_alert->Go();
+
+			fStatusBar->Reset();
 
 			break;
 		}
