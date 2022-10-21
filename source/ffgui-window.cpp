@@ -204,7 +204,7 @@ ffguiwin::ffguiwin(BRect r, char *name, window_type type, ulong mode)
 									false,
 									new BMessage(M_OUTPUTFILE_REF));
 
-	fProgressView = new ProgressView();
+	fStatusBar = new BStatusBar("");
 
 
 // set the names for each control, so they can be figured out in MessageReceived
@@ -420,7 +420,7 @@ ffguiwin::ffguiwin(BRect r, char *name, window_type type, ulong mode)
 		.Add(fileoptionsbox)
 		.Add(tabview)
 		.Add(encodebox)
-		.Add(fProgressView)
+		.Add(fStatusBar)
 	.Layout();
 
 	ResizeToPreferred();
@@ -733,8 +733,11 @@ void ffguiwin::MessageReceived(BMessage *message)
 					progress_data.CopyInto(time_string, time_startpos, time_endpos-time_startpos);
 					encode_time = get_seconds(time_string);
 					int32 encode_percentage = (encode_time * 100) / encode_duration;
-					std::cout << encode_percentage << " % done" << std::endl;
-
+					BMessage progress_update_message(B_UPDATE_STATUS_BAR);
+					progress_update_message.AddFloat("delta", encode_percentage);
+					progress_update_message.AddString("text", "");
+					progress_update_message.AddString("trailing_text", "");
+					PostMessage(&progress_update_message, fStatusBar);
 				}
 
 			}
