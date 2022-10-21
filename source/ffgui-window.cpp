@@ -206,7 +206,6 @@ ffguiwin::ffguiwin(BRect r, char *name, window_type type, ulong mode)
 
 	fStatusBar = new BStatusBar("");
 
-
 // set the names for each control, so they can be figured out in MessageReceived
 	vbitrate->SetName("vbitrate");
 	framerate->SetName("framerate");
@@ -425,6 +424,8 @@ ffguiwin::ffguiwin(BRect r, char *name, window_type type, ulong mode)
 
 	ResizeToPreferred();
 	MoveOnScreen();
+
+	fStatusBar->Hide();
 
 	//initialize command launcher
 	fCommandLauncher = new CommandLauncher(new BMessenger(this));
@@ -710,6 +711,8 @@ void ffguiwin::MessageReceived(BMessage *message)
 			BString files_string;
 			files_string << sourcefile->Text() << " -> " << outputfile->Text();
 			fStatusBar->SetText(files_string.String());
+			fStatusBar->Show();
+
 
 			BMessage start_encode_message(M_RUN_COMMAND);
 			start_encode_message.AddString("cmdline", *commandline);
@@ -783,7 +786,7 @@ void ffguiwin::MessageReceived(BMessage *message)
 			finished_alert->Go();
 
 			fStatusBar->Reset();
-
+			fStatusBar->Hide();
 			break;
 		}
 		default:
