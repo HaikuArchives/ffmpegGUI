@@ -22,6 +22,7 @@
 #include <String.h>
 #include <FilePanel.h>
 #include <TabView.h>
+#include <StringList.h>
 
 #include <string.h>
 #include <stdio.h>
@@ -39,6 +40,8 @@ class ffguiwin : public BWindow
 
 	private:
 			void set_encodebutton_state();
+			int32 get_seconds(BString& time_string);
+
 			//main view
 			BView *topview;
 			// text views

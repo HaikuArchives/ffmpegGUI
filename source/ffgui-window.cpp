@@ -22,6 +22,7 @@
 #include <Alert.h>
 #include <ScrollView.h>
 
+#include <cstdlib>
 #include <iostream>
 
 
@@ -727,7 +728,10 @@ void ffguiwin::MessageReceived(BMessage *message)
 					int32 time_endpos = progress_data.FindFirst(".", time_startpos);
 					BString time_string;
 					progress_data.CopyInto(time_string, time_startpos, time_endpos-time_startpos);
-					std::cout << "Time: " << time_string.String() << std::endl;
+					encode_time = get_seconds(time_string);
+					int32 encode_percentage = (encode_time * 100) / encode_duration;
+					std::cout << encode_percentage << " % done" << std::endl;
+
 				}
 
 			}
@@ -740,8 +744,7 @@ void ffguiwin::MessageReceived(BMessage *message)
 					int32 duration_endpos = progress_data.FindFirst(".", duration_startpos);
 					BString duration_string;
 					progress_data.CopyInto(duration_string, duration_startpos, duration_endpos-duration_startpos);
-					//std::cout << "startpos: " << duration_startpos << " endpos: " << duration_endpos << std::endl;
-					std::cout << "Duration: " << duration_string.String() << std::endl;
+					encode_duration = get_seconds(duration_string);
 					duration_detected = true;
 				}
 			}
@@ -798,3 +801,24 @@ void ffguiwin::set_encodebutton_state()
 	encodebutton->SetEnabled(encodebutton_enabled);
 }
 
+
+int32
+ffguiwin::get_seconds(BString& time_string)
+{
+
+	int32 hours = 0;
+	int32 minutes = 0;
+	int32 seconds = 0;
+	BStringList time_list;
+
+	time_string.Trim().Split(":", true, time_list);
+	hours = std::atoi(time_list.StringAt(0).String());
+	minutes = std::atoi(time_list.StringAt(1).String());
+	seconds = std::atoi(time_list.StringAt(2).String());
+
+	seconds+=minutes*60;
+	seconds+=hours*3600;
+
+	return seconds;
+
+}
