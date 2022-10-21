@@ -204,6 +204,8 @@ ffguiwin::ffguiwin(BRect r, char *name, window_type type, ulong mode)
 									false,
 									new BMessage(M_OUTPUTFILE_REF));
 
+	fProgressView = new ProgressView();
+
 
 // set the names for each control, so they can be figured out in MessageReceived
 	vbitrate->SetName("vbitrate");
@@ -418,6 +420,7 @@ ffguiwin::ffguiwin(BRect r, char *name, window_type type, ulong mode)
 		.Add(fileoptionsbox)
 		.Add(tabview)
 		.Add(encodebox)
+		.Add(fProgressView)
 	.Layout();
 
 	ResizeToPreferred();

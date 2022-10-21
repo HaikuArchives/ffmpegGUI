@@ -8,6 +8,7 @@
 	Zach Dykstra
 */
 #include "commandlauncher.h"
+#include "progressview.h"
 
 #include <View.h>
 #include <Window.h>
@@ -101,6 +102,7 @@ class ffguiwin : public BWindow
 			int32 encode_duration;
 			int32 encode_time;
 			bool duration_detected;
+			ProgressView *fProgressView;
 
 
 			// bools
