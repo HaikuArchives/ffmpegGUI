@@ -98,7 +98,6 @@ CommandLauncher::run_command()
 			BString output_string(buffer);
 			if(output_string.FindFirst("Error while decoding stream") != B_ERROR)
 			{
-				std::cout << "CommandLauncher Error detected" << std::endl;
 				error_detected = true;
 				close(stderr_pipe[0]);
 				kill_thread(proc_id);
