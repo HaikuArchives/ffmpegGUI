@@ -49,12 +49,6 @@ RSRCS = \
 # @<-src@ 
 #%}
 
-#%}
-
-#%}
-
-#%}
-
 #	Specify libraries to link against.
 #	There are two acceptable forms of library specifications:
 #	-	if your library follows the naming pattern of libXXX.so or libXXX.a,
