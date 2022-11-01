@@ -77,6 +77,7 @@ CommandLauncher::run_command()
 	dup2 (original_stderr, STDERR_FILENO);
 
 	//read stderr output and send to target
+	bool error_detected = false;
 	if (error_code >= 0)
 	{
 		while (true)
@@ -92,6 +93,17 @@ CommandLauncher::run_command()
 			BMessage progress_message(M_PROGRESS);
 			progress_message.AddString("data", buffer);
 			fTargetMessenger->SendMessage(&progress_message);
+
+			//check if output contains error messages
+			BString output_string(buffer);
+			if(output_string.FindFirst("Error while decoding stream") != B_ERROR)
+			{
+				error_detected = true;
+				close(stderr_pipe[0]);
+				kill_thread(proc_id);
+				break;
+			}
+
 		}
 	}
 
@@ -102,6 +114,10 @@ CommandLauncher::run_command()
 
 	//inform target that the command has finished
 	BMessage finished_message(M_COMMAND_FINISHED);
+	if(error_detected)
+	{
+		proc_exit_code = 911;
+	}
 	finished_message.AddInt32("exitcode", proc_exit_code);
 	fTargetMessenger->SendMessage(&finished_message);
 	fBusy = false;

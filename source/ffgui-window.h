@@ -22,6 +22,8 @@
 #include <String.h>
 #include <FilePanel.h>
 #include <TabView.h>
+#include <StringList.h>
+#include <StatusBar.h>
 
 #include <string.h>
 #include <stdio.h>
@@ -39,6 +41,8 @@ class ffguiwin : public BWindow
 
 	private:
 			void set_encodebutton_state();
+			int32 get_seconds(BString& time_string);
+
 			//main view
 			BView *topview;
 			// text views
@@ -95,7 +99,12 @@ class ffguiwin : public BWindow
 			BTabView	*tabview;
 
 			//progress bar
-			//MProgressBar *encodestatus;
+			int32 encode_duration;
+			int32 encode_time;
+			bool duration_detected;
+			BStatusBar *fStatusBar;
+
+
 			// bools
 			bool benablevideo, benableaudio, benablecropping, bdeletesource,bcustomres;
 			bool sourcefile_specified, outputfile_specified;

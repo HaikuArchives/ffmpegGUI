@@ -22,6 +22,7 @@
 #include <Alert.h>
 #include <ScrollView.h>
 
+#include <cstdlib>
 #include <iostream>
 
 
@@ -203,6 +204,8 @@ ffguiwin::ffguiwin(BRect r, char *name, window_type type, ulong mode)
 									false,
 									new BMessage(M_OUTPUTFILE_REF));
 
+	fStatusBar = new BStatusBar("");
+	fStatusBar->SetExplicitMinSize(BSize(B_SIZE_UNSET, 50));
 
 // set the names for each control, so they can be figured out in MessageReceived
 	vbitrate->SetName("vbitrate");
@@ -417,10 +420,13 @@ ffguiwin::ffguiwin(BRect r, char *name, window_type type, ulong mode)
 		.Add(fileoptionsbox)
 		.Add(tabview)
 		.Add(encodebox)
+		.Add(fStatusBar)
 	.Layout();
 
 	ResizeToPreferred();
 	MoveOnScreen();
+
+	fStatusBar->Hide();
 
 	//initialize command launcher
 	fCommandLauncher = new CommandLauncher(new BMessenger(this));
@@ -699,12 +705,22 @@ void ffguiwin::MessageReceived(BMessage *message)
 		{
 			outputtext->SelectAll();
 			outputtext->Clear();
-			tabview->Select(2);
+			//tabview->Select(2);
 			commandline->SetTo(encode->Text());
 			commandline->Append(" -y");
+
+			BString files_string;
+			files_string << sourcefile->Text() << " -> " << outputfile->Text();
+			fStatusBar->SetText(files_string.String());
+			fStatusBar->Show();
+
+
 			BMessage start_encode_message(M_RUN_COMMAND);
 			start_encode_message.AddString("cmdline", *commandline);
 			fCommandLauncher->PostMessage(&start_encode_message);
+			encode_duration = 0;
+			encode_time = 0;
+			duration_detected = false;
 			break;
 		}
 		case M_PROGRESS:
@@ -712,6 +728,44 @@ void ffguiwin::MessageReceived(BMessage *message)
 			BString progress_data;
 			message->FindString("data", &progress_data);
 			outputtext->Insert(progress_data.String());
+
+			//calculate progress percentage
+			if (duration_detected) 	//the duration appears in the data all the time but
+			{						//we need it only once
+
+				int32 time_startpos = progress_data.FindFirst("time=");
+				if (time_startpos > -1)
+				{
+					time_startpos+=5;
+					int32 time_endpos = progress_data.FindFirst(".", time_startpos);
+					BString time_string;
+					progress_data.CopyInto(time_string, time_startpos, time_endpos-time_startpos);
+					encode_time = get_seconds(time_string);
+					int32 encode_percentage = (encode_time * 100) / encode_duration;
+					BMessage progress_update_message(B_UPDATE_STATUS_BAR);
+					progress_update_message.AddFloat("delta", encode_percentage - fStatusBar->CurrentValue());
+					BString percentage_string;
+					percentage_string << encode_percentage << "%";
+					progress_update_message.AddString("trailing_text", percentage_string.String());
+					PostMessage(&progress_update_message, fStatusBar);
+				}
+
+			}
+			else
+			{
+				int32 duration_startpos = progress_data.FindFirst("Duration:");
+				if (duration_startpos > -1)
+				{
+					duration_startpos+=9;
+					int32 duration_endpos = progress_data.FindFirst(".", duration_startpos);
+					BString duration_string;
+					progress_data.CopyInto(duration_string, duration_startpos, duration_endpos-duration_startpos);
+					encode_duration = get_seconds(duration_string);
+					duration_detected = true;
+				}
+			}
+
+
 			//outputtext->ScrollToOffset(outputtext->TextLength());
 			break;
 		}
@@ -732,6 +786,8 @@ void ffguiwin::MessageReceived(BMessage *message)
 			BAlert *finished_alert = new BAlert("", finished_message, "OK");
 			finished_alert->Go();
 
+			fStatusBar->Reset();
+			fStatusBar->Hide();
 			break;
 		}
 		default:
@@ -763,3 +819,24 @@ void ffguiwin::set_encodebutton_state()
 	encodebutton->SetEnabled(encodebutton_enabled);
 }
 
+
+int32
+ffguiwin::get_seconds(BString& time_string)
+{
+
+	int32 hours = 0;
+	int32 minutes = 0;
+	int32 seconds = 0;
+	BStringList time_list;
+
+	time_string.Trim().Split(":", true, time_list);
+	hours = std::atoi(time_list.StringAt(0).String());
+	minutes = std::atoi(time_list.StringAt(1).String());
+	seconds = std::atoi(time_list.StringAt(2).String());
+
+	seconds+=minutes*60;
+	seconds+=hours*3600;
+
+	return seconds;
+
+}
