@@ -28,26 +28,18 @@
 
 void ffguiwin::BuildLine() // ask all the views what they hold, reset the command string
 {
-	char buff[64];
 	BString commandline("ffmpeg -i ");
-	const char *contents (sourcefile->Text()); //append the input file name
-	commandline.Append(contents);
-
-	sprintf(buff," -f %s",outputfileformat->MenuItem()->Label()); // grab and set the file format
-	commandline.Append(buff);
+	commandline << sourcefile->Text();  //append the input file name
+	commandline << " -f " << outputfileformat->MenuItem()->Label(); // grab and set the file format
 
 	if (benablevideo == false) // is video enabled, add options
 	{
-		sprintf(buff," -vcodec %s",outputvideoformat->MenuItem()->Label()); // grab and set the video encoder
-		commandline.Append(buff);
-		sprintf(buff," -b:v %d",(int)vbitrate->Value());
-		commandline.Append(buff);
-		sprintf(buff," -r %d",(int)framerate->Value());
-		commandline.Append(buff);
+		commandline << " -vcodec " << outputvideoformat->MenuItem()->Label(); // grab and set the video encoder
+		commandline << " -b:v " << vbitrate->Value();
+		commandline << " -r " << framerate->Value();
 		if (bcustomres == true)
 		{
-			sprintf(buff," -s %dx%d",(int)xres->Value(),(int)yres->Value());
-			commandline.Append(buff);
+			commandline << "-s " << xres->Value() << "x" << yres->Value();
 		}
 
 		// cropping options -- no point in cropping if we aren't encoding video...
@@ -55,52 +47,42 @@ void ffguiwin::BuildLine() // ask all the views what they hold, reset the comman
 		{
 			// below should be rewritten to use only one crop, but I can't be bothered
 			// to do so as ffmpeg supports multiple filters stacked on each other
-			if ((int)topcrop->Value() != 0)
+			if (topcrop->Value() != 0)
 			{
-				sprintf(buff," -vf crop=w=in_w:h=in_h:x=0:y=%d",(int)topcrop->Value());
-				commandline.Append(buff);
+				commandline << " -vf crop=w=in_w:h=in_h:x=0:y=" << topcrop->Value();
 			}
-			if ((int)bottomcrop->Value() != 0)
+			if (bottomcrop->Value() != 0)
 			{
-				sprintf(buff," -vf crop=w=in_w:h=in_h-%d:x=0:y=0",(int)bottomcrop->Value());
-				commandline.Append(buff);
+				commandline << " -vf crop=w=in_w:h=in_h-" << bottomcrop->Value() << ":x=0:y=0";
 			}
-			if ((int)leftcrop->Value() != 0)
+			if (leftcrop->Value() != 0)
 			{
-				sprintf(buff," -vf crop=w=in_w:h=in_h:x=%d:y=0",(int)leftcrop->Value());
-				commandline.Append(buff);
+				commandline << " -vf crop=w=in_w:h=in_h:x=" << leftcrop->Value() << ":y=0";
 			}
-			if ((int)rightcrop->Value() != 0)
+			if (rightcrop->Value() != 0)
 			{
-				sprintf(buff," -vf crop=w=in_w-%d:h=in_h:x=0:y=0",(int)rightcrop->Value());
-				commandline.Append(buff);
+				commandline << " -vf crop=w=in_w-" << rightcrop->Value() << ":h=in_h:x=0:y=0";
 			}
 		}
 	}
 	else //nope, add the no video encoding flag
 	{
-		commandline.Append(" -vn");
+		commandline << " -vn";
 	}
 
 	if (benableaudio == true) // audio encoding enabled, grab the values
 	{
-		sprintf(buff," -acodec %s",outputaudioformat->MenuItem()->Label());
-		commandline.Append(buff);
-		sprintf(buff," -b:a %d",(int)ab->Value());
-		commandline.Append(buff);
-		sprintf(buff," -ar %d",(int)ar->Value());
-		commandline.Append(buff);
-		sprintf(buff," -ac %d",(int)ac->Value());
-		commandline.Append(buff);
+		commandline << " -acodec " << outputaudioformat->MenuItem()->Label();
+		commandline << " -b:a " << ab->Value();
+		commandline << " -ar " << ar->Value();
+		commandline << " -ac " << ac->Value();
 	}
 	else
 	{
-		commandline.Append(" -an");
+		commandline << (" -an");
 	}
-	commandline.Append(" ");
-	commandline.Append(outputfile->Text());
-	printf(commandline.String());
-	printf("\n");
+	commandline << (" ");
+	commandline << (outputfile->Text());
 	encode->SetText(commandline.String());
 }
 
