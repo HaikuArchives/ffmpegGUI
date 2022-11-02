@@ -29,7 +29,7 @@
 void ffguiwin::BuildLine() // ask all the views what they hold, reset the command string
 {
 	BString commandline("ffmpeg -i ");
-	commandline << sourcefile->Text();  //append the input file name
+	commandline << "\"" << sourcefile->Text() << "\"";  //append the input file name
 	commandline << " -f " << outputfileformat->MenuItem()->Label(); // grab and set the file format
 
 	if (benablevideo == false) // is video enabled, add options
@@ -81,8 +81,7 @@ void ffguiwin::BuildLine() // ask all the views what they hold, reset the comman
 	{
 		commandline << (" -an");
 	}
-	commandline << (" ");
-	commandline << (outputfile->Text());
+	commandline << " \"" << outputfile->Text() << "\"";
 	encode->SetText(commandline.String());
 }
 
