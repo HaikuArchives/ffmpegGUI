@@ -109,7 +109,7 @@ class ffguiwin : public BWindow
 			bool benablevideo, benableaudio, benablecropping, bdeletesource,bcustomres;
 			bool sourcefile_specified, outputfile_specified;
 			// bstrings
-			BString *commandline;
+			BString commandline;
 			// file panels
 			BFilePanel *fSourceFilePanel;
 			BFilePanel *fOutputFilePanel;
