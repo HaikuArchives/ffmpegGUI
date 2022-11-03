@@ -786,6 +786,7 @@ void ffguiwin::MessageReceived(BMessage *message)
 				BPath sourcefile_path(&sourcefile_entry);
 
 				sourcefile->SetText(sourcefile_path.Path());
+				preset_outputfile();
 				BuildLine();
 				sourcefile_specified = true;
 				set_encodebutton_state();
@@ -841,5 +842,20 @@ ffguiwin::get_seconds(BString& time_string)
 	seconds+=hours*3600;
 
 	return seconds;
+
+}
+
+
+void
+ffguiwin::preset_outputfile()
+{
+	BString output_filename(sourcefile->Text());
+	int32 begin_ext = output_filename.FindLast(".")+1;
+	output_filename.RemoveChars(begin_ext, output_filename.Length()-begin_ext);
+	output_filename.Append(outputfileformatpopup->FindMarked()->Label());
+	outputfile->SetText(output_filename);
+
+
+
 
 }
