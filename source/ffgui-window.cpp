@@ -771,6 +771,28 @@ void ffguiwin::MessageReceived(BMessage *message)
 			fStatusBar->Hide();
 			break;
 		}
+		case B_SIMPLE_DATA:
+		{
+			BPoint drop_point;
+			message->FindPoint("_drop_point_", &drop_point);
+			BRect sourcefile_rect = sourcefile->Bounds();
+			sourcefile->ConvertToScreen(&sourcefile_rect);
+
+			if(sourcefile_rect.Contains(drop_point))
+			{
+				entry_ref sourcefile_ref;
+				message->FindRef("refs", &sourcefile_ref);
+				BEntry sourcefile_entry(&sourcefile_ref, true);
+				BPath sourcefile_path(&sourcefile_entry);
+
+				sourcefile->SetText(sourcefile_path.Path());
+				BuildLine();
+				sourcefile_specified = true;
+				set_encodebutton_state();
+			}
+
+			break;
+		}
 		default:
 			/*
 			printf("recieved by window:\n");
