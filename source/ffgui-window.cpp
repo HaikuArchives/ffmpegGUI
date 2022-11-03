@@ -656,6 +656,7 @@ void ffguiwin::MessageReceived(BMessage *message)
 			BEntry file_entry(&ref, true);
 			BPath file_path(&file_entry);
 			sourcefile->SetText(file_path.Path());
+			preset_outputfile();
 			BuildLine();
 			set_encodebutton_state();
 			break;
