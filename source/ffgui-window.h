@@ -41,6 +41,7 @@ class ffguiwin : public BWindow
 
 	private:
 			void set_encodebutton_state();
+			void preset_outputfile();
 			int32 get_seconds(BString& time_string);
 
 			//main view
@@ -107,7 +108,6 @@ class ffguiwin : public BWindow
 
 			// bools
 			bool benablevideo, benableaudio, benablecropping, bdeletesource,bcustomres;
-			bool sourcefile_specified, outputfile_specified;
 			// bstrings
 			BString commandline;
 			// file panels

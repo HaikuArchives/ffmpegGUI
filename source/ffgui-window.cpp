@@ -89,8 +89,6 @@ void ffguiwin::BuildLine() // ask all the views what they hold, reset the comman
 ffguiwin::ffguiwin(BRect r, char *name, window_type type, ulong mode)
 	: BWindow(r,name,type,mode)
 {
-	sourcefile_specified = false;
-	outputfile_specified = false;
 
 	//initialize GUI elements
 	sourcefilebutton = new BButton("Source file", new BMessage(M_SOURCE));
@@ -438,14 +436,12 @@ void ffguiwin::MessageReceived(BMessage *message)
 		case M_SOURCEFILE:
 		{
 			BuildLine();
-			sourcefile_specified = !(BString(sourcefile->Text()).Trim().IsEmpty());
 			set_encodebutton_state();
 			break;
 		}
 		case M_OUTPUTFILE:
 		{
 			BuildLine();
-			outputfile_specified = !(BString(outputfile->Text()).Trim().IsEmpty());
 			set_encodebutton_state();
 			break;
 		}
@@ -660,8 +656,8 @@ void ffguiwin::MessageReceived(BMessage *message)
 			BEntry file_entry(&ref, true);
 			BPath file_path(&file_entry);
 			sourcefile->SetText(file_path.Path());
+			preset_outputfile();
 			BuildLine();
-			sourcefile_specified = true;
 			set_encodebutton_state();
 			break;
 		}
@@ -678,7 +674,6 @@ void ffguiwin::MessageReceived(BMessage *message)
 
 			outputfile->SetText(filename);
 			BuildLine();
-			outputfile_specified = true;
 			set_encodebutton_state();
 			break;
 		}
@@ -771,6 +766,27 @@ void ffguiwin::MessageReceived(BMessage *message)
 			fStatusBar->Hide();
 			break;
 		}
+		case B_SIMPLE_DATA:
+		{
+			BPoint drop_point;
+			message->FindPoint("_drop_point_", &drop_point);
+			BRect sourcefile_rect = sourcefile->Bounds();
+			sourcefile->ConvertToScreen(&sourcefile_rect);
+
+			if(sourcefile_rect.Contains(drop_point))
+			{
+				entry_ref sourcefile_ref;
+				message->FindRef("refs", &sourcefile_ref);
+				BEntry sourcefile_entry(&sourcefile_ref, true);
+				BPath sourcefile_path(&sourcefile_entry);
+				sourcefile->SetText(sourcefile_path.Path());
+				preset_outputfile();
+				BuildLine();
+				set_encodebutton_state();
+			}
+
+			break;
+		}
 		default:
 			/*
 			printf("recieved by window:\n");
@@ -788,7 +804,13 @@ void ffguiwin::set_encodebutton_state()
 {
 	bool encodebutton_enabled;
 
-	if (sourcefile_specified && outputfile_specified)
+	BString source_filename(sourcefile->Text());
+	BString output_filename(outputfile->Text());
+	source_filename.Trim();
+	output_filename.Trim();
+
+
+	if (!(source_filename.IsEmpty()) && !(output_filename.IsEmpty()))
 	{
 		encodebutton_enabled = true;
 	}
@@ -819,5 +841,20 @@ ffguiwin::get_seconds(BString& time_string)
 	seconds+=hours*3600;
 
 	return seconds;
+
+}
+
+
+void
+ffguiwin::preset_outputfile()
+{
+	BString output_filename(sourcefile->Text());
+	int32 begin_ext = output_filename.FindLast(".")+1;
+	output_filename.RemoveChars(begin_ext, output_filename.Length()-begin_ext);
+	output_filename.Append(outputfileformatpopup->FindMarked()->Label());
+	outputfile->SetText(output_filename);
+
+
+
 
 }
