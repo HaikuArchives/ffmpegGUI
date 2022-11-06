@@ -87,7 +87,6 @@ class ffguiwin : public BWindow
 			BCheckBox *enablevideo;
 			BCheckBox *enableaudio;
 			BCheckBox *enablecropping;
-			BCheckBox *deletesource;
 			BCheckBox *customres;
 			// popup menus
 			BPopUpMenu *outputfileformatpopup;
