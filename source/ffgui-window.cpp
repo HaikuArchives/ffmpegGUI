@@ -95,7 +95,6 @@ ffguiwin::ffguiwin(BRect r, char *name, window_type type, ulong mode)
 	sourcefile = new BTextControl("", "", new BMessage(M_SOURCEFILE));
 	outputfilebutton = new BButton("Output file", new BMessage(M_OUTPUT));
 	outputfile = new BTextControl("", "", new BMessage(M_OUTPUTFILE));
-	deletesource = new BCheckBox("", "Delete source when finished", new BMessage(M_DELETESOURCE));
 
 	outputfileformatpopup = new BPopUpMenu("");
 	outputfileformatpopup->AddItem(new BMenuItem("avi", new BMessage(M_OUTPUTFILEFORMAT)));
@@ -201,7 +200,6 @@ ffguiwin::ffguiwin(BRect r, char *name, window_type type, ulong mode)
 	enablevideo->SetName("enablevideo");
 	enableaudio->SetName("enableaudio");
 	enablecropping->SetName("enablecropping");
-	deletesource->SetName("deletesource");
 	customres->SetName("customres");
 
 	// set the min and max values for the spin controls
@@ -258,7 +256,6 @@ ffguiwin::ffguiwin(BRect r, char *name, window_type type, ulong mode)
 			.Add(outputfilebutton)
 			.Add(outputfile)
 		.End()
-		.Add(deletesource)
 		.AddGroup(B_HORIZONTAL)
 			.Add(outputfileformat)
 			.Add(outputvideoformat)

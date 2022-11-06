@@ -28,7 +28,6 @@ const uint32 M_AR = 0x1209;
 const uint32 M_AC = 0x1210;
 
 // CheckBoxes
-const uint32 M_DELETESOURCE = 0x1300;
 const uint32 M_ENABLEVIDEO = 0x1301;
 const uint32 M_CUSTOMRES = 0x1302;
 const uint32 M_ENABLECROPPING = 0x1303;
