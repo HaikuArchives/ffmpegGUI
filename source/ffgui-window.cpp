@@ -91,6 +91,8 @@ ffguiwin::ffguiwin(BRect r, char *name, window_type type, ulong mode)
 {
 
 	//initialize GUI elements
+	fTopMenuBar = new BMenuBar("topmenubar");
+
 	sourcefilebutton = new BButton("Source file", new BMessage(M_SOURCE));
 	sourcefile = new BTextControl("", "", new BMessage(M_SOURCEFILE));
 	outputfilebutton = new BButton("Output file", new BMessage(M_OUTPUT));
@@ -390,13 +392,27 @@ ffguiwin::ffguiwin(BRect r, char *name, window_type type, ulong mode)
 	outputtab->SetLabel("Output");
 	abouttab->SetLabel("About");
 
+	//menu bar layout
+	BLayoutBuilder::Menu<>(fTopMenuBar)
+		.AddMenu("App")
+			.AddItem("About", B_ABOUT_REQUESTED)
+			.AddSeparator()
+			.AddItem("Quit", B_QUIT_REQUESTED, 'Q')
+		.End()
+	.End();
+
 	//main layout
-	BLayoutBuilder::Group<>(this, B_VERTICAL)
-		.SetInsets(5)
-		.Add(fileoptionsbox)
-		.Add(tabview)
-		.Add(encodebox)
-		.Add(fStatusBar)
+	BLayoutBuilder::Group<>(this, B_VERTICAL, 0)
+		.SetInsets(0)
+		.Add(fTopMenuBar)
+		.AddGroup(B_VERTICAL)
+			.SetInsets(5)
+			.Add(fileoptionsbox)
+			.Add(tabview)
+			.Add(encodebox)
+			.Add(fStatusBar)
+		.End()
+		.AddGlue()
 	.Layout();
 
 	ResizeToPreferred();
@@ -425,6 +441,12 @@ void ffguiwin::MessageReceived(BMessage *message)
 	//message->PrintToStream();
 	switch(message->what)
 	{
+
+		case B_ABOUT_REQUESTED:
+		{
+			std::cout << "About requested" << std::endl;
+		}
+
 		case M_NOMSG:
 		{
 			BuildLine();

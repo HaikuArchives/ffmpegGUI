@@ -24,6 +24,7 @@
 #include <TabView.h>
 #include <StringList.h>
 #include <StatusBar.h>
+#include <MenuBar.h>
 
 #include <string.h>
 #include <stdio.h>
@@ -104,6 +105,8 @@ class ffguiwin : public BWindow
 			bool duration_detected;
 			BStatusBar *fStatusBar;
 
+			//menu bar
+			BMenuBar *fTopMenuBar;
 
 			// bools
 			bool benablevideo, benableaudio, benablecropping, bdeletesource,bcustomres;
