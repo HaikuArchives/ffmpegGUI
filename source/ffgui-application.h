@@ -13,7 +13,7 @@
 
 class ffguiapp : public BApplication
 {
-	public: ffguiapp(char *);
+	public: ffguiapp();
 			virtual void MessageReceived(BMessage*);
 			void AboutRequested();
 };
