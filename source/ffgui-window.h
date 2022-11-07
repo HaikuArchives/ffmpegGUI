@@ -48,7 +48,6 @@ class ffguiwin : public BWindow
 			//main view
 			BView *topview;
 			// text views
-			BTextView *abouttext;
 			BTextView *outputtext;
 			// text controls
 			BTextControl *sourcefile;

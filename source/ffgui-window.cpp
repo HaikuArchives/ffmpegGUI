@@ -160,8 +160,6 @@ ffguiwin::ffguiwin(BRect r, char *name, window_type type, ulong mode)
 	quantblur = new BSpinner("", "Video Quantiser Scale Blur", nullptr);
 	quantcompression = new BSpinner("", "Video Quantiser Scale Compression", nullptr);
 
-	abouttext = new BTextView("");
-	abouttext->SetViewColor(ui_color(B_PANEL_BACKGROUND_COLOR));
 	outputtext = new BTextView("");
 	outputtext->SetViewColor(ui_color(B_PANEL_BACKGROUND_COLOR));
 	outputtext->MakeEditable(false);
@@ -233,13 +231,6 @@ ffguiwin::ffguiwin(BRect r, char *name, window_type type, ulong mode)
 	benablevideo = false; // changing this breaks UI enabled/disabled behaviour
 	xres->SetEnabled(false);
 	yres->SetEnabled(false);
-
-	// set the about view text
-	abouttext->MakeEditable(false);
-	abouttext->SetText("  ffmpeg gui v1.0\n\n"
-					   "  Thanks to mmu_man, Jeremy, DeadYak, Marco, etc...\n\n"
-					   "  md@geekport.com\n\n"
-					   "  made more or less usable by reds <reds@sakamoto.pl> - have fun! ");
 
 	// set the initial command line
 	BuildLine();
@@ -330,7 +321,6 @@ ffguiwin::ffguiwin(BRect r, char *name, window_type type, ulong mode)
 	BView *mainoptionsview = new BView("",B_SUPPORTS_LAYOUT);
 	BView *advancedoptionsview = new BView("",B_SUPPORTS_LAYOUT);
 	BView *outputview = new BScrollView("", outputtext, B_SUPPORTS_LAYOUT, true, true);
-	BView *aboutview = new BView("",B_SUPPORTS_LAYOUT);
 
 	BLayoutBuilder::Group<>(mainoptionsview, B_HORIZONTAL)
 		.SetInsets(5)
@@ -373,24 +363,17 @@ ffguiwin::ffguiwin(BRect r, char *name, window_type type, ulong mode)
 		.AddGlue()
 		.End();
 
-	BLayoutBuilder::Group<>(aboutview, B_HORIZONTAL)
-		.SetInsets(0)
-		.Add(abouttext);
-
 	tabview = new BTabView("");
 	BTab *mainoptionstab = new BTab();
 	BTab *advancedoptionstab = new BTab();
 	BTab *outputtab = new BTab();
-	BTab *abouttab = new BTab();
 
 	tabview->AddTab(mainoptionsview, mainoptionstab);
 	tabview->AddTab(advancedoptionsview, advancedoptionstab);
 	tabview->AddTab(outputview, outputtab);
-	tabview->AddTab(aboutview, abouttab);
 	mainoptionstab->SetLabel("Main Options");
 	advancedoptionstab->SetLabel("Advanced Options");
 	outputtab->SetLabel("Output");
-	abouttab->SetLabel("About");
 
 	//menu bar layout
 	BLayoutBuilder::Menu<>(fTopMenuBar)
@@ -444,7 +427,7 @@ void ffguiwin::MessageReceived(BMessage *message)
 
 		case B_ABOUT_REQUESTED:
 		{
-			std::cout << "About requested" << std::endl;
+			be_app->PostMessage(B_ABOUT_REQUESTED);
 		}
 
 		case M_NOMSG:
