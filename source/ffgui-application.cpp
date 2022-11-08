@@ -54,7 +54,13 @@ ffguiapp::AboutRequested()
 
 	const char *authors[] =
 	{
-		"Zach Dykstra",
+		"2003 Zach Dykstra",
+		"2015,2018 diversys",
+		"2020 Dominika Liberda (sdomi)",
+		"2020 waddlesplash",
+		"2020 Jacob Secunda (CoderforEvolution)",
+		"2018,2021 Scott McCreary (scottmc)",
+		"2022 Andi Machovec (BlueSky)",
 		NULL
 	};
 
