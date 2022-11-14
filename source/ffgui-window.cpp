@@ -384,19 +384,21 @@ ffguiwin::ffguiwin(BRect r, char *name, window_type type, ulong mode)
 		.End()
 	.End();
 
+
 	//main layout
-	BLayoutBuilder::Group<>(this, B_VERTICAL, 0)
+	BLayoutBuilder::Group<>(this, B_VERTICAL)
 		.SetInsets(0)
 		.Add(fTopMenuBar)
 		.AddGroup(B_VERTICAL)
-			.SetInsets(5)
+			.SetInsets(B_USE_SMALL_INSETS)
 			.Add(fileoptionsbox)
 			.Add(tabview)
 			.Add(encodebox)
 			.Add(fStatusBar)
 		.End()
-		.AddGlue()
 	.Layout();
+
+	GetLayout()->ItemAt(0)->SetExplicitAlignment(BAlignment(B_ALIGN_HORIZONTAL_UNSET,B_ALIGN_TOP));
 
 	ResizeToPreferred();
 	MoveOnScreen();
