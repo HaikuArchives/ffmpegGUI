@@ -224,6 +224,11 @@ ffguiwin::ffguiwin(BRect r, const char *name, window_type type, ulong mode)
 	ar->SetValue(44100);
 	ac->SetValue(2);
 
+	BSize ar_prefsize = ar->TextView()->PreferredSize();
+	ar_prefsize.width+=10;
+	ar->CreateTextViewLayoutItem()->SetExplicitMinSize(ar_prefsize);
+
+
 	// set the default status for the conditional spinners
 	benablecropping = true;
 	benableaudio = true;
@@ -858,3 +863,4 @@ ffguiwin::preset_outputfile()
 
 
 }
+
