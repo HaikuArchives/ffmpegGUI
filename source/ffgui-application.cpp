@@ -3,7 +3,7 @@
  * Distributed under the terms of the MIT License.
  */
 
-/* 
+/*
 	ffgui-application.cpp , 1/06/03
 	Zach Dykstra
 */
@@ -14,13 +14,19 @@
 #include "ffgui-application.h"
 #include "ffgui-window.h"
 #include "messages.h"
+#include <AboutWindow.h>
+#include <Resources.h>
+#include <AppFileInfo.h>
 
-ffguiapp::ffguiapp(char *id)
-	: BApplication(id)
+
+const char *kAppSignature = "application/x-vnd.HaikuArchives-ffmpegGUI";
+
+ffguiapp::ffguiapp()
+	: BApplication(kAppSignature)
 {
 	ffguiwin *window;
 	window = new ffguiwin(BRect(0,0,0,0),"ffmpeg GUI",B_TITLED_WINDOW,0);
-	window->Show();	
+	window->Show();
 }
 
 
@@ -38,3 +44,47 @@ void ffguiapp::MessageReceived(BMessage *message)
 			break;
 	}
 }
+
+
+void
+ffguiapp::AboutRequested()
+{
+
+	BAboutWindow *aboutwindow = new BAboutWindow("ffmpeg GUI", kAppSignature);
+
+	const char *authors[] =
+	{
+		"2003 Zach Dykstra",
+		"2015,2018 diversys",
+		"2020 Dominika Liberda (sdomi)",
+		"2020 waddlesplash",
+		"2020 Jacob Secunda (CoderforEvolution)",
+		"2018,2021 Scott McCreary (scottmc)",
+		"2022 Andi Machovec (BlueSky)",
+		NULL
+	};
+
+	BString extra_info;
+	extra_info << 	"Thanks to mmu_man, Jeremy, DeadYak, Marco, etc...\n"
+					"md@geekport.com\n"
+					"made more or less usable by reds <reds@sakamoto.pl> - have fun! ";
+
+	BResources *appresource = BApplication::AppResources();
+	size_t size;
+	version_info *appversion = (version_info *)appresource->LoadResource('APPV',1,&size);
+	BString version_string;
+	version_string<<appversion->major;
+	version_string+=".";
+	version_string<<appversion->middle;
+	version_string+=".";
+	version_string<<appversion->minor;
+
+	aboutwindow->AddCopyright(2003, "Zach Dykstra");
+	aboutwindow->AddAuthors(authors);
+	aboutwindow->SetVersion(version_string.String());
+	aboutwindow->AddDescription("a GUI frontend for ffmpeg");
+	aboutwindow->AddExtraInfo(extra_info.String());
+	aboutwindow->Show();
+
+}
+

@@ -3,7 +3,7 @@
  * Distributed under the terms of the MIT License.
  */
 
-/* 
+/*
  	ffgui-application.h , 1/06/03
  	Zach Dykstra
 */
@@ -13,7 +13,8 @@
 
 class ffguiapp : public BApplication
 {
-	public: ffguiapp(char *);
+	public: ffguiapp();
 			virtual void MessageReceived(BMessage*);
+			void AboutRequested();
 };
 

@@ -24,6 +24,7 @@
 #include <TabView.h>
 #include <StringList.h>
 #include <StatusBar.h>
+#include <MenuBar.h>
 
 #include <string.h>
 #include <stdio.h>
@@ -32,8 +33,7 @@
 class ffguiwin : public BWindow
 {
 	public:
-			ffguiwin(BRect,char*,window_type,ulong);
-			ffguiwin(BRect, char*, window_look, window_feel, ulong);
+			ffguiwin(BRect, const char*,window_type,ulong);
 			void BuildLine();
 			virtual bool	QuitRequested();
 			virtual void MessageReceived(BMessage*);
@@ -47,7 +47,6 @@ class ffguiwin : public BWindow
 			//main view
 			BView *topview;
 			// text views
-			BTextView *abouttext;
 			BTextView *outputtext;
 			// text controls
 			BTextControl *sourcefile;
@@ -104,6 +103,8 @@ class ffguiwin : public BWindow
 			bool duration_detected;
 			BStatusBar *fStatusBar;
 
+			//menu bar
+			BMenuBar *fTopMenuBar;
 
 			// bools
 			bool benablevideo, benableaudio, benablecropping, bdeletesource,bcustomres;

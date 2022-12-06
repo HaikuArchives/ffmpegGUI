@@ -86,11 +86,13 @@ void ffguiwin::BuildLine() // ask all the views what they hold, reset the comman
 }
 
 // new window object
-ffguiwin::ffguiwin(BRect r, char *name, window_type type, ulong mode)
+ffguiwin::ffguiwin(BRect r, const char *name, window_type type, ulong mode)
 	: BWindow(r,name,type,mode)
 {
 
 	//initialize GUI elements
+	fTopMenuBar = new BMenuBar("topmenubar");
+
 	sourcefilebutton = new BButton("Source file", new BMessage(M_SOURCE));
 	sourcefile = new BTextControl("", "", new BMessage(M_SOURCEFILE));
 	outputfilebutton = new BButton("Output file", new BMessage(M_OUTPUT));
@@ -158,8 +160,6 @@ ffguiwin::ffguiwin(BRect r, char *name, window_type type, ulong mode)
 	quantblur = new BSpinner("", "Video Quantiser Scale Blur", nullptr);
 	quantcompression = new BSpinner("", "Video Quantiser Scale Compression", nullptr);
 
-	abouttext = new BTextView("");
-	abouttext->SetViewColor(ui_color(B_PANEL_BACKGROUND_COLOR));
 	outputtext = new BTextView("");
 	outputtext->SetViewColor(ui_color(B_PANEL_BACKGROUND_COLOR));
 	outputtext->MakeEditable(false);
@@ -231,13 +231,6 @@ ffguiwin::ffguiwin(BRect r, char *name, window_type type, ulong mode)
 	benablevideo = false; // changing this breaks UI enabled/disabled behaviour
 	xres->SetEnabled(false);
 	yres->SetEnabled(false);
-
-	// set the about view text
-	abouttext->MakeEditable(false);
-	abouttext->SetText("  ffmpeg gui v1.0\n\n"
-					   "  Thanks to mmu_man, Jeremy, DeadYak, Marco, etc...\n\n"
-					   "  md@geekport.com\n\n"
-					   "  made more or less usable by reds <reds@sakamoto.pl> - have fun! ");
 
 	// set the initial command line
 	BuildLine();
@@ -328,7 +321,6 @@ ffguiwin::ffguiwin(BRect r, char *name, window_type type, ulong mode)
 	BView *mainoptionsview = new BView("",B_SUPPORTS_LAYOUT);
 	BView *advancedoptionsview = new BView("",B_SUPPORTS_LAYOUT);
 	BView *outputview = new BScrollView("", outputtext, B_SUPPORTS_LAYOUT, true, true);
-	BView *aboutview = new BView("",B_SUPPORTS_LAYOUT);
 
 	BLayoutBuilder::Group<>(mainoptionsview, B_HORIZONTAL)
 		.SetInsets(5)
@@ -371,32 +363,37 @@ ffguiwin::ffguiwin(BRect r, char *name, window_type type, ulong mode)
 		.AddGlue()
 		.End();
 
-	BLayoutBuilder::Group<>(aboutview, B_HORIZONTAL)
-		.SetInsets(0)
-		.Add(abouttext);
-
 	tabview = new BTabView("");
 	BTab *mainoptionstab = new BTab();
 	BTab *advancedoptionstab = new BTab();
 	BTab *outputtab = new BTab();
-	BTab *abouttab = new BTab();
 
 	tabview->AddTab(mainoptionsview, mainoptionstab);
 	tabview->AddTab(advancedoptionsview, advancedoptionstab);
 	tabview->AddTab(outputview, outputtab);
-	tabview->AddTab(aboutview, abouttab);
 	mainoptionstab->SetLabel("Main Options");
 	advancedoptionstab->SetLabel("Advanced Options");
 	outputtab->SetLabel("Output");
-	abouttab->SetLabel("About");
+
+	//menu bar layout
+	BLayoutBuilder::Menu<>(fTopMenuBar)
+		.AddMenu("App")
+			.AddItem("About", B_ABOUT_REQUESTED)
+			.AddSeparator()
+			.AddItem("Quit", B_QUIT_REQUESTED, 'Q')
+		.End()
+	.End();
+
 
 	//main layout
 	BLayoutBuilder::Group<>(this, B_VERTICAL)
-		.SetInsets(5)
+		.SetInsets(0,0,0,0)
+		.Add(fTopMenuBar)
 		.Add(fileoptionsbox)
 		.Add(tabview)
 		.Add(encodebox)
 		.Add(fStatusBar)
+		.AddGlue()
 	.Layout();
 
 	ResizeToPreferred();
@@ -425,6 +422,12 @@ void ffguiwin::MessageReceived(BMessage *message)
 	//message->PrintToStream();
 	switch(message->what)
 	{
+
+		case B_ABOUT_REQUESTED:
+		{
+			be_app->PostMessage(B_ABOUT_REQUESTED);
+		}
+
 		case M_NOMSG:
 		{
 			BuildLine();

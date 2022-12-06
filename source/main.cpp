@@ -2,7 +2,7 @@
  * Copyright 2003, Zach Dykstra. All rights reserved.
  * Distributed under the terms of the MIT License.
  */
- 
+
 /*
 	ffgui-main.cpp , 1/06/03
 	Zach Dykstra
@@ -14,7 +14,7 @@
 
 int main(void)
 {
-	ffguiapp app("application/x-md-ffguiapp");
+	ffguiapp app;
 	app.Run();
 	return(0);
 }
