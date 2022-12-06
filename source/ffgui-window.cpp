@@ -86,7 +86,7 @@ void ffguiwin::BuildLine() // ask all the views what they hold, reset the comman
 }
 
 // new window object
-ffguiwin::ffguiwin(BRect r, char *name, window_type type, ulong mode)
+ffguiwin::ffguiwin(BRect r, const char *name, window_type type, ulong mode)
 	: BWindow(r,name,type,mode)
 {
 

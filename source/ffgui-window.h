@@ -33,8 +33,7 @@
 class ffguiwin : public BWindow
 {
 	public:
-			ffguiwin(BRect,char*,window_type,ulong);
-			ffguiwin(BRect, char*, window_look, window_feel, ulong);
+			ffguiwin(BRect, const char*,window_type,ulong);
 			void BuildLine();
 			virtual bool	QuitRequested();
 			virtual void MessageReceived(BMessage*);
