@@ -222,8 +222,20 @@ ffguiwin::ffguiwin(BRect r, const char *name, window_type type, ulong mode)
 	yres->SetValue(720);
 	ab->SetValue(128);
 	ar->SetValue(44100);
-	set_preferred_spinner_size(ar);
 	ac->SetValue(2);
+
+	// set minimum size for the spinners
+	set_spinner_minsize(vbitrate);
+	set_spinner_minsize(framerate);
+	set_spinner_minsize(xres);
+	set_spinner_minsize(yres);
+	set_spinner_minsize(ab);
+	set_spinner_minsize(ar);
+	set_spinner_minsize(ac);
+	set_spinner_minsize(topcrop);
+	set_spinner_minsize(bottomcrop);
+	set_spinner_minsize(leftcrop);
+	set_spinner_minsize(rightcrop);
 
 	// set the default status for the conditional spinners
 	benablecropping = true;
@@ -862,7 +874,7 @@ ffguiwin::preset_outputfile()
 
 
 void
-ffguiwin::set_preferred_spinner_size(BSpinner *spinner)
+ffguiwin::set_spinner_minsize(BSpinner *spinner)
 {
 
 	BSize textview_prefsize = spinner->TextView()->PreferredSize();
