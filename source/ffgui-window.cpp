@@ -410,6 +410,12 @@ ffguiwin::ffguiwin(BRect r, const char *name, window_type type, ulong mode)
 	.Layout();
 
 	ResizeToPreferred();
+	float min_width, min_height, max_width, max_height;
+	GetSizeLimits(&min_width, &max_width, &min_height, &max_height);
+	BSize window_size = Size();
+	min_width = window_size.width;
+	min_height = window_size.height;
+	SetSizeLimits(min_width, max_width, min_height, max_height);
 	MoveOnScreen();
 
 	fStatusBar->Hide();
