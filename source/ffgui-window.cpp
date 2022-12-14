@@ -224,6 +224,19 @@ ffguiwin::ffguiwin(BRect r, const char *name, window_type type, ulong mode)
 	ar->SetValue(44100);
 	ac->SetValue(2);
 
+	// set minimum size for the spinners
+	set_spinner_minsize(vbitrate);
+	set_spinner_minsize(framerate);
+	set_spinner_minsize(xres);
+	set_spinner_minsize(yres);
+	set_spinner_minsize(ab);
+	set_spinner_minsize(ar);
+	set_spinner_minsize(ac);
+	set_spinner_minsize(topcrop);
+	set_spinner_minsize(bottomcrop);
+	set_spinner_minsize(leftcrop);
+	set_spinner_minsize(rightcrop);
+
 	// set the default status for the conditional spinners
 	benablecropping = true;
 	benableaudio = true;
@@ -279,8 +292,12 @@ ffguiwin::ffguiwin(BRect r, const char *name, window_type type, ulong mode)
 		.End()
 		.Add(new BSeparatorView(B_HORIZONTAL))
 		.Add(customres)
-		.Add(xres)
-		.Add(yres);
+		.AddGrid(B_USE_SMALL_SPACING,B_USE_SMALL_SPACING)
+			.Add(xres->CreateLabelLayoutItem(),0,0)
+			.Add(xres->CreateTextViewLayoutItem(),1,0)
+			.Add(yres->CreateLabelLayoutItem(),0,1)
+			.Add(yres->CreateTextViewLayoutItem(),1,1)
+		.End();
 	videobox->AddChild(videolayout->View());
 
 	BBox *croppingoptionsbox = new BBox("");
@@ -397,6 +414,12 @@ ffguiwin::ffguiwin(BRect r, const char *name, window_type type, ulong mode)
 	.Layout();
 
 	ResizeToPreferred();
+	float min_width, min_height, max_width, max_height;
+	GetSizeLimits(&min_width, &max_width, &min_height, &max_height);
+	BSize window_size = Size();
+	min_width = window_size.width;
+	min_height = window_size.height;
+	SetSizeLimits(min_width, max_width, min_height, max_height);
 	MoveOnScreen();
 
 	fStatusBar->Hide();
@@ -856,5 +879,17 @@ ffguiwin::preset_outputfile()
 
 
 
+
+}
+
+
+void
+ffguiwin::set_spinner_minsize(BSpinner *spinner)
+{
+
+	BSize textview_prefsize = spinner->TextView()->PreferredSize();
+	textview_prefsize.width+=20;
+	textview_prefsize.height=B_SIZE_UNSET;
+	spinner->CreateTextViewLayoutItem()->SetExplicitMinSize(textview_prefsize);
 
 }
