@@ -292,8 +292,12 @@ ffguiwin::ffguiwin(BRect r, const char *name, window_type type, ulong mode)
 		.End()
 		.Add(new BSeparatorView(B_HORIZONTAL))
 		.Add(customres)
-		.Add(xres)
-		.Add(yres);
+		.AddGrid(B_USE_SMALL_SPACING,B_USE_SMALL_SPACING)
+			.Add(xres->CreateLabelLayoutItem(),0,0)
+			.Add(xres->CreateTextViewLayoutItem(),1,0)
+			.Add(yres->CreateLabelLayoutItem(),0,1)
+			.Add(yres->CreateTextViewLayoutItem(),1,1)
+		.End();
 	videobox->AddChild(videolayout->View());
 
 	BBox *croppingoptionsbox = new BBox("");
