@@ -10,13 +10,15 @@
 
 // new app object
 
-#include <stdio.h>
 #include "ffgui-application.h"
 #include "ffgui-window.h"
 #include "messages.h"
+#include <stdio.h>
+
 #include <AboutWindow.h>
-#include <Resources.h>
 #include <AppFileInfo.h>
+#include <Catalog.h>
+#include <Resources.h>
 
 
 const char *kAppSignature = "application/x-vnd.HaikuArchives-ffmpegGUI";
@@ -69,19 +71,8 @@ ffguiapp::AboutRequested()
 					"md@geekport.com\n"
 					"made more or less usable by reds <reds@sakamoto.pl> - have fun! ";
 
-	BResources *appresource = BApplication::AppResources();
-	size_t size;
-	version_info *appversion = (version_info *)appresource->LoadResource('APPV',1,&size);
-	BString version_string;
-	version_string<<appversion->major;
-	version_string+=".";
-	version_string<<appversion->middle;
-	version_string+=".";
-	version_string<<appversion->minor;
-
 	aboutwindow->AddCopyright(2003, "Zach Dykstra");
 	aboutwindow->AddAuthors(authors);
-	aboutwindow->SetVersion(version_string.String());
 	aboutwindow->AddDescription("a GUI frontend for ffmpeg");
 	aboutwindow->AddExtraInfo(extra_info.String());
 	aboutwindow->Show();
