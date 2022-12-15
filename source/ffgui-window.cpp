@@ -1,29 +1,35 @@
 /*
- * Copyright 2003, Zach Dykstra. All rights reserved.
+ * Copyright 2003-2022, Zach Dykstra. All rights reserved.
  * Distributed under the terms of the MIT License.
  */
 
 /*
 	ffgui-window.cpp , 1/06/03
 	Zach Dykstra
+	Humdinger, humdingerb@gmail.com, 2022
 */
 
 #include <stdio.h>
 #include "ffgui-window.h"
 #include "ffgui-application.h"
 #include "messages.h"
-#include <MenuItem.h>
-#include <LayoutBuilder.h>
-#include <View.h>
-#include <Box.h>
-#include <SeparatorView.h>
-#include <Entry.h>
-#include <Path.h>
+
 #include <Alert.h>
+#include <Box.h>
+#include <Catalog.h>
+#include <Entry.h>
+#include <LayoutBuilder.h>
+#include <MenuItem.h>
+#include <Path.h>
 #include <ScrollView.h>
+#include <SeparatorView.h>
+#include <View.h>
 
 #include <cstdlib>
 #include <iostream>
+
+#undef B_TRANSLATION_CONTEXT
+#define B_TRANSLATION_CONTEXT "Window"
 
 
 void ffguiwin::BuildLine() // ask all the views what they hold, reset the command string
@@ -93,9 +99,9 @@ ffguiwin::ffguiwin(BRect r, const char *name, window_type type, ulong mode)
 	//initialize GUI elements
 	fTopMenuBar = new BMenuBar("topmenubar");
 
-	sourcefilebutton = new BButton("Source file", new BMessage(M_SOURCE));
+	sourcefilebutton = new BButton(B_TRANSLATE("Source file"), new BMessage(M_SOURCE));
 	sourcefile = new BTextControl("", "", new BMessage(M_SOURCEFILE));
-	outputfilebutton = new BButton("Output file", new BMessage(M_OUTPUT));
+	outputfilebutton = new BButton(B_TRANSLATE("Output file"), new BMessage(M_OUTPUT));
 	outputfile = new BTextControl("", "", new BMessage(M_OUTPUTFILE));
 
 	outputfileformatpopup = new BPopUpMenu("");
@@ -106,7 +112,7 @@ ffguiwin::ffguiwin(BRect r, const char *name, window_type type, ulong mode)
 	outputfileformatpopup->AddItem(new BMenuItem("mkv", new BMessage(M_OUTPUTFILEFORMAT)));
 	outputfileformatpopup->AddItem(new BMenuItem("webm", new BMessage(M_OUTPUTFILEFORMAT)));
 	outputfileformatpopup->ItemAt(0)->SetMarked(true);
-	outputfileformat = new BMenuField("Output File Format", outputfileformatpopup);
+	outputfileformat = new BMenuField(B_TRANSLATE("Output file format:"), outputfileformatpopup);
 
 	outputvideoformatpopup = new BPopUpMenu("");
 	outputvideoformatpopup->AddItem(new BMenuItem("mpeg4", new BMessage(M_OUTPUTVIDEOFORMAT)));
@@ -115,7 +121,7 @@ ffguiwin::ffguiwin(BRect r, const char *name, window_type type, ulong mode)
 	outputvideoformatpopup->AddItem(new BMenuItem("vp9", new BMessage(M_OUTPUTVIDEOFORMAT)));
 	outputvideoformatpopup->AddItem(new BMenuItem("wmv1", new BMessage(M_OUTPUTVIDEOFORMAT)));
 	outputvideoformatpopup->ItemAt(0)->SetMarked(true);
-	outputvideoformat = new BMenuField("Output Video Format", outputvideoformatpopup);
+	outputvideoformat = new BMenuField(B_TRANSLATE("Output video format:"), outputvideoformatpopup);
 
 	outputaudioformatpopup = new BPopUpMenu("");
 	outputaudioformatpopup->AddItem(new BMenuItem("ac3", new BMessage(M_OUTPUTAUDIOFORMAT)));
@@ -123,48 +129,48 @@ ffguiwin::ffguiwin(BRect r, const char *name, window_type type, ulong mode)
 	outputaudioformatpopup->AddItem(new BMenuItem("opus", new BMessage(M_OUTPUTAUDIOFORMAT)));
 	outputaudioformatpopup->AddItem(new BMenuItem("vorbis", new BMessage(M_OUTPUTAUDIOFORMAT)));
 	outputaudioformatpopup->ItemAt(0)->SetMarked(true);
-	outputaudioformat = new BMenuField("Output Audio Format", outputaudioformatpopup);
+	outputaudioformat = new BMenuField(B_TRANSLATE("Output audio format:"), outputaudioformatpopup);
 
-	enablevideo = new BCheckBox("", "Enable Video Encoding", new BMessage(M_ENABLEVIDEO));
+	enablevideo = new BCheckBox("", B_TRANSLATE("Enable video encoding"), new BMessage(M_ENABLEVIDEO));
 	enablevideo->SetValue(B_CONTROL_ON);
-	vbitrate = new BSpinner("", "Bitrate (Kbit/s)", new BMessage(M_VBITRATE));
-	framerate = new BSpinner("", "Framerate (fps)", new BMessage(M_FRAMERATE));
-	customres = new BCheckBox("", "Use Custom Resolution", new BMessage(M_CUSTOMRES));
-	xres = new BSpinner("", "Width", new BMessage(M_XRES));
-	yres = new BSpinner("", "Height", new BMessage(M_YRES));
+	vbitrate = new BSpinner("", B_TRANSLATE("Bitrate (Kbit/s):"), new BMessage(M_VBITRATE));
+	framerate = new BSpinner("", B_TRANSLATE("Framerate (fps):"), new BMessage(M_FRAMERATE));
+	customres = new BCheckBox("", B_TRANSLATE("Use custom resolution"), new BMessage(M_CUSTOMRES));
+	xres = new BSpinner("", B_TRANSLATE("Width:"), new BMessage(M_XRES));
+	yres = new BSpinner("", B_TRANSLATE("Height:"), new BMessage(M_YRES));
 
-	enablecropping = new BCheckBox("", "Enable Video Cropping", new BMessage(M_ENABLECROPPING));
+	enablecropping = new BCheckBox("", B_TRANSLATE("Enable video cropping"), new BMessage(M_ENABLECROPPING));
 	enablecropping->SetValue(B_CONTROL_ON);
-	topcrop = new BSpinner("", "Top Crop Size", new BMessage(M_TOPCROP));
-	bottomcrop = new BSpinner("", "Bottom Crop Size", new BMessage(M_BOTTOMCROP));
-    leftcrop = new BSpinner("", "Left Crop Size", new BMessage(M_LEFTCROP));
-	rightcrop = new BSpinner("", "Right Crop Size", new BMessage(M_RIGHTCROP));
+	topcrop = new BSpinner("", B_TRANSLATE("Top crop size:"), new BMessage(M_TOPCROP));
+	bottomcrop = new BSpinner("", B_TRANSLATE("Bottom crop size:"), new BMessage(M_BOTTOMCROP));
+    leftcrop = new BSpinner("", B_TRANSLATE("Left crop size:"), new BMessage(M_LEFTCROP));
+	rightcrop = new BSpinner("", B_TRANSLATE("Right crop size:"), new BMessage(M_RIGHTCROP));
 
-	enableaudio = new BCheckBox("", "Enable Audio Encoding", new BMessage(M_ENABLEAUDIO));
+	enableaudio = new BCheckBox("", B_TRANSLATE("Enable audio encoding"), new BMessage(M_ENABLEAUDIO));
 	enableaudio->SetValue(B_CONTROL_ON);
-	ab = new BSpinner("", "Bitrate (Kbit/s)", new BMessage(M_AB));
-	ar = new BSpinner("", "Sampling Rate (Hz)", new BMessage(M_AR));
-	ac = new BSpinner("", "Audio Channels", new BMessage(M_AC));
+	ab = new BSpinner("", B_TRANSLATE("Bitrate (Kbit/s):"), new BMessage(M_AB));
+	ar = new BSpinner("", B_TRANSLATE("Sampling rate (Hz):"), new BMessage(M_AR));
+	ac = new BSpinner("", B_TRANSLATE("Audio channels:"), new BMessage(M_AC));
 
-	bframes = new BSpinner("", "'B' Frames", nullptr);
-	gop = new BSpinner("", "GOP Size", nullptr);
-	highquality = new BCheckBox("","Use High Quality Settings", new BMessage(M_HIGHQUALITY));
-	fourmotion = new BCheckBox("", "Use four motion vector", new BMessage(M_FOURMOTION));
-	deinterlace = new BCheckBox("", "Deinterlace Pictures", new BMessage(M_DEINTERLACE));
-	calcpsnr = new BCheckBox("", "Calculate PSNR of Compressed Frames", new BMessage(M_CALCPSNR));
+	bframes = new BSpinner("", B_TRANSLATE("'B' frames:"), nullptr);
+	gop = new BSpinner("", B_TRANSLATE("GOP size:"), nullptr);
+	highquality = new BCheckBox("",B_TRANSLATE("Use high quality settings"), new BMessage(M_HIGHQUALITY));
+	fourmotion = new BCheckBox("", B_TRANSLATE("Use four motion vector"), new BMessage(M_FOURMOTION));
+	deinterlace = new BCheckBox("", B_TRANSLATE("Deinterlace pictures"), new BMessage(M_DEINTERLACE));
+	calcpsnr = new BCheckBox("", B_TRANSLATE("Calculate PSNR of compressed frames"), new BMessage(M_CALCPSNR));
 
-	fixedquant = new BSpinner("", "Use Fixed Video Quantiser Scale", nullptr);
-	minquant = new BSpinner("", "Min Video Quantiser Scale", nullptr);
-	maxquant = new BSpinner("", "Max Video Quantiser Scale", nullptr);
-	quantdifference = new BSpinner("", "Max Difference Between Quantiser Scale", nullptr);
-	quantblur = new BSpinner("", "Video Quantiser Scale Blur", nullptr);
-	quantcompression = new BSpinner("", "Video Quantiser Scale Compression", nullptr);
+	fixedquant = new BSpinner("", B_TRANSLATE("Use fixed video quantiser scale:"), nullptr);
+	minquant = new BSpinner("", B_TRANSLATE("Min video quantiser scale:"), nullptr);
+	maxquant = new BSpinner("", B_TRANSLATE("Max video quantiser scale:"), nullptr);
+	quantdifference = new BSpinner("", B_TRANSLATE("Max difference between quantiser scale:"), nullptr);
+	quantblur = new BSpinner("", B_TRANSLATE("Video quantiser scale blur:"), nullptr);
+	quantcompression = new BSpinner("", B_TRANSLATE("Video quantiser scale compression:"), nullptr);
 
 	outputtext = new BTextView("");
 	outputtext->SetViewColor(ui_color(B_PANEL_BACKGROUND_COLOR));
 	outputtext->MakeEditable(false);
 
-	encodebutton = new BButton("Encode", new BMessage(M_ENCODE));
+	encodebutton = new BButton(B_TRANSLATE("Encode"), new BMessage(M_ENCODE));
 	encodebutton->SetEnabled(false);
 	encode = new BTextControl("", "", nullptr);
 
@@ -251,7 +257,7 @@ ffguiwin::ffguiwin(BRect r, const char *name, window_type type, ulong mode)
 
 	// create tabs and boxes
 	BBox *fileoptionsbox = new BBox("");
-	fileoptionsbox->SetLabel("File Options");
+	fileoptionsbox->SetLabel(B_TRANSLATE("File options"));
 	BGroupLayout *fileoptionslayout = BLayoutBuilder::Group<>(B_VERTICAL, B_USE_SMALL_SPACING)
 		.SetInsets(3,3,3,3)
 		.AddGroup(B_HORIZONTAL)
@@ -270,7 +276,7 @@ ffguiwin::ffguiwin(BRect r, const char *name, window_type type, ulong mode)
 	fileoptionsbox->AddChild(fileoptionslayout->View());
 
 	BBox *encodebox = new BBox("");
-	encodebox->SetLabel("Encode");
+	encodebox->SetLabel(B_TRANSLATE("Encode"));
 	BGroupLayout *encodelayout = BLayoutBuilder::Group<>(B_VERTICAL)
 		.SetInsets(0,0,0,0)
 		.AddGroup(B_HORIZONTAL)
@@ -280,7 +286,7 @@ ffguiwin::ffguiwin(BRect r, const char *name, window_type type, ulong mode)
 	encodebox->AddChild(encodelayout->View());
 
 	BBox *videobox = new BBox("");
-	videobox->SetLabel("Video");
+	videobox->SetLabel(B_TRANSLATE("Video"));
 	BGroupLayout *videolayout = BLayoutBuilder::Group<>(B_VERTICAL)
 		.SetInsets(5,5,5,5)
 		.Add(enablevideo)
@@ -301,7 +307,7 @@ ffguiwin::ffguiwin(BRect r, const char *name, window_type type, ulong mode)
 	videobox->AddChild(videolayout->View());
 
 	BBox *croppingoptionsbox = new BBox("");
-	croppingoptionsbox->SetLabel("Cropping Options");
+	croppingoptionsbox->SetLabel(B_TRANSLATE("Cropping options"));
 	BGroupLayout *croppingoptionslayout = BLayoutBuilder::Group<>(B_VERTICAL)
 		.SetInsets(5,5,5,5)
 		.Add(enablecropping)
@@ -319,7 +325,7 @@ ffguiwin::ffguiwin(BRect r, const char *name, window_type type, ulong mode)
 	croppingoptionsbox->AddChild(croppingoptionslayout->View());
 
 	BBox *audiobox = new BBox("");
-	audiobox->SetLabel("Audio");
+	audiobox->SetLabel(B_TRANSLATE("Audio"));
 	BGroupLayout *audiolayout = BLayoutBuilder::Group<>(B_VERTICAL)
 		.SetInsets(5,5,5,5)
 		.Add(enableaudio)
@@ -334,7 +340,6 @@ ffguiwin::ffguiwin(BRect r, const char *name, window_type type, ulong mode)
 		.AddGlue();
 	audiobox->AddChild(audiolayout->View());
 
-
 	BView *mainoptionsview = new BView("",B_SUPPORTS_LAYOUT);
 	BView *advancedoptionsview = new BView("",B_SUPPORTS_LAYOUT);
 	BView *outputview = new BScrollView("", outputtext, B_SUPPORTS_LAYOUT, true, true);
@@ -347,7 +352,8 @@ ffguiwin::ffguiwin(BRect r, const char *name, window_type type, ulong mode)
 		.Layout();
 
 	BLayoutBuilder::Group<>(advancedoptionsview, B_HORIZONTAL)
-		.SetInsets(5)
+		.SetInsets(B_USE_DEFAULT_SPACING, B_USE_DEFAULT_SPACING,
+					B_USE_DEFAULT_SPACING, B_USE_DEFAULT_SPACING)
 		.AddGroup(B_VERTICAL)
 			.AddGrid(B_USE_SMALL_SPACING,B_USE_SMALL_SPACING)
 				.Add(bframes->CreateLabelLayoutItem(),0,0)
@@ -388,16 +394,16 @@ ffguiwin::ffguiwin(BRect r, const char *name, window_type type, ulong mode)
 	tabview->AddTab(mainoptionsview, mainoptionstab);
 	tabview->AddTab(advancedoptionsview, advancedoptionstab);
 	tabview->AddTab(outputview, outputtab);
-	mainoptionstab->SetLabel("Main Options");
-	advancedoptionstab->SetLabel("Advanced Options");
-	outputtab->SetLabel("Output");
+	mainoptionstab->SetLabel(B_TRANSLATE("Main options"));
+	advancedoptionstab->SetLabel(B_TRANSLATE("Advanced options"));
+	outputtab->SetLabel(B_TRANSLATE("Output"));
 
 	//menu bar layout
 	BLayoutBuilder::Menu<>(fTopMenuBar)
-		.AddMenu("App")
-			.AddItem("About", B_ABOUT_REQUESTED)
+		.AddMenu(B_TRANSLATE("App"))
+			.AddItem(B_TRANSLATE("About"), B_ABOUT_REQUESTED)
 			.AddSeparator()
-			.AddItem("Quit", B_QUIT_REQUESTED, 'Q')
+			.AddItem(B_TRANSLATE("Quit"), B_QUIT_REQUESTED, 'Q')
 		.End()
 	.End();
 
@@ -775,14 +781,14 @@ void ffguiwin::MessageReceived(BMessage *message)
 			BString finished_message;
 			if(exit_code == 0)
 			{
-				finished_message = "The video was converted successfully";
+				finished_message = B_TRANSLATE("The video was converted successfully.");
 			}
 			else
 			{
-				finished_message << "Converting the video failed";
+				finished_message << B_TRANSLATE("Converting the video failed.");
 			}
 
-			BAlert *finished_alert = new BAlert("", finished_message, "OK");
+			BAlert *finished_alert = new BAlert("", finished_message, B_TRANSLATE("OK"));
 			finished_alert->Go();
 
 			fStatusBar->Reset();

@@ -1,0 +1,49 @@
+1	English	application/x-vnd.HaikuArchives-ffmpegGUI	266222480
+Main options	Window		Main options
+Video	Window		Video
+Deinterlace pictures	Window		Deinterlace pictures
+Enable audio encoding	Window		Enable audio encoding
+Use four motion vector	Window		Use four motion vector
+Output file format:	Window		Output file format:
+Calculate PSNR of compressed frames	Window		Calculate PSNR of compressed frames
+Output file	Window		Output file
+A GUI frontend for ffmpeg	Application		A GUI frontend for ffmpeg
+OK	Window		OK
+Use fixed video quantiser scale:	Window		Use fixed video quantiser scale:
+Enable video cropping	Window		Enable video cropping
+'B' frames:	Window		'B' frames:
+Enable video encoding	Window		Enable video encoding
+Output	Window		Output
+Min video quantiser scale:	Window		Min video quantiser scale:
+Converting the video failed.	Window		Converting the video failed.
+Output audio format:	Window		Output audio format:
+Video quantiser scale compression:	Window		Video quantiser scale compression:
+About	Window		About
+GOP size:	Window		GOP size:
+Top crop size:	Window		Top crop size:
+App	Window		App
+Source file	Window		Source file
+Bitrate (Kbit/s):	Window		Bitrate (Kbit/s):
+Right crop size:	Window		Right crop size:
+Audio channels:	Window		Audio channels:
+The video was converted successfully.	Window		The video was converted successfully.
+Advanced options	Window		Advanced options
+Bottom crop size:	Window		Bottom crop size:
+Quit	Window		Quit
+Height:	Window		Height:
+Video quantiser scale blur:	Window		Video quantiser scale blur:
+Framerate (fps):	Window		Framerate (fps):
+Use high quality settings	Window		Use high quality settings
+File options	Window		File options
+Thanks to mmu_man, Jeremy, DeadYak, Marco, etc...\nmd@geekport.com\nmade more or less usable by reds <reds@sakamoto.pl> - have fun!	Application		Thanks to mmu_man, Jeremy, DeadYak, Marco, etc...\nmd@geekport.com\nmade more or less usable by reds <reds@sakamoto.pl> - have fun!
+Max difference between quantiser scale:	Window		Max difference between quantiser scale:
+Encode	Window		Encode
+Max video quantiser scale:	Window		Max video quantiser scale:
+Left crop size:	Window		Left crop size:
+Audio	Window		Audio
+Cropping options	Window		Cropping options
+ffmpeg GUI	System name		ffmpeg GUI
+Sampling rate (Hz):	Window		Sampling rate (Hz):
+Width:	Window		Width:
+Output video format:	Window		Output video format:
+Use custom resolution	Window		Use custom resolution

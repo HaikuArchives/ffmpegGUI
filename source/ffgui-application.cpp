@@ -1,11 +1,12 @@
 /*
- * Copyright 2003, Zach Dykstra. All rights reserved.
+ * Copyright 2003-2022, Zach Dykstra. All rights reserved.
  * Distributed under the terms of the MIT License.
  */
 
 /*
 	ffgui-application.cpp , 1/06/03
 	Zach Dykstra
+	Humdinger, humdingerb@gmail.com, 2022
 */
 
 // new app object
@@ -20,6 +21,9 @@
 #include <Catalog.h>
 #include <Resources.h>
 
+#undef B_TRANSLATION_CONTEXT
+#define B_TRANSLATION_CONTEXT "Application"
+
 
 const char *kAppSignature = "application/x-vnd.HaikuArchives-ffmpegGUI";
 
@@ -27,7 +31,7 @@ ffguiapp::ffguiapp()
 	: BApplication(kAppSignature)
 {
 	ffguiwin *window;
-	window = new ffguiwin(BRect(0,0,0,0),"ffmpeg GUI",B_TITLED_WINDOW,0);
+	window = new ffguiwin(BRect(0,0,0,0),B_TRANSLATE_SYSTEM_NAME("ffmpeg GUI"),B_TITLED_WINDOW,0);
 	window->Show();
 }
 
@@ -51,8 +55,7 @@ void ffguiapp::MessageReceived(BMessage *message)
 void
 ffguiapp::AboutRequested()
 {
-
-	BAboutWindow *aboutwindow = new BAboutWindow("ffmpeg GUI", kAppSignature);
+	BAboutWindow *aboutwindow = new BAboutWindow(B_TRANSLATE_SYSTEM_NAME("ffmpeg GUI"), kAppSignature);
 
 	const char *authors[] =
 	{
@@ -67,15 +70,13 @@ ffguiapp::AboutRequested()
 	};
 
 	BString extra_info;
-	extra_info << 	"Thanks to mmu_man, Jeremy, DeadYak, Marco, etc...\n"
+	extra_info << 	B_TRANSLATE("Thanks to mmu_man, Jeremy, DeadYak, Marco, etc...\n"
 					"md@geekport.com\n"
-					"made more or less usable by reds <reds@sakamoto.pl> - have fun! ";
+					"made more or less usable by reds <reds@sakamoto.pl> - have fun!");
 
 	aboutwindow->AddCopyright(2003, "Zach Dykstra");
 	aboutwindow->AddAuthors(authors);
-	aboutwindow->AddDescription("a GUI frontend for ffmpeg");
+	aboutwindow->AddDescription(B_TRANSLATE("A GUI frontend for ffmpeg"));
 	aboutwindow->AddExtraInfo(extra_info.String());
 	aboutwindow->Show();
-
 }
-
