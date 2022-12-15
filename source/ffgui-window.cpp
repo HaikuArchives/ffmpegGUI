@@ -398,7 +398,7 @@ ffguiwin::ffguiwin(BRect r, const char *name, window_type type, ulong mode)
 	BTab *outputtab = new BTab();
 
 	tabview->AddTab(mainoptionsview, mainoptionstab);
-	tabview->AddTab(advancedoptionsview, advancedoptionstab);
+	//tabview->AddTab(advancedoptionsview, advancedoptionstab);
 	tabview->AddTab(outputview, outputtab);
 	mainoptionstab->SetLabel(B_TRANSLATE("Main options"));
 	advancedoptionstab->SetLabel(B_TRANSLATE("Advanced options"));
