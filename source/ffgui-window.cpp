@@ -45,7 +45,7 @@ void ffguiwin::BuildLine() // ask all the views what they hold, reset the comman
 		commandline << " -r " << framerate->Value();
 		if (bcustomres == true)
 		{
-			commandline << "-s " << xres->Value() << "x" << yres->Value();
+			commandline << " -s " << xres->Value() << "x" << yres->Value();
 		}
 
 		// cropping options -- no point in cropping if we aren't encoding video...
