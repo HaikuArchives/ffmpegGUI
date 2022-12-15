@@ -95,7 +95,6 @@ void ffguiwin::BuildLine() // ask all the views what they hold, reset the comman
 ffguiwin::ffguiwin(BRect r, const char *name, window_type type, ulong mode)
 	: BWindow(r,name,type,mode)
 {
-
 	//initialize GUI elements
 	fTopMenuBar = new BMenuBar("topmenubar");
 
@@ -189,7 +188,7 @@ ffguiwin::ffguiwin(BRect r, const char *name, window_type type, ulong mode)
 									new BMessage(M_OUTPUTFILE_REF));
 
 	fStatusBar = new BStatusBar("");
-	fStatusBar->SetExplicitMinSize(BSize(B_SIZE_UNSET, 50));
+	fStatusBar->SetText(B_TRANSLATE("Waiting to start encoding" B_UTF8_ELLIPSIS));
 
 // set the names for each control, so they can be figured out in MessageReceived
 	vbitrate->SetName("vbitrate");
@@ -254,12 +253,12 @@ ffguiwin::ffguiwin(BRect r, const char *name, window_type type, ulong mode)
 	// set the initial command line
 	BuildLine();
 
-
 	// create tabs and boxes
 	BBox *fileoptionsbox = new BBox("");
 	fileoptionsbox->SetLabel(B_TRANSLATE("File options"));
 	BGroupLayout *fileoptionslayout = BLayoutBuilder::Group<>(B_VERTICAL, B_USE_SMALL_SPACING)
-		.SetInsets(3,3,3,3)
+		.SetInsets(B_USE_DEFAULT_SPACING, B_USE_DEFAULT_SPACING,
+					B_USE_DEFAULT_SPACING, B_USE_DEFAULT_SPACING)
 		.AddGroup(B_HORIZONTAL)
 			.Add(sourcefilebutton)
 			.Add(sourcefile)
@@ -270,7 +269,9 @@ ffguiwin::ffguiwin(BRect r, const char *name, window_type type, ulong mode)
 		.End()
 		.AddGroup(B_HORIZONTAL)
 			.Add(outputfileformat)
+			.AddStrut(B_USE_SMALL_SPACING)
 			.Add(outputvideoformat)
+			.AddStrut(B_USE_SMALL_SPACING)
 			.Add(outputaudioformat)
 		.End();
 	fileoptionsbox->AddChild(fileoptionslayout->View());
@@ -278,7 +279,8 @@ ffguiwin::ffguiwin(BRect r, const char *name, window_type type, ulong mode)
 	BBox *encodebox = new BBox("");
 	encodebox->SetLabel(B_TRANSLATE("Encode"));
 	BGroupLayout *encodelayout = BLayoutBuilder::Group<>(B_VERTICAL)
-		.SetInsets(0,0,0,0)
+		.SetInsets(B_USE_DEFAULT_SPACING, B_USE_DEFAULT_SPACING,
+					B_USE_DEFAULT_SPACING, B_USE_DEFAULT_SPACING)
 		.AddGroup(B_HORIZONTAL)
 			.Add(encodebutton)
 			.Add(encode)
@@ -288,7 +290,8 @@ ffguiwin::ffguiwin(BRect r, const char *name, window_type type, ulong mode)
 	BBox *videobox = new BBox("");
 	videobox->SetLabel(B_TRANSLATE("Video"));
 	BGroupLayout *videolayout = BLayoutBuilder::Group<>(B_VERTICAL)
-		.SetInsets(5,5,5,5)
+		.SetInsets(B_USE_DEFAULT_SPACING, B_USE_DEFAULT_SPACING,
+					B_USE_DEFAULT_SPACING, B_USE_DEFAULT_SPACING)
 		.Add(enablevideo)
 		.AddGrid(B_USE_SMALL_SPACING,B_USE_SMALL_SPACING)
 			.Add(vbitrate->CreateLabelLayoutItem(),0,0)
@@ -309,7 +312,8 @@ ffguiwin::ffguiwin(BRect r, const char *name, window_type type, ulong mode)
 	BBox *croppingoptionsbox = new BBox("");
 	croppingoptionsbox->SetLabel(B_TRANSLATE("Cropping options"));
 	BGroupLayout *croppingoptionslayout = BLayoutBuilder::Group<>(B_VERTICAL)
-		.SetInsets(5,5,5,5)
+		.SetInsets(B_USE_DEFAULT_SPACING, B_USE_DEFAULT_SPACING,
+					B_USE_DEFAULT_SPACING, B_USE_DEFAULT_SPACING)
 		.Add(enablecropping)
 		.AddGrid(B_USE_SMALL_SPACING,B_USE_SMALL_SPACING)
 			.Add(topcrop->CreateLabelLayoutItem(),0,0)
@@ -327,7 +331,8 @@ ffguiwin::ffguiwin(BRect r, const char *name, window_type type, ulong mode)
 	BBox *audiobox = new BBox("");
 	audiobox->SetLabel(B_TRANSLATE("Audio"));
 	BGroupLayout *audiolayout = BLayoutBuilder::Group<>(B_VERTICAL)
-		.SetInsets(5,5,5,5)
+		.SetInsets(B_USE_DEFAULT_SPACING, B_USE_DEFAULT_SPACING,
+					B_USE_DEFAULT_SPACING, B_USE_DEFAULT_SPACING)
 		.Add(enableaudio)
 		.AddGrid(B_USE_SMALL_SPACING,B_USE_SMALL_SPACING)
 			.Add(ab->CreateLabelLayoutItem(),0,0)
@@ -345,7 +350,8 @@ ffguiwin::ffguiwin(BRect r, const char *name, window_type type, ulong mode)
 	BView *outputview = new BScrollView("", outputtext, B_SUPPORTS_LAYOUT, true, true);
 
 	BLayoutBuilder::Group<>(mainoptionsview, B_HORIZONTAL)
-		.SetInsets(5)
+		.SetInsets(B_USE_DEFAULT_SPACING, B_USE_DEFAULT_SPACING,
+					B_USE_DEFAULT_SPACING, B_USE_DEFAULT_SPACING)
 		.Add(videobox)
 		.Add(croppingoptionsbox)
 		.Add(audiobox)
@@ -407,15 +413,17 @@ ffguiwin::ffguiwin(BRect r, const char *name, window_type type, ulong mode)
 		.End()
 	.End();
 
-
 	//main layout
 	BLayoutBuilder::Group<>(this, B_VERTICAL)
-		.SetInsets(0,0,0,0)
+		.SetInsets(-2,0,-2,0)
 		.Add(fTopMenuBar)
 		.Add(fileoptionsbox)
 		.Add(tabview)
 		.Add(encodebox)
-		.Add(fStatusBar)
+		.AddGroup(B_HORIZONTAL)
+			.SetInsets(B_USE_DEFAULT_SPACING,0,B_USE_DEFAULT_SPACING,0)
+			.Add(fStatusBar)
+		.End()
 		.AddGlue()
 	.Layout();
 
@@ -428,11 +436,8 @@ ffguiwin::ffguiwin(BRect r, const char *name, window_type type, ulong mode)
 	SetSizeLimits(min_width, max_width, min_height, max_height);
 	MoveOnScreen();
 
-	fStatusBar->Hide();
-
 	//initialize command launcher
 	fCommandLauncher = new CommandLauncher(new BMessenger(this));
-
 }
 
 //quitting
@@ -447,11 +452,9 @@ bool ffguiwin::QuitRequested()
 //message received
 void ffguiwin::MessageReceived(BMessage *message)
 {
-
 	//message->PrintToStream();
 	switch(message->what)
 	{
-
 		case B_ABOUT_REQUESTED:
 		{
 			be_app->PostMessage(B_ABOUT_REQUESTED);
@@ -717,8 +720,6 @@ void ffguiwin::MessageReceived(BMessage *message)
 			BString files_string;
 			files_string << sourcefile->Text() << " -> " << outputfile->Text();
 			fStatusBar->SetText(files_string.String());
-			fStatusBar->Show();
-
 
 			BMessage start_encode_message(M_RUN_COMMAND);
 			start_encode_message.AddString("cmdline", commandline);
@@ -733,6 +734,7 @@ void ffguiwin::MessageReceived(BMessage *message)
 			BString progress_data;
 			message->FindString("data", &progress_data);
 			outputtext->Insert(progress_data.String());
+			outputtext->ScrollTo(0.0, 1000000.0);
 
 			//calculate progress percentage
 			if (duration_detected) 	//the duration appears in the data all the time but
@@ -792,7 +794,7 @@ void ffguiwin::MessageReceived(BMessage *message)
 			finished_alert->Go();
 
 			fStatusBar->Reset();
-			fStatusBar->Hide();
+			fStatusBar->SetText(B_TRANSLATE("Waiting to start encoding" B_UTF8_ELLIPSIS));
 			break;
 		}
 		case B_SIMPLE_DATA:
@@ -855,7 +857,6 @@ void ffguiwin::set_encodebutton_state()
 int32
 ffguiwin::get_seconds(BString& time_string)
 {
-
 	int32 hours = 0;
 	int32 minutes = 0;
 	int32 seconds = 0;
@@ -870,7 +871,6 @@ ffguiwin::get_seconds(BString& time_string)
 	seconds+=hours*3600;
 
 	return seconds;
-
 }
 
 
@@ -882,20 +882,14 @@ ffguiwin::preset_outputfile()
 	output_filename.RemoveChars(begin_ext, output_filename.Length()-begin_ext);
 	output_filename.Append(outputfileformatpopup->FindMarked()->Label());
 	outputfile->SetText(output_filename);
-
-
-
-
 }
 
 
 void
 ffguiwin::set_spinner_minsize(BSpinner *spinner)
 {
-
 	BSize textview_prefsize = spinner->TextView()->PreferredSize();
 	textview_prefsize.width+=20;
 	textview_prefsize.height=B_SIZE_UNSET;
 	spinner->CreateTextViewLayoutItem()->SetExplicitMinSize(textview_prefsize);
-
 }

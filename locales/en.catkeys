@@ -1,4 +1,4 @@
-1	English	application/x-vnd.HaikuArchives-ffmpegGUI	266222480
+1	English	application/x-vnd.HaikuArchives-ffmpegGUI	2475388938
 Main options	Window		Main options
 Video	Window		Video
 Deinterlace pictures	Window		Deinterlace pictures
@@ -42,6 +42,7 @@ Max video quantiser scale:	Window		Max video quantiser scale:
 Left crop size:	Window		Left crop size:
 Audio	Window		Audio
 Cropping options	Window		Cropping options
+Waiting to start encoding…	Window		Waiting to start encoding…
 ffmpeg GUI	System name		ffmpeg GUI
 Sampling rate (Hz):	Window		Sampling rate (Hz):
 Width:	Window		Width:

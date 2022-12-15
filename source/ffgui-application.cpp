@@ -31,7 +31,7 @@ ffguiapp::ffguiapp()
 	: BApplication(kAppSignature)
 {
 	ffguiwin *window;
-	window = new ffguiwin(BRect(0,0,0,0),B_TRANSLATE_SYSTEM_NAME("ffmpeg GUI"),B_TITLED_WINDOW,0);
+	window = new ffguiwin(BRect(0,0,0,0),B_TRANSLATE_SYSTEM_NAME("ffmpeg GUI"),B_TITLED_WINDOW,B_NOT_V_RESIZABLE);
 	window->Show();
 }
 
