@@ -36,7 +36,15 @@ void ffguiwin::BuildLine() // ask all the views what they hold, reset the comman
 {
 	BString commandline("ffmpeg -i ");
 	commandline << "\"" << sourcefile->Text() << "\"";  //append the input file name
-	commandline << " -f " << outputfileformat->MenuItem()->Label(); // grab and set the file format
+
+	//this really is a hack to get mkv output working. Should and will be replaced by a proper formats class 
+	//that handles format name, commandline option and file extension in a proper way
+	BString fileformat_option(outputfileformat->MenuItem()->Label());
+	if (fileformat_option == "mkv")
+	{
+		fileformat_option = "matroska";
+	}	
+	commandline << " -f " << fileformat_option; // grab and set the file format
 
 	if (benablevideo == false) // is video enabled, add options
 	{
