@@ -70,9 +70,11 @@ ffguiapp::AboutRequested()
 	};
 
 	BString extra_info;
-	extra_info << 	B_TRANSLATE("Thanks to mmu_man, Jeremy, DeadYak, Marco, etc...\n"
+	extra_info << 	B_TRANSLATE("Thanks to:\n"
+					"mmu_man, Jeremy, DeadYak, Marco, etc.\n"
 					"md@geekport.com\n"
-					"made more or less usable by reds <reds@sakamoto.pl> - have fun!");
+					"reds <reds@sakamoto.pl> for making it more or less usable.\n"
+					"Have fun!");
 
 	aboutwindow->AddCopyright(2003, "Zach Dykstra");
 	aboutwindow->AddAuthors(authors);
