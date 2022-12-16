@@ -1,9 +1,11 @@
-1	English	application/x-vnd.HaikuArchives-ffmpegGUI	2475388938
+1	English	application/x-vnd.HaikuArchives-ffmpegGUI	132315271
 Main options	Window		Main options
 Video	Window		Video
 Deinterlace pictures	Window		Deinterlace pictures
 Enable audio encoding	Window		Enable audio encoding
+Start	Window		Start
 Use four motion vector	Window		Use four motion vector
+Encoding finished successfully.	Window		Encoding finished successfully.
 Output file format:	Window		Output file format:
 Calculate PSNR of compressed frames	Window		Calculate PSNR of compressed frames
 Output file	Window		Output file
@@ -15,31 +17,30 @@ Enable video cropping	Window		Enable video cropping
 Enable video encoding	Window		Enable video encoding
 Output	Window		Output
 Min video quantiser scale:	Window		Min video quantiser scale:
-Converting the video failed.	Window		Converting the video failed.
+Left:	Window		Left:
 Output audio format:	Window		Output audio format:
 Video quantiser scale compression:	Window		Video quantiser scale compression:
+Top:	Window		Top:
 About	Window		About
 GOP size:	Window		GOP size:
-Top crop size:	Window		Top crop size:
 App	Window		App
 Source file	Window		Source file
 Bitrate (Kbit/s):	Window		Bitrate (Kbit/s):
-Right crop size:	Window		Right crop size:
 Audio channels:	Window		Audio channels:
-The video was converted successfully.	Window		The video was converted successfully.
 Advanced options	Window		Advanced options
-Bottom crop size:	Window		Bottom crop size:
 Quit	Window		Quit
 Height:	Window		Height:
 Video quantiser scale blur:	Window		Video quantiser scale blur:
 Framerate (fps):	Window		Framerate (fps):
+Thanks to:\nmmu_man, Jeremy, DeadYak, Marco, etc.\nmd@geekport.com\nreds <reds@sakamoto.pl> for making it more or less usable.\nHave fun!	Application		Thanks to:\nmmu_man, Jeremy, DeadYak, Marco, etc.\nmd@geekport.com\nreds <reds@sakamoto.pl> for making it more or less usable.\nHave fun!
 Use high quality settings	Window		Use high quality settings
 File options	Window		File options
-Thanks to mmu_man, Jeremy, DeadYak, Marco, etc...\nmd@geekport.com\nmade more or less usable by reds <reds@sakamoto.pl> - have fun!	Application		Thanks to mmu_man, Jeremy, DeadYak, Marco, etc...\nmd@geekport.com\nmade more or less usable by reds <reds@sakamoto.pl> - have fun!
+Bottom:	Window		Bottom:
+Right:	Window		Right:
 Max difference between quantiser scale:	Window		Max difference between quantiser scale:
+Encoding failed.	Window		Encoding failed.
 Encode	Window		Encode
 Max video quantiser scale:	Window		Max video quantiser scale:
-Left crop size:	Window		Left crop size:
 Audio	Window		Audio
 Cropping options	Window		Cropping options
 Waiting to start encoding…	Window		Waiting to start encoding…

@@ -140,10 +140,10 @@ ffguiwin::ffguiwin(BRect r, const char *name, window_type type, ulong mode)
 
 	enablecropping = new BCheckBox("", B_TRANSLATE("Enable video cropping"), new BMessage(M_ENABLECROPPING));
 	enablecropping->SetValue(B_CONTROL_ON);
-	topcrop = new BSpinner("", B_TRANSLATE("Top crop size:"), new BMessage(M_TOPCROP));
-	bottomcrop = new BSpinner("", B_TRANSLATE("Bottom crop size:"), new BMessage(M_BOTTOMCROP));
-    leftcrop = new BSpinner("", B_TRANSLATE("Left crop size:"), new BMessage(M_LEFTCROP));
-	rightcrop = new BSpinner("", B_TRANSLATE("Right crop size:"), new BMessage(M_RIGHTCROP));
+	topcrop = new BSpinner("", B_TRANSLATE("Top:"), new BMessage(M_TOPCROP));
+	bottomcrop = new BSpinner("", B_TRANSLATE("Bottom:"), new BMessage(M_BOTTOMCROP));
+    leftcrop = new BSpinner("", B_TRANSLATE("Left:"), new BMessage(M_LEFTCROP));
+	rightcrop = new BSpinner("", B_TRANSLATE("Right:"), new BMessage(M_RIGHTCROP));
 
 	enableaudio = new BCheckBox("", B_TRANSLATE("Enable audio encoding"), new BMessage(M_ENABLEAUDIO));
 	enableaudio->SetValue(B_CONTROL_ON);
@@ -169,7 +169,7 @@ ffguiwin::ffguiwin(BRect r, const char *name, window_type type, ulong mode)
 	outputtext->SetViewColor(ui_color(B_PANEL_BACKGROUND_COLOR));
 	outputtext->MakeEditable(false);
 
-	encodebutton = new BButton(B_TRANSLATE("Encode"), new BMessage(M_ENCODE));
+	encodebutton = new BButton(B_TRANSLATE("Start"), new BMessage(M_ENCODE));
 	encodebutton->SetEnabled(false);
 	encode = new BTextControl("", "", nullptr);
 
@@ -783,11 +783,11 @@ void ffguiwin::MessageReceived(BMessage *message)
 			BString finished_message;
 			if(exit_code == 0)
 			{
-				finished_message = B_TRANSLATE("The video was converted successfully.");
+				finished_message = B_TRANSLATE("Encoding finished successfully.");
 			}
 			else
 			{
-				finished_message << B_TRANSLATE("Converting the video failed.");
+				finished_message << B_TRANSLATE("Encoding failed.");
 			}
 
 			BAlert *finished_alert = new BAlert("", finished_message, B_TRANSLATE("OK"));
