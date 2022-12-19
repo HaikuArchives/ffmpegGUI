@@ -49,7 +49,7 @@ void ffguiwin::BuildLine() // ask all the views what they hold, reset the comman
 	if (benablevideo == false) // is video enabled, add options
 	{
 		commandline << " -vcodec " << outputvideoformat->MenuItem()->Label(); // grab and set the video encoder
-		commandline << " -b:v " << vbitrate->Value();
+		commandline << " -b:v " << vbitrate->Value() << "k";
 		commandline << " -r " << framerate->Value();
 		if (bcustomres == true)
 		{
@@ -87,7 +87,7 @@ void ffguiwin::BuildLine() // ask all the views what they hold, reset the comman
 	if (benableaudio == true) // audio encoding enabled, grab the values
 	{
 		commandline << " -acodec " << outputaudioformat->MenuItem()->Label();
-		commandline << " -b:a " << ab->Value();
+		commandline << " -b:a " << ab->Value() << "k";
 		commandline << " -ar " << ar->Value();
 		commandline << " -ac " << ac->Value();
 	}
