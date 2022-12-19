@@ -37,13 +37,13 @@ void ffguiwin::BuildLine() // ask all the views what they hold, reset the comman
 	BString commandline("ffmpeg -i ");
 	commandline << "\"" << sourcefile->Text() << "\"";  //append the input file name
 
-	//this really is a hack to get mkv output working. Should and will be replaced by a proper formats class 
+	//this really is a hack to get mkv output working. Should and will be replaced by a proper formats class
 	//that handles format name, commandline option and file extension in a proper way
 	BString fileformat_option(outputfileformat->MenuItem()->Label());
 	if (fileformat_option == "mkv")
 	{
 		fileformat_option = "matroska";
-	}	
+	}
 	commandline << " -f " << fileformat_option; // grab and set the file format
 
 	if (benablevideo == false) // is video enabled, add options
@@ -502,6 +502,16 @@ void ffguiwin::MessageReceived(BMessage *message)
 			break;
 		}
 */		case M_OUTPUTFILEFORMAT:
+		{
+			BString outputfilename(outputfile->Text());
+			outputfilename=outputfilename.Trim();
+			if (!outputfilename.IsEmpty())
+			{
+				set_outputfile_extension();
+			}
+			BuildLine();
+			break;
+		}
 		case M_OUTPUTVIDEOFORMAT:
 		case M_OUTPUTAUDIOFORMAT:
 		{
@@ -696,7 +706,8 @@ void ffguiwin::MessageReceived(BMessage *message)
 			BEntry file_entry(&ref, true);
 			BPath file_path(&file_entry);
 			sourcefile->SetText(file_path.Path());
-			preset_outputfile();
+			outputfile->SetText(file_path.Path());
+			set_outputfile_extension();
 			BuildLine();
 			set_encodebutton_state();
 			break;
@@ -819,7 +830,8 @@ void ffguiwin::MessageReceived(BMessage *message)
 				BEntry sourcefile_entry(&sourcefile_ref, true);
 				BPath sourcefile_path(&sourcefile_entry);
 				sourcefile->SetText(sourcefile_path.Path());
-				preset_outputfile();
+				outputfile->SetText(sourcefile_path.Path());
+				set_outputfile_extension();
 				BuildLine();
 				set_encodebutton_state();
 			}
@@ -883,11 +895,20 @@ ffguiwin::get_seconds(BString& time_string)
 
 
 void
-ffguiwin::preset_outputfile()
+ffguiwin::set_outputfile_extension()
 {
 	BString output_filename(sourcefile->Text());
-	int32 begin_ext = output_filename.FindLast(".")+1;
-	output_filename.RemoveChars(begin_ext, output_filename.Length()-begin_ext);
+	int32 begin_ext = output_filename.FindLast(".");
+	if (begin_ext != B_ERROR) //cut away extension if it already exists
+	{
+		++begin_ext;
+		output_filename.RemoveChars(begin_ext, output_filename.Length()-begin_ext);
+	}
+	else
+	{
+		output_filename.Append(".");
+	}
+
 	output_filename.Append(outputfileformatpopup->FindMarked()->Label());
 	outputfile->SetText(output_filename);
 }
