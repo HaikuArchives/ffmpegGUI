@@ -41,7 +41,7 @@ class ffguiwin : public BWindow
 
 	private:
 			void set_encodebutton_state();
-			void preset_outputfile();
+			void set_outputfile_extension();
 			int32 get_seconds(BString& time_string);
 			void set_spinner_minsize(BSpinner *spinner);
 
