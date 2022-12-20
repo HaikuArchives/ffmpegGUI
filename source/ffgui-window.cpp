@@ -459,48 +459,21 @@ bool ffguiwin::QuitRequested()
 //message received
 void ffguiwin::MessageReceived(BMessage *message)
 {
-	//message->PrintToStream();
+
 	switch(message->what)
 	{
 		case B_ABOUT_REQUESTED:
 		{
 			be_app->PostMessage(B_ABOUT_REQUESTED);
 		}
-
-		case M_NOMSG:
-		{
-			BuildLine();
-			break;
-		}
 		case M_SOURCEFILE:
-		{
-			BuildLine();
-			set_encodebutton_state();
-			break;
-		}
 		case M_OUTPUTFILE:
 		{
 			BuildLine();
 			set_encodebutton_state();
 			break;
 		}
-
-/*		case '_PBL':
-		{
-			BuildLine();
-			break;
-		}
-		case '_UKU':
-		{
-			BuildLine();
-			break;
-		}
-		case '_UKD':
-		{
-			BuildLine();
-			break;
-		}
-*/		case M_OUTPUTFILEFORMAT:
+		case M_OUTPUTFILEFORMAT:
 		{
 			BString outputfilename(outputfile->Text());
 			outputfilename=outputfilename.Trim();
@@ -513,10 +486,6 @@ void ffguiwin::MessageReceived(BMessage *message)
 		}
 		case M_OUTPUTVIDEOFORMAT:
 		case M_OUTPUTAUDIOFORMAT:
-		{
-			BuildLine();
-			break;
-		}
 		case M_VBITRATE:
 		case M_FRAMERATE:
 		case M_XRES:
@@ -539,30 +508,22 @@ void ffguiwin::MessageReceived(BMessage *message)
 			if (benablevideo == true)
 			{
 				vbitrate->SetEnabled(true);
-				vbitrate->ChildAt(0)->Invalidate();
 				framerate->SetEnabled(true);
-				framerate->ChildAt(0)->Invalidate();
 				customres->SetEnabled(true);
 
 				if (bcustomres == true)
 				{
 					xres->SetEnabled(true);
-					xres->ChildAt(0)->Invalidate();
 					yres->SetEnabled(true);
-					yres->ChildAt(0)->Invalidate();
 				}
 
 				enablecropping->SetEnabled(true);
 				if (benablecropping == true)
 				{
 					topcrop->SetEnabled(true);
-					topcrop->ChildAt(0)->Invalidate();
 					bottomcrop->SetEnabled(true);
-					bottomcrop->ChildAt(0)->Invalidate();
 					leftcrop->SetEnabled(true);
-					leftcrop->ChildAt(0)->Invalidate();
 					rightcrop->SetEnabled(true);
-					rightcrop->ChildAt(0)->Invalidate();
 				}
 				benablevideo = false;
 				BuildLine();
@@ -570,23 +531,15 @@ void ffguiwin::MessageReceived(BMessage *message)
 			else
 			{
 				vbitrate->SetEnabled(false);
-				vbitrate->ChildAt(0)->Invalidate();
 				framerate->SetEnabled(false);
-				framerate->ChildAt(0)->Invalidate();
 				customres->SetEnabled(false);
 				xres->SetEnabled(false);
-				xres->ChildAt(0)->Invalidate();
 				yres->SetEnabled(false);
-				yres->ChildAt(0)->Invalidate();
 				enablecropping->SetEnabled(false);
 				topcrop->SetEnabled(false);
-				topcrop->ChildAt(0)->Invalidate();
 				bottomcrop->SetEnabled(false);
-				bottomcrop->ChildAt(0)->Invalidate();
 				leftcrop->SetEnabled(false);
-				leftcrop->ChildAt(0)->Invalidate();
 				rightcrop->SetEnabled(false);
-				rightcrop->ChildAt(0)->Invalidate();
 				benablevideo = true;
 				BuildLine();
 			}
@@ -598,18 +551,14 @@ void ffguiwin::MessageReceived(BMessage *message)
 			if (bcustomres == false)
 			{
 				xres->SetEnabled(true);
-				xres->ChildAt(0)->Invalidate();
 				yres->SetEnabled(true);
-				yres->ChildAt(0)->Invalidate();
 				bcustomres = true;
 				BuildLine();
 			}
 			else
 			{
 				xres->SetEnabled(false);
-				xres->ChildAt(0)->Invalidate();
 				yres->SetEnabled(false);
-				yres->ChildAt(0)->Invalidate();
 				bcustomres = false;
 				BuildLine();
 			}
@@ -622,26 +571,18 @@ void ffguiwin::MessageReceived(BMessage *message)
 			if (benablecropping == false)
 			{
 				topcrop->SetEnabled(true);
-				topcrop->ChildAt(0)->Invalidate();
 				bottomcrop->SetEnabled(true);
-				bottomcrop->ChildAt(0)->Invalidate();
 				leftcrop->SetEnabled(true);
-				leftcrop->ChildAt(0)->Invalidate();
 				rightcrop->SetEnabled(true);
-				rightcrop->ChildAt(0)->Invalidate();
 				benablecropping = true;
 				BuildLine();
 			}
 			else
 			{
 				topcrop->SetEnabled(false);
-				topcrop->ChildAt(0)->Invalidate();
 				bottomcrop->SetEnabled(false);
-				bottomcrop->ChildAt(0)->Invalidate();
 				leftcrop->SetEnabled(false);
-				leftcrop->ChildAt(0)->Invalidate();
 				rightcrop->SetEnabled(false);
-				rightcrop->ChildAt(0)->Invalidate();
 				benablecropping = false;
 				BuildLine();
 			}
@@ -654,22 +595,16 @@ void ffguiwin::MessageReceived(BMessage *message)
 			if (benableaudio == true)
 			{
 				ab->SetEnabled(false);
-				ab->ChildAt(0)->Invalidate();
 				ac->SetEnabled(false);
-				ac->ChildAt(0)->Invalidate();
 				ar->SetEnabled(false);
-				ar->ChildAt(0)->Invalidate();
 				benableaudio = false;
 				BuildLine();
 			}
 			else
 			{
 				ab->SetEnabled(true);
-				ab->ChildAt(0)->Invalidate();
 				ac->SetEnabled(true);
-				ac->ChildAt(0)->Invalidate();
 				ar->SetEnabled(true);
-				ar->ChildAt(0)->Invalidate();
 				benableaudio = true;
 				BuildLine();
 			}
