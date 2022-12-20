@@ -108,8 +108,11 @@ ffguiwin::ffguiwin(BRect r, const char *name, window_type type, ulong mode)
 	fTopMenuBar = new BMenuBar("topmenubar");
 
 	sourcefilebutton = new BButton(B_TRANSLATE("Source file"), new BMessage(M_SOURCE));
+	sourcefilebutton->SetExplicitMaxSize(BSize(B_SIZE_UNLIMITED, B_SIZE_UNLIMITED));
 	sourcefile = new BTextControl("", "", new BMessage(M_SOURCEFILE));
+
 	outputfilebutton = new BButton(B_TRANSLATE("Output file"), new BMessage(M_OUTPUT));
+	outputfilebutton->SetExplicitMaxSize(BSize(B_SIZE_UNLIMITED, B_SIZE_UNLIMITED));
 	outputfile = new BTextControl("", "", new BMessage(M_OUTPUTFILE));
 
 	outputfileformatpopup = new BPopUpMenu("");
@@ -121,6 +124,9 @@ ffguiwin::ffguiwin(BRect r, const char *name, window_type type, ulong mode)
 	outputfileformatpopup->AddItem(new BMenuItem("webm", new BMessage(M_OUTPUTFILEFORMAT)));
 	outputfileformatpopup->ItemAt(0)->SetMarked(true);
 	outputfileformat = new BMenuField(B_TRANSLATE("Output file format:"), outputfileformatpopup);
+	BSize menuWidth = outputfileformat->PreferredSize();
+	menuWidth.height=B_SIZE_UNSET;
+	outputfileformat->SetExplicitMinSize(menuWidth);
 
 	outputvideoformatpopup = new BPopUpMenu("");
 	outputvideoformatpopup->AddItem(new BMenuItem("mpeg4", new BMessage(M_OUTPUTVIDEOFORMAT)));
@@ -130,6 +136,9 @@ ffguiwin::ffguiwin(BRect r, const char *name, window_type type, ulong mode)
 	outputvideoformatpopup->AddItem(new BMenuItem("wmv1", new BMessage(M_OUTPUTVIDEOFORMAT)));
 	outputvideoformatpopup->ItemAt(0)->SetMarked(true);
 	outputvideoformat = new BMenuField(B_TRANSLATE("Output video format:"), outputvideoformatpopup);
+	menuWidth = outputvideoformat->PreferredSize();
+	menuWidth.height=B_SIZE_UNSET;
+	outputvideoformat->SetExplicitMinSize(menuWidth);
 
 	outputaudioformatpopup = new BPopUpMenu("");
 	outputaudioformatpopup->AddItem(new BMenuItem("ac3", new BMessage(M_OUTPUTAUDIOFORMAT)));
@@ -138,6 +147,9 @@ ffguiwin::ffguiwin(BRect r, const char *name, window_type type, ulong mode)
 	outputaudioformatpopup->AddItem(new BMenuItem("vorbis", new BMessage(M_OUTPUTAUDIOFORMAT)));
 	outputaudioformatpopup->ItemAt(0)->SetMarked(true);
 	outputaudioformat = new BMenuField(B_TRANSLATE("Output audio format:"), outputaudioformatpopup);
+	menuWidth = outputaudioformat->PreferredSize();
+	menuWidth.height=B_SIZE_UNSET;
+	outputaudioformat->SetExplicitMinSize(menuWidth);
 
 	enablevideo = new BCheckBox("", B_TRANSLATE("Enable video encoding"), new BMessage(M_ENABLEVIDEO));
 	enablevideo->SetValue(B_CONTROL_ON);
@@ -251,13 +263,13 @@ ffguiwin::ffguiwin(BRect r, const char *name, window_type type, ulong mode)
 	BGroupLayout *fileoptionslayout = BLayoutBuilder::Group<>(B_VERTICAL, B_USE_SMALL_SPACING)
 		.SetInsets(B_USE_DEFAULT_SPACING, B_USE_DEFAULT_SPACING,
 					B_USE_DEFAULT_SPACING, B_USE_DEFAULT_SPACING)
-		.AddGroup(B_HORIZONTAL)
-			.Add(sourcefilebutton)
-			.Add(sourcefile)
-		.End()
-		.AddGroup(B_HORIZONTAL)
-			.Add(outputfilebutton)
-			.Add(outputfile)
+		.AddGrid(B_USE_DEFAULT_SPACING)
+			.Add(sourcefilebutton, 0, 0)
+			.Add(sourcefile, 1, 0)
+			.Add(outputfilebutton, 0, 1)
+			.Add(outputfile, 1, 1)
+			.SetColumnWeight(0, 0)
+			.SetColumnWeight(1, 1)
 		.End()
 		.AddGroup(B_HORIZONTAL)
 			.Add(outputfileformat)
