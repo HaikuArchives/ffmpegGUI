@@ -44,7 +44,7 @@ class ffguiwin : public BWindow
 			void set_outputfile_extension();
 			int32 get_seconds(BString& time_string);
 			void set_spinner_minsize(BSpinner *spinner);
-
+			void play_video(const char* filepath);
 			//main view
 			BView *topview;
 			// text views

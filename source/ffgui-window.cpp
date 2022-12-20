@@ -24,6 +24,7 @@
 #include <ScrollView.h>
 #include <SeparatorView.h>
 #include <View.h>
+#include <Roster.h>
 
 #include <cstdlib>
 #include <iostream>
@@ -810,17 +811,26 @@ void ffguiwin::MessageReceived(BMessage *message)
 			status_t exit_code;
 			message->FindInt32("exitcode", &exit_code);
 			BString finished_message;
+			const char *play_button_label;
+			
 			if(exit_code == 0)
 			{
+
 				finished_message = B_TRANSLATE("Encoding finished successfully.");
+				play_button_label = B_TRANSLATE("Play now");
 			}
 			else
 			{
 				finished_message << B_TRANSLATE("Encoding failed.");
+				play_button_label = nullptr;
 			}
 
-			BAlert *finished_alert = new BAlert("", finished_message, B_TRANSLATE("OK"));
-			finished_alert->Go();
+			BAlert *finished_alert = new BAlert("", finished_message, B_TRANSLATE("OK"), play_button_label);
+			int32 button = finished_alert->Go();
+			if (button == 1)
+			{
+				play_video(outputfile->Text());
+			}
 
 			fStatusBar->Reset();
 			fStatusBar->SetText(B_TRANSLATE("Waiting to start encoding" B_UTF8_ELLIPSIS));
@@ -931,4 +941,14 @@ ffguiwin::set_spinner_minsize(BSpinner *spinner)
 	textview_prefsize.width+=20;
 	textview_prefsize.height=B_SIZE_UNSET;
 	spinner->CreateTextViewLayoutItem()->SetExplicitMinSize(textview_prefsize);
+}
+
+void
+ffguiwin::play_video(const char* filepath)
+{
+	BEntry video_entry(filepath);
+	entry_ref video_ref;
+	video_entry.GetRef(&video_ref);
+	be_roster->Launch(&video_ref);
+	
 }
