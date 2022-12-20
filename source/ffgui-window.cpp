@@ -198,23 +198,6 @@ ffguiwin::ffguiwin(BRect r, const char *name, window_type type, ulong mode)
 	fStatusBar = new BStatusBar("");
 	fStatusBar->SetText(B_TRANSLATE("Waiting to start encoding" B_UTF8_ELLIPSIS));
 
-// set the names for each control, so they can be figured out in MessageReceived
-	vbitrate->SetName("vbitrate");
-	framerate->SetName("framerate");
-	xres->SetName("xres");
-	yres->SetName("yres");
-	topcrop->SetName("topcrop");
-	bottomcrop->SetName("bottomcrop");
-	leftcrop->SetName("leftcrop");
-	rightcrop->SetName("rightcrop");
-	ab->SetName("ab");
-	ar->SetName("ar");
-	ac->SetName("ac");
-	enablevideo->SetName("enablevideo");
-	enableaudio->SetName("enableaudio");
-	enablecropping->SetName("enablecropping");
-	customres->SetName("customres");
-
 	// set the min and max values for the spin controls
 	vbitrate->SetMinValue(64);
 	vbitrate->SetMaxValue(50000);
