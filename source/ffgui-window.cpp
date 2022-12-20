@@ -767,7 +767,17 @@ void ffguiwin::MessageReceived(BMessage *message)
 					BString time_string;
 					progress_data.CopyInto(time_string, time_startpos, time_endpos-time_startpos);
 					encode_time = get_seconds(time_string);
-					int32 encode_percentage = (encode_time * 100) / encode_duration;
+					
+					int32 encode_percentage;
+					if (encode_duration > 0)
+					{
+						encode_percentage = (encode_time * 100) / encode_duration;
+					}
+					else
+					{
+						encode_percentage = 0;
+					}
+					
 					BMessage progress_update_message(B_UPDATE_STATUS_BAR);
 					progress_update_message.AddFloat("delta", encode_percentage - fStatusBar->CurrentValue());
 					BString percentage_string;
