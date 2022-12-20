@@ -7,6 +7,7 @@
 	ffgui-window.cpp , 1/06/03
 	Zach Dykstra
 	Humdinger, humdingerb@gmail.com, 2022
+	Andi Machovec (BlueSky), andi.machovec@gmail.com, 2022
 */
 
 #include "ffgui-window.h"
@@ -389,7 +390,7 @@ ffguiwin::ffguiwin(BRect r, const char *name, window_type type, ulong mode)
 	BTab *outputtab = new BTab();
 
 	tabview->AddTab(mainoptionsview, mainoptionstab);
-	//tabview->AddTab(advancedoptionsview, advancedoptionstab);
+	//tabview->AddTab(advancedoptionsview, advancedoptionstab); //don´t remove, will be needed later
 	tabview->AddTab(outputview, outputtab);
 	mainoptionstab->SetLabel(B_TRANSLATE("Main options"));
 	advancedoptionstab->SetLabel(B_TRANSLATE("Advanced options"));
@@ -636,7 +637,6 @@ void ffguiwin::MessageReceived(BMessage *message)
 		{
 			outputtext->SelectAll();
 			outputtext->Clear();
-			//tabview->Select(2);
 			commandline.SetTo(encode->Text());
 			commandline.Append(" -y");
 
@@ -705,8 +705,6 @@ void ffguiwin::MessageReceived(BMessage *message)
 				}
 			}
 
-
-			//outputtext->ScrollToOffset(outputtext->TextLength());
 			break;
 		}
 		case M_COMMAND_FINISHED:
