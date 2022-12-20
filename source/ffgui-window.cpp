@@ -453,9 +453,8 @@ ffguiwin::ffguiwin(BRect r, const char *name, window_type type, ulong mode)
 bool ffguiwin::QuitRequested()
 {
 	fCommandLauncher->PostMessage(B_QUIT_REQUESTED);
-	PostMessage(B_QUIT_REQUESTED);
-	printf("have a nice day\n");
-	exit(0);
+	be_app->PostMessage(B_QUIT_REQUESTED);
+	return true;
 }
 
 //message received
