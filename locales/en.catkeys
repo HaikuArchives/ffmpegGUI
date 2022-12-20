@@ -1,51 +1,52 @@
-1	English	application/x-vnd.HaikuArchives-ffmpegGUI	132315271
-Main options	Window		Main options
-Video	Window		Video
+1	English	application/x-vnd.HaikuArchives-ffmpegGUI	866132392
 Deinterlace pictures	Window		Deinterlace pictures
-Enable audio encoding	Window		Enable audio encoding
-Start	Window		Start
 Use four motion vector	Window		Use four motion vector
+Start	Window		Start
 Encoding finished successfully.	Window		Encoding finished successfully.
-Output file format:	Window		Output file format:
-Calculate PSNR of compressed frames	Window		Calculate PSNR of compressed frames
-Output file	Window		Output file
-A GUI frontend for ffmpeg	Application		A GUI frontend for ffmpeg
 OK	Window		OK
 Use fixed video quantiser scale:	Window		Use fixed video quantiser scale:
-Enable video cropping	Window		Enable video cropping
-'B' frames:	Window		'B' frames:
-Enable video encoding	Window		Enable video encoding
-Output	Window		Output
-Min video quantiser scale:	Window		Min video quantiser scale:
 Left:	Window		Left:
-Output audio format:	Window		Output audio format:
+Min video quantiser scale:	Window		Min video quantiser scale:
+Output	Window		Output
 Video quantiser scale compression:	Window		Video quantiser scale compression:
-Top:	Window		Top:
-About	Window		About
 GOP size:	Window		GOP size:
-App	Window		App
-Source file	Window		Source file
 Bitrate (Kbit/s):	Window		Bitrate (Kbit/s):
 Audio channels:	Window		Audio channels:
-Advanced options	Window		Advanced options
+Play now	Window		Play now
 Quit	Window		Quit
+Framerate (fps):	Window		Framerate (fps):
+Use high quality settings	Window		Use high quality settings
+Encode	Window		Encode
+Cropping options	Window		Cropping options
+Audio	Window		Audio
+ffmpeg GUI	System name		ffmpeg GUI
+Width:	Window		Width:
+Output video format:	Window		Output video format:
+Main options	Window		Main options
+Video	Window		Video
+Enable audio encoding	Window		Enable audio encoding
+Output file format:	Window		Output file format:
+Output file	Window		Output file
+Calculate PSNR of compressed frames	Window		Calculate PSNR of compressed frames
+A GUI frontend for ffmpeg	Application		A GUI frontend for ffmpeg
+'B' frames:	Window		'B' frames:
+Enable video cropping	Window		Enable video cropping
+Enable video encoding	Window		Enable video encoding
+Output audio format:	Window		Output audio format:
+Top:	Window		Top:
+About	Window		About
+Source file	Window		Source file
+App	Window		App
+Advanced options	Window		Advanced options
 Height:	Window		Height:
 Video quantiser scale blur:	Window		Video quantiser scale blur:
-Framerate (fps):	Window		Framerate (fps):
 Thanks to:\nmmu_man, Jeremy, DeadYak, Marco, etc.\nmd@geekport.com\nreds <reds@sakamoto.pl> for making it more or less usable.\nHave fun!	Application		Thanks to:\nmmu_man, Jeremy, DeadYak, Marco, etc.\nmd@geekport.com\nreds <reds@sakamoto.pl> for making it more or less usable.\nHave fun!
-Use high quality settings	Window		Use high quality settings
 File options	Window		File options
 Bottom:	Window		Bottom:
 Right:	Window		Right:
 Max difference between quantiser scale:	Window		Max difference between quantiser scale:
 Encoding failed.	Window		Encoding failed.
-Encode	Window		Encode
 Max video quantiser scale:	Window		Max video quantiser scale:
-Audio	Window		Audio
-Cropping options	Window		Cropping options
 Waiting to start encoding…	Window		Waiting to start encoding…
-ffmpeg GUI	System name		ffmpeg GUI
 Sampling rate (Hz):	Window		Sampling rate (Hz):
-Width:	Window		Width:
-Output video format:	Window		Output video format:
 Use custom resolution	Window		Use custom resolution
