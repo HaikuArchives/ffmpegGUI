@@ -9,7 +9,6 @@
 	Humdinger, humdingerb@gmail.com, 2022
 */
 
-#include <stdio.h>
 #include "ffgui-window.h"
 #include "ffgui-application.h"
 #include "messages.h"
@@ -27,7 +26,7 @@
 #include <Roster.h>
 
 #include <cstdlib>
-#include <iostream>
+
 
 #undef B_TRANSLATION_CONTEXT
 #define B_TRANSLATION_CONTEXT "Window"
@@ -515,12 +514,6 @@ void ffguiwin::MessageReceived(BMessage *message)
 		case M_OUTPUTVIDEOFORMAT:
 		case M_OUTPUTAUDIOFORMAT:
 		{
-			BView *view (NULL);
-			printf("!pop found\n");
-			if (message->FindPointer("source", reinterpret_cast<void **>(&view)) == B_OK)
-			{
-				printf("found view pointer\n");
-			}
 			BuildLine();
 			break;
 		}
@@ -537,13 +530,6 @@ void ffguiwin::MessageReceived(BMessage *message)
 		case M_AC:
 		{
 			BuildLine();
-			BView *view (NULL);
-			if (message->FindPointer("source", reinterpret_cast<void **>(&view)) == B_OK)
-			{
-				const char *name (view->Name());
-				printf(name);
-				printf("\n");
-			}
 			break;
 		}
 
@@ -858,12 +844,6 @@ void ffguiwin::MessageReceived(BMessage *message)
 			break;
 		}
 		default:
-			/*
-			printf("recieved by window:\n");
-			message->PrintToStream();
-			printf("\n");
-			printf("------------\n");
-			*/
 			BWindow::MessageReceived(message);
 			break;
 	}
