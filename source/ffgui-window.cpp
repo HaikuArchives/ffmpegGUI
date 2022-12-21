@@ -13,6 +13,7 @@
 #include "ffgui-window.h"
 #include "ffgui-application.h"
 #include "messages.h"
+#include "commandlauncher.h"
 
 #include <Alert.h>
 #include <Box.h>
@@ -25,6 +26,19 @@
 #include <SeparatorView.h>
 #include <View.h>
 #include <Roster.h>
+#include <TextView.h>
+#include <TextControl.h>
+#include <Button.h>
+#include <CheckBox.h>
+#include <MenuField.h>
+#include <PopUpMenu.h>
+#include <Spinner.h>
+#include <String.h>
+#include <FilePanel.h>
+#include <TabView.h>
+#include <StringList.h>
+#include <StatusBar.h>
+#include <MenuBar.h>
 
 #include <cstdlib>
 
@@ -671,7 +685,7 @@ void ffguiwin::MessageReceived(BMessage *message)
 					BString time_string;
 					progress_data.CopyInto(time_string, time_startpos, time_endpos-time_startpos);
 					encode_time = get_seconds(time_string);
-					
+
 					int32 encode_percentage;
 					if (encode_duration > 0)
 					{
@@ -681,7 +695,7 @@ void ffguiwin::MessageReceived(BMessage *message)
 					{
 						encode_percentage = 0;
 					}
-					
+
 					BMessage progress_update_message(B_UPDATE_STATUS_BAR);
 					progress_update_message.AddFloat("delta", encode_percentage - fStatusBar->CurrentValue());
 					BString percentage_string;
@@ -713,7 +727,7 @@ void ffguiwin::MessageReceived(BMessage *message)
 			message->FindInt32("exitcode", &exit_code);
 			BString finished_message;
 			const char *play_button_label;
-			
+
 			if(exit_code == 0)
 			{
 
@@ -845,5 +859,5 @@ ffguiwin::play_video(const char* filepath)
 	entry_ref video_ref;
 	video_entry.GetRef(&video_ref);
 	be_roster->Launch(&video_ref);
-	
+
 }

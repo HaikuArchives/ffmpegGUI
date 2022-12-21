@@ -11,27 +11,24 @@
 	Zach Dykstra
 	Andi Machovec (BlueSky), andi.machovec@gmail.com, 2022
 */
-#include "commandlauncher.h"
 
-#include <View.h>
 #include <Window.h>
-#include <TextView.h>
-#include <OutlineListView.h>
-#include <TextControl.h>
-#include <Button.h>
-#include <CheckBox.h>
-#include <MenuField.h>
-#include <PopUpMenu.h>
-#include <Spinner.h>
-#include <String.h>
-#include <FilePanel.h>
-#include <TabView.h>
-#include <StringList.h>
-#include <StatusBar.h>
-#include <MenuBar.h>
 
-#include <string.h>
-#include <stdio.h>
+
+class BView;
+class BTextView;
+class BTextControl;
+class BButton;
+class BSpinner;
+class BCheckBox;
+class BPopUpMenu;
+class BMenuField;
+class BMenuBar;
+class BTabView;
+class BStatusBar;
+class BFilePanel;
+class BString;
+class CommandLauncher;
 
 
 class ffguiwin : public BWindow
