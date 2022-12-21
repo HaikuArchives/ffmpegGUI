@@ -6,6 +6,7 @@
 /*
 	ffgui-window.h , 1/06/03
 	Zach Dykstra
+	Andi Machovec (BlueSky), andi.machovec@gmail.com, 2022
 */
 #include "commandlauncher.h"
 
@@ -33,10 +34,10 @@
 class ffguiwin : public BWindow
 {
 	public:
-			ffguiwin(BRect, const char*,window_type,ulong);
+			ffguiwin(BRect, const char* name,window_type type,ulong mode);
 			void BuildLine();
 			virtual bool	QuitRequested();
-			virtual void MessageReceived(BMessage*);
+			virtual void MessageReceived(BMessage* message);
 
 
 	private:
