@@ -1,3 +1,6 @@
+#ifndef FFGUI_APPLICATION_H
+#define FFGUI_APPLICATION_H
+
 /*
  * Copyright 2003, Zach Dykstra. All rights reserved.
  * Distributed under the terms of the MIT License.
@@ -19,3 +22,4 @@ class ffguiapp : public BApplication
 			void AboutRequested();
 };
 
+#endif

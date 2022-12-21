@@ -1,3 +1,6 @@
+#ifndef FFGUI_WINDOW_H
+#define FFGUI_WINDOW_H
+
 /*
  * Copyright 2003, Zach Dykstra. All rights reserved.
  * Distributed under the terms of the MIT License.
@@ -119,3 +122,5 @@ class ffguiwin : public BWindow
 			CommandLauncher *fCommandLauncher;
 
 };
+
+#endif
