@@ -5,7 +5,7 @@
 ## architecture of Haiku.
 
 # The name of the binary.
-NAME = ffgui
+NAME = ffmpegGUI
 
 # The type of binary, must be one of:
 #	APP:	Application
