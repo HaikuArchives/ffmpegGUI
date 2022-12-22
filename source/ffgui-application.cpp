@@ -31,7 +31,7 @@ ffguiapp::ffguiapp()
 	: BApplication(kAppSignature)
 {
 	ffguiwin *window;
-	window = new ffguiwin(BRect(0,0,0,0),B_TRANSLATE_SYSTEM_NAME("ffmpeg GUI"),B_TITLED_WINDOW,B_NOT_V_RESIZABLE);
+	window = new ffguiwin(BRect(0,0,0,0),B_TRANSLATE_SYSTEM_NAME("ffmpegGUI"),B_TITLED_WINDOW,B_NOT_V_RESIZABLE);
 	window->Show();
 }
 
@@ -52,7 +52,7 @@ void ffguiapp::MessageReceived(BMessage *message)
 void
 ffguiapp::AboutRequested()
 {
-	BAboutWindow *aboutwindow = new BAboutWindow(B_TRANSLATE_SYSTEM_NAME("ffmpeg GUI"), kAppSignature);
+	BAboutWindow *aboutwindow = new BAboutWindow(B_TRANSLATE_SYSTEM_NAME("ffmpegGUI"), kAppSignature);
 
 	const char *authors[] =
 	{
