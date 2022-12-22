@@ -7,12 +7,13 @@
 	ffgui-window.cpp , 1/06/03
 	Zach Dykstra
 	Humdinger, humdingerb@gmail.com, 2022
+	Andi Machovec (BlueSky), andi.machovec@gmail.com, 2022
 */
 
-#include <stdio.h>
 #include "ffgui-window.h"
 #include "ffgui-application.h"
 #include "messages.h"
+#include "commandlauncher.h"
 
 #include <Alert.h>
 #include <Box.h>
@@ -25,9 +26,22 @@
 #include <SeparatorView.h>
 #include <View.h>
 #include <Roster.h>
+#include <TextView.h>
+#include <TextControl.h>
+#include <Button.h>
+#include <CheckBox.h>
+#include <MenuField.h>
+#include <PopUpMenu.h>
+#include <Spinner.h>
+#include <String.h>
+#include <FilePanel.h>
+#include <TabView.h>
+#include <StringList.h>
+#include <StatusBar.h>
+#include <MenuBar.h>
 
 #include <cstdlib>
-#include <iostream>
+
 
 #undef B_TRANSLATION_CONTEXT
 #define B_TRANSLATION_CONTEXT "Window"
@@ -198,23 +212,6 @@ ffguiwin::ffguiwin(BRect r, const char *name, window_type type, ulong mode)
 
 	fStatusBar = new BStatusBar("");
 	fStatusBar->SetText(B_TRANSLATE("Waiting to start encoding" B_UTF8_ELLIPSIS));
-
-// set the names for each control, so they can be figured out in MessageReceived
-	vbitrate->SetName("vbitrate");
-	framerate->SetName("framerate");
-	xres->SetName("xres");
-	yres->SetName("yres");
-	topcrop->SetName("topcrop");
-	bottomcrop->SetName("bottomcrop");
-	leftcrop->SetName("leftcrop");
-	rightcrop->SetName("rightcrop");
-	ab->SetName("ab");
-	ar->SetName("ar");
-	ac->SetName("ac");
-	enablevideo->SetName("enablevideo");
-	enableaudio->SetName("enableaudio");
-	enablecropping->SetName("enablecropping");
-	customres->SetName("customres");
 
 	// set the min and max values for the spin controls
 	vbitrate->SetMinValue(64);
@@ -407,7 +404,7 @@ ffguiwin::ffguiwin(BRect r, const char *name, window_type type, ulong mode)
 	BTab *outputtab = new BTab();
 
 	tabview->AddTab(mainoptionsview, mainoptionstab);
-	//tabview->AddTab(advancedoptionsview, advancedoptionstab);
+	//tabview->AddTab(advancedoptionsview, advancedoptionstab); //don´t remove, will be needed later
 	tabview->AddTab(outputview, outputtab);
 	mainoptionstab->SetLabel(B_TRANSLATE("Main options"));
 	advancedoptionstab->SetLabel(B_TRANSLATE("Advanced options"));
@@ -453,56 +450,28 @@ ffguiwin::ffguiwin(BRect r, const char *name, window_type type, ulong mode)
 bool ffguiwin::QuitRequested()
 {
 	fCommandLauncher->PostMessage(B_QUIT_REQUESTED);
-	PostMessage(B_QUIT_REQUESTED);
-	printf("have a nice day\n");
-	exit(0);
+	be_app->PostMessage(B_QUIT_REQUESTED);
+	return true;
 }
 
 //message received
 void ffguiwin::MessageReceived(BMessage *message)
 {
-	//message->PrintToStream();
+
 	switch(message->what)
 	{
 		case B_ABOUT_REQUESTED:
 		{
 			be_app->PostMessage(B_ABOUT_REQUESTED);
 		}
-
-		case M_NOMSG:
-		{
-			BuildLine();
-			break;
-		}
 		case M_SOURCEFILE:
-		{
-			BuildLine();
-			set_encodebutton_state();
-			break;
-		}
 		case M_OUTPUTFILE:
 		{
 			BuildLine();
 			set_encodebutton_state();
 			break;
 		}
-
-/*		case '_PBL':
-		{
-			BuildLine();
-			break;
-		}
-		case '_UKU':
-		{
-			BuildLine();
-			break;
-		}
-		case '_UKD':
-		{
-			BuildLine();
-			break;
-		}
-*/		case M_OUTPUTFILEFORMAT:
+		case M_OUTPUTFILEFORMAT:
 		{
 			BString outputfilename(outputfile->Text());
 			outputfilename=outputfilename.Trim();
@@ -515,16 +484,6 @@ void ffguiwin::MessageReceived(BMessage *message)
 		}
 		case M_OUTPUTVIDEOFORMAT:
 		case M_OUTPUTAUDIOFORMAT:
-		{
-			BView *view (NULL);
-			printf("!pop found\n");
-			if (message->FindPointer("source", reinterpret_cast<void **>(&view)) == B_OK)
-			{
-				printf("found view pointer\n");
-			}
-			BuildLine();
-			break;
-		}
 		case M_VBITRATE:
 		case M_FRAMERATE:
 		case M_XRES:
@@ -538,13 +497,6 @@ void ffguiwin::MessageReceived(BMessage *message)
 		case M_AC:
 		{
 			BuildLine();
-			BView *view (NULL);
-			if (message->FindPointer("source", reinterpret_cast<void **>(&view)) == B_OK)
-			{
-				const char *name (view->Name());
-				printf(name);
-				printf("\n");
-			}
 			break;
 		}
 
@@ -554,30 +506,22 @@ void ffguiwin::MessageReceived(BMessage *message)
 			if (benablevideo == true)
 			{
 				vbitrate->SetEnabled(true);
-				vbitrate->ChildAt(0)->Invalidate();
 				framerate->SetEnabled(true);
-				framerate->ChildAt(0)->Invalidate();
 				customres->SetEnabled(true);
 
 				if (bcustomres == true)
 				{
 					xres->SetEnabled(true);
-					xres->ChildAt(0)->Invalidate();
 					yres->SetEnabled(true);
-					yres->ChildAt(0)->Invalidate();
 				}
 
 				enablecropping->SetEnabled(true);
 				if (benablecropping == true)
 				{
 					topcrop->SetEnabled(true);
-					topcrop->ChildAt(0)->Invalidate();
 					bottomcrop->SetEnabled(true);
-					bottomcrop->ChildAt(0)->Invalidate();
 					leftcrop->SetEnabled(true);
-					leftcrop->ChildAt(0)->Invalidate();
 					rightcrop->SetEnabled(true);
-					rightcrop->ChildAt(0)->Invalidate();
 				}
 				benablevideo = false;
 				BuildLine();
@@ -585,23 +529,15 @@ void ffguiwin::MessageReceived(BMessage *message)
 			else
 			{
 				vbitrate->SetEnabled(false);
-				vbitrate->ChildAt(0)->Invalidate();
 				framerate->SetEnabled(false);
-				framerate->ChildAt(0)->Invalidate();
 				customres->SetEnabled(false);
 				xres->SetEnabled(false);
-				xres->ChildAt(0)->Invalidate();
 				yres->SetEnabled(false);
-				yres->ChildAt(0)->Invalidate();
 				enablecropping->SetEnabled(false);
 				topcrop->SetEnabled(false);
-				topcrop->ChildAt(0)->Invalidate();
 				bottomcrop->SetEnabled(false);
-				bottomcrop->ChildAt(0)->Invalidate();
 				leftcrop->SetEnabled(false);
-				leftcrop->ChildAt(0)->Invalidate();
 				rightcrop->SetEnabled(false);
-				rightcrop->ChildAt(0)->Invalidate();
 				benablevideo = true;
 				BuildLine();
 			}
@@ -613,18 +549,14 @@ void ffguiwin::MessageReceived(BMessage *message)
 			if (bcustomres == false)
 			{
 				xres->SetEnabled(true);
-				xres->ChildAt(0)->Invalidate();
 				yres->SetEnabled(true);
-				yres->ChildAt(0)->Invalidate();
 				bcustomres = true;
 				BuildLine();
 			}
 			else
 			{
 				xres->SetEnabled(false);
-				xres->ChildAt(0)->Invalidate();
 				yres->SetEnabled(false);
-				yres->ChildAt(0)->Invalidate();
 				bcustomres = false;
 				BuildLine();
 			}
@@ -637,26 +569,18 @@ void ffguiwin::MessageReceived(BMessage *message)
 			if (benablecropping == false)
 			{
 				topcrop->SetEnabled(true);
-				topcrop->ChildAt(0)->Invalidate();
 				bottomcrop->SetEnabled(true);
-				bottomcrop->ChildAt(0)->Invalidate();
 				leftcrop->SetEnabled(true);
-				leftcrop->ChildAt(0)->Invalidate();
 				rightcrop->SetEnabled(true);
-				rightcrop->ChildAt(0)->Invalidate();
 				benablecropping = true;
 				BuildLine();
 			}
 			else
 			{
 				topcrop->SetEnabled(false);
-				topcrop->ChildAt(0)->Invalidate();
 				bottomcrop->SetEnabled(false);
-				bottomcrop->ChildAt(0)->Invalidate();
 				leftcrop->SetEnabled(false);
-				leftcrop->ChildAt(0)->Invalidate();
 				rightcrop->SetEnabled(false);
-				rightcrop->ChildAt(0)->Invalidate();
 				benablecropping = false;
 				BuildLine();
 			}
@@ -669,22 +593,16 @@ void ffguiwin::MessageReceived(BMessage *message)
 			if (benableaudio == true)
 			{
 				ab->SetEnabled(false);
-				ab->ChildAt(0)->Invalidate();
 				ac->SetEnabled(false);
-				ac->ChildAt(0)->Invalidate();
 				ar->SetEnabled(false);
-				ar->ChildAt(0)->Invalidate();
 				benableaudio = false;
 				BuildLine();
 			}
 			else
 			{
 				ab->SetEnabled(true);
-				ab->ChildAt(0)->Invalidate();
 				ac->SetEnabled(true);
-				ac->ChildAt(0)->Invalidate();
 				ar->SetEnabled(true);
-				ar->ChildAt(0)->Invalidate();
 				benableaudio = true;
 				BuildLine();
 			}
@@ -733,7 +651,6 @@ void ffguiwin::MessageReceived(BMessage *message)
 		{
 			outputtext->SelectAll();
 			outputtext->Clear();
-			//tabview->Select(2);
 			commandline.SetTo(encode->Text());
 			commandline.Append(" -y");
 
@@ -768,7 +685,7 @@ void ffguiwin::MessageReceived(BMessage *message)
 					BString time_string;
 					progress_data.CopyInto(time_string, time_startpos, time_endpos-time_startpos);
 					encode_time = get_seconds(time_string);
-					
+
 					int32 encode_percentage;
 					if (encode_duration > 0)
 					{
@@ -778,7 +695,7 @@ void ffguiwin::MessageReceived(BMessage *message)
 					{
 						encode_percentage = 0;
 					}
-					
+
 					BMessage progress_update_message(B_UPDATE_STATUS_BAR);
 					progress_update_message.AddFloat("delta", encode_percentage - fStatusBar->CurrentValue());
 					BString percentage_string;
@@ -802,8 +719,6 @@ void ffguiwin::MessageReceived(BMessage *message)
 				}
 			}
 
-
-			//outputtext->ScrollToOffset(outputtext->TextLength());
 			break;
 		}
 		case M_COMMAND_FINISHED:
@@ -812,7 +727,7 @@ void ffguiwin::MessageReceived(BMessage *message)
 			message->FindInt32("exitcode", &exit_code);
 			BString finished_message;
 			const char *play_button_label;
-			
+
 			if(exit_code == 0)
 			{
 
@@ -859,12 +774,6 @@ void ffguiwin::MessageReceived(BMessage *message)
 			break;
 		}
 		default:
-			/*
-			printf("recieved by window:\n");
-			message->PrintToStream();
-			printf("\n");
-			printf("------------\n");
-			*/
 			BWindow::MessageReceived(message);
 			break;
 	}
@@ -950,5 +859,5 @@ ffguiwin::play_video(const char* filepath)
 	entry_ref video_ref;
 	video_entry.GetRef(&video_ref);
 	be_roster->Launch(&video_ref);
-	
+
 }

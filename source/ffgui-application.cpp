@@ -7,6 +7,7 @@
 	ffgui-application.cpp , 1/06/03
 	Zach Dykstra
 	Humdinger, humdingerb@gmail.com, 2022
+	Andi Machovec (BlueSky), andi.machovec@gmail.com, 2022
 */
 
 // new app object
@@ -14,7 +15,6 @@
 #include "ffgui-application.h"
 #include "ffgui-window.h"
 #include "messages.h"
-#include <stdio.h>
 
 #include <AboutWindow.h>
 #include <AppFileInfo.h>
@@ -43,9 +43,6 @@ void ffguiapp::MessageReceived(BMessage *message)
 	switch(message->what)
 	{
 		default:
-			printf("recieved by app:\n");
-			message->PrintToStream();
-			printf("\n");
 			BApplication::MessageReceived(message);
 			break;
 	}

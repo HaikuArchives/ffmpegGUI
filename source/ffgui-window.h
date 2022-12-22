@@ -1,3 +1,6 @@
+#ifndef FFGUI_WINDOW_H
+#define FFGUI_WINDOW_H
+
 /*
  * Copyright 2003, Zach Dykstra. All rights reserved.
  * Distributed under the terms of the MIT License.
@@ -6,37 +9,35 @@
 /*
 	ffgui-window.h , 1/06/03
 	Zach Dykstra
+	Andi Machovec (BlueSky), andi.machovec@gmail.com, 2022
 */
-#include "commandlauncher.h"
 
-#include <View.h>
 #include <Window.h>
-#include <TextView.h>
-#include <OutlineListView.h>
-#include <TextControl.h>
-#include <Button.h>
-#include <CheckBox.h>
-#include <MenuField.h>
-#include <PopUpMenu.h>
-#include <Spinner.h>
-#include <String.h>
-#include <FilePanel.h>
-#include <TabView.h>
-#include <StringList.h>
-#include <StatusBar.h>
-#include <MenuBar.h>
 
-#include <string.h>
-#include <stdio.h>
+
+class BView;
+class BTextView;
+class BTextControl;
+class BButton;
+class BSpinner;
+class BCheckBox;
+class BPopUpMenu;
+class BMenuField;
+class BMenuBar;
+class BTabView;
+class BStatusBar;
+class BFilePanel;
+class BString;
+class CommandLauncher;
 
 
 class ffguiwin : public BWindow
 {
 	public:
-			ffguiwin(BRect, const char*,window_type,ulong);
+			ffguiwin(BRect, const char* name,window_type type,ulong mode);
 			void BuildLine();
 			virtual bool	QuitRequested();
-			virtual void MessageReceived(BMessage*);
+			virtual void MessageReceived(BMessage* message);
 
 
 	private:
@@ -118,3 +119,5 @@ class ffguiwin : public BWindow
 			CommandLauncher *fCommandLauncher;
 
 };
+
+#endif

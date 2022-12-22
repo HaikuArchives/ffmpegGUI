@@ -6,15 +6,15 @@
 /*
 	ffgui-main.cpp , 1/06/03
 	Zach Dykstra
+	Andi Machovec (BlueSky), andi.machovec@gmail.com, 2022
 */
-#include <stdio.h>
 
 #include "ffgui-application.h"
 #include "ffgui-window.h"
 
-int main(void)
+int main()
 {
 	ffguiapp app;
 	app.Run();
-	return(0);
+	return 0;
 }

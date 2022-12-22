@@ -1,3 +1,6 @@
+#ifndef MESSAGES_H
+#define MESSAGES_H
+
 /*
  * Copyright 2003, Zach Dykstra. All rights reserved.
  * Distributed under the terms of the MIT License.
@@ -6,6 +9,7 @@
 /*
 	ffgui-window.cpp , 1/06/03
 	Zach Dykstra
+	Andi Machovec (BlueSky), andi.machovec@gmail.com, 2022
 */
 
 // Buttons
@@ -55,3 +59,4 @@ const uint32 M_RUN_COMMAND = 0x1700;
 const uint32 M_PROGRESS = 0x1701;
 const uint32 M_COMMAND_FINISHED = 0x1702;
 
+#endif
