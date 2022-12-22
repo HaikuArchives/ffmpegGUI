@@ -148,7 +148,7 @@ ffguiwin::ffguiwin(BRect r, const char *name, window_type type, ulong mode)
 	yres = new BSpinner("", B_TRANSLATE("Height:"), new BMessage(M_YRES));
 
 	enablecropping = new BCheckBox("", B_TRANSLATE("Enable video cropping"), new BMessage(M_ENABLECROPPING));
-	enablecropping->SetValue(B_CONTROL_ON);
+	enablecropping->SetValue(B_CONTROL_OFF);
 	topcrop = new BSpinner("", B_TRANSLATE("Top:"), new BMessage(M_TOPCROP));
 	bottomcrop = new BSpinner("", B_TRANSLATE("Bottom:"), new BMessage(M_BOTTOMCROP));
     leftcrop = new BSpinner("", B_TRANSLATE("Left:"), new BMessage(M_LEFTCROP));
@@ -235,7 +235,7 @@ ffguiwin::ffguiwin(BRect r, const char *name, window_type type, ulong mode)
 	set_spinner_minsize(rightcrop);
 
 	// set the default status for the conditional spinners
-	benablecropping = true;
+	benablecropping = false;
 	benableaudio = true;
 	bcustomres = false;
 	benablevideo = false; // changing this breaks UI enabled/disabled behaviour
