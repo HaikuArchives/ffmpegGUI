@@ -71,27 +71,13 @@ void ffguiwin::BuildLine() // ask all the views what they hold, reset the comman
 			commandline << " -s " << xres->Value() << "x" << yres->Value();
 		}
 
-		// cropping options -- no point in cropping if we aren't encoding video...
+		// cropping options
 		if (benablecropping == true)
 		{
-			// below should be rewritten to use only one crop, but I can't be bothered
-			// to do so as ffmpeg supports multiple filters stacked on each other
-			if (topcrop->Value() != 0)
-			{
-				commandline << " -vf crop=w=in_w:h=in_h:x=0:y=" << topcrop->Value();
-			}
-			if (bottomcrop->Value() != 0)
-			{
-				commandline << " -vf crop=w=in_w:h=in_h-" << bottomcrop->Value() << ":x=0:y=0";
-			}
-			if (leftcrop->Value() != 0)
-			{
-				commandline << " -vf crop=w=in_w:h=in_h:x=" << leftcrop->Value() << ":y=0";
-			}
-			if (rightcrop->Value() != 0)
-			{
-				commandline << " -vf crop=w=in_w-" << rightcrop->Value() << ":h=in_h:x=0:y=0";
-			}
+
+			commandline << " -vf crop=iw-" << leftcrop->Value() + rightcrop->Value()
+						<< ":ih-" << topcrop->Value()+bottomcrop->Value() << ":"
+						<< leftcrop->Value() << ":" << topcrop->Value();
 		}
 	}
 	else //nope, add the no video encoding flag
