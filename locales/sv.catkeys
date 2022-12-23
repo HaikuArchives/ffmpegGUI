@@ -1,0 +1,51 @@
+1	Swedish	application/x-vnd.HaikuArchives-ffmpegGUI	132315271
+'B' frames:	Window		'B'-ramar:
+About	Window		Om
+Advanced options	Window		Avancerade alternativ
+App	Window		App
+Audio	Window		Ljud
+Audio channels:	Window		Ljudkanaler:
+Bitrate (Kbit/s):	Window		Bithastighet (Kbit/s):
+Bottom:	Window		Botten:
+Calculate PSNR of compressed frames	Window		Beräkna PSNR för komprimerade ramar
+Cropping options	Window		Beskärningsalternativ
+Deinterlace pictures	Window		Deinterlace bilder
+Enable audio encoding	Window		Aktivera ljudkodning
+Enable video cropping	Window		Aktivera videobeskärning
+Enable video encoding	Window		Aktivera videokodning
+Encode	Window		Koda
+Encoding failed.	Window		Kodningen misslyckades.
+Encoding finished successfully.	Window		Kodningen slutfördes.
+File options	Window		Filalternativ
+Framerate (fps):	Window		Bildhastighet (fps):
+GOP size:	Window		GOP storlek:
+Height:	Window		Höjd:
+Left:	Window		Vänster:
+Main options	Window		Huvudalternativ
+Max difference between quantiser scale:	Window		Max skillnad mellan kvantiseringsskala:
+Max video quantiser scale:	Window		Max videokvantiseringsskala:
+Min video quantiser scale:	Window		Min video quantiser scale:
+OK	Window		OK
+Output	Window		Produktion
+Output audio format:	Window		Utmatningsljudformat:
+Output file	Window		Utdatafil
+Output file format:	Window		Utgående filformat:
+Output video format:	Window		Utgående videoformat:
+Quit	Window		Avsluta
+Right:	Window		Höger:
+Sampling rate (Hz):	Window		Samplingshastighet (Hz):
+Source file	Window		Källfil
+Start	Window		Start
+Top:	Window		Topp:
+Use custom resolution	Window		Använd anpassad upplösning
+Use fixed video quantiser scale:	Window		Använd fast videokvantiseringsskala:
+Use four motion vector	Window		Använd vektor med fyra rörelser
+Use high quality settings	Window		Använd inställningar av hög kvalitet
+Video	Window		Video
+Video quantiser scale blur:	Window		Videokvantiserarens skaloskärpa:
+Video quantiser scale compression:	Window		Video kvantiseringsskala komprimering
+Waiting to start encoding…	Window		Väntar på att börja koda...
+Width:	Window		Bredd:
+A GUI frontend for ffmpeg	Application		En GUI-gränssnitt för ffmpeg
+Thanks to:\nmmu_man, Jeremy, DeadYak, Marco, etc.\nmd@geekport.com\nreds <reds@sakamoto.pl> for making it more or less usable.\nHave fun!	Application		Tack till:\nmmu_man, Jeremy, DeadYak, Marco, etc.\nmd@geekport.com\nreds <reds@sakamoto.pl> för att du gjorde den mer eller mindre användbar.\nHa kul!
+ffmpeg GUI	System name		ffmpeg GUI

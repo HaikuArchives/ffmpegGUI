@@ -1,0 +1,51 @@
+1	German	application/x-vnd.HaikuArchives-ffmpegGUI	132315271
+'B' frames:	Window		'B' Frames:
+About	Window		Über
+Advanced options	Window		Erweiterte Optionen
+App	Window		App
+Audio	Window		Audio
+Audio channels:	Window		Audiokanäle:
+Bitrate (Kbit/s):	Window		Bitrate (Kbit/s):
+Bottom:	Window		Unten:
+Calculate PSNR of compressed frames	Window		PSNR der komprimierten Frames berechnen
+Cropping options	Window		Zuschneide-Optionen
+Deinterlace pictures	Window		Bilder deinterlacen
+Enable audio encoding	Window		Audio kodieren
+Enable video cropping	Window		Video zuschneiden
+Enable video encoding	Window		Video kodieren
+Encode	Window		Konvertierung
+Encoding failed.	Window		Konvertierung fehlgeschlagen.
+Encoding finished successfully.	Window		Konvertierung erfolgreich.
+File options	Window		Datei Optionen
+Framerate (fps):	Window		Framerate (Bilder/s):
+GOP size:	Window		GOP Größe:
+Height:	Window		Höhe:
+Left:	Window		Links:
+Main options	Window		Optionen
+Max difference between quantiser scale:	Window		Max. Unterschied in Quantiser Scale:
+Max video quantiser scale:	Window		Max. Video Quantiser Scale:
+Min video quantiser scale:	Window		Min. Video Quantiser Scale:
+OK	Window		OK
+Output	Window		Ausgabe
+Output audio format:	Window		Ausgabe Audioformat:
+Output file	Window		Ausgabedatei
+Output file format:	Window		Ausgabe Dateiformat:
+Output video format:	Window		Ausgabe Videoformat:
+Quit	Window		Beenden
+Right:	Window		Rechts:
+Sampling rate (Hz):	Window		Samplingrate (Hz):
+Source file	Window		Quelldatei
+Start	Window		Start
+Top:	Window		Oben:
+Use custom resolution	Window		Auflösung ändern
+Use fixed video quantiser scale:	Window		Fester Video Quantiser Scale:
+Use four motion vector	Window		Vier Bewegungsvektoren
+Use high quality settings	Window		Einstellungen für hohe Qualität
+Video	Window		Video
+Video quantiser scale blur:	Window		Video Quantiser Scale Blur:
+Video quantiser scale compression:	Window		Video Quantiser Scale Kompression:
+Waiting to start encoding…	Window		Warte auf Start der Konvertierung…
+Width:	Window		Breite:
+A GUI frontend for ffmpeg	Application		Eine grafische Oberfläche für ffmpeg
+Thanks to:\nmmu_man, Jeremy, DeadYak, Marco, etc.\nmd@geekport.com\nreds <reds@sakamoto.pl> for making it more or less usable.\nHave fun!	Application		Dank an:\nmmu_man, Jeremy, DeadYak, Marco, etc.\nmd@geekport.com\nreds <reds@sakamoto.pl>, der das Ganze mehr oder weniger benutzbar gemacht hat.\nViel Spaß!
+ffmpeg GUI	System name		ffmpeg GUI

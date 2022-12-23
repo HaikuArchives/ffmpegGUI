@@ -1,0 +1,51 @@
+1	English (British)	application/x-vnd.HaikuArchives-ffmpegGUI	132315271
+'B' frames:	Window		'B' frames:
+About	Window		About
+Advanced options	Window		Advanced options
+App	Window		App
+Audio	Window		Audio
+Audio channels:	Window		Audio channels:
+Bitrate (Kbit/s):	Window		Bitrate (Kbit/s):
+Bottom:	Window		Bottom:
+Calculate PSNR of compressed frames	Window		Calculate PSNR of compressed frames
+Cropping options	Window		Cropping options
+Deinterlace pictures	Window		Deinterlace pictures
+Enable audio encoding	Window		Enable audio encoding
+Enable video cropping	Window		Enable video cropping
+Enable video encoding	Window		Enable video encoding
+Encode	Window		Encode
+Encoding failed.	Window		Encoding failed.
+Encoding finished successfully.	Window		Encoding finished successfully.
+File options	Window		File options
+Framerate (fps):	Window		Framerate (fps):
+GOP size:	Window		GOP size:
+Height:	Window		Height:
+Left:	Window		Left:
+Main options	Window		Main options
+Max difference between quantiser scale:	Window		Max difference between quantiser scale:
+Max video quantiser scale:	Window		Max video quantiser scale:
+Min video quantiser scale:	Window		Min video quantiser scale:
+OK	Window		Alright
+Output	Window		Output
+Output audio format:	Window		Output audio format:
+Output file	Window		Output file
+Output file format:	Window		Output file format:
+Output video format:	Window		Output video format:
+Quit	Window		Quit
+Right:	Window		Right:
+Sampling rate (Hz):	Window		Sampling rate (Hz):
+Source file	Window		Source file
+Start	Window		Start
+Top:	Window		Top:
+Use custom resolution	Window		Use custom resolution
+Use fixed video quantiser scale:	Window		Use fixed video quantiser scale:
+Use four motion vector	Window		Use four motion vector
+Use high quality settings	Window		Use high quality settings
+Video	Window		Video
+Video quantiser scale blur:	Window		Video quantiser scale blur:
+Video quantiser scale compression:	Window		Video quantiser scale compression:
+Waiting to start encoding…	Window		Waiting to start encoding…
+Width:	Window		Width:
+A GUI frontend for ffmpeg	Application		A GUI frontend for ffmpeg
+Thanks to:\nmmu_man, Jeremy, DeadYak, Marco, etc.\nmd@geekport.com\nreds <reds@sakamoto.pl> for making it more or less usable.\nHave fun!	Application		Thanks to:\nmmu_man, Jeremy, DeadYak, Marco, etc.\nmd@geekport.com\nreds <reds@sakamoto.pl> for making it more or less usable.\nHave fun!
+ffmpeg GUI	System name		ffmpeg GUI
