@@ -88,8 +88,8 @@ void ffguiwin::BuildLine() // ask all the views what they hold, reset the comman
 	if (benableaudio == true) // audio encoding enabled, grab the values
 	{
 		commandline << " -acodec " << outputaudioformat->MenuItem()->Label();
-		commandline << " -b:a " << ab->Value() << "k";
-		commandline << " -ar " << ar->Value();
+		commandline << " -b:a " << std::atoi(abpopup->FindMarked()->Label()) << "k";
+		commandline << " -ar " << std::atoi(arpopup->FindMarked()->Label());
 		commandline << " -ac " << ac->Value();
 	}
 	else
@@ -168,8 +168,23 @@ ffguiwin::ffguiwin(BRect r, const char *name, window_type type, ulong mode)
 
 	enableaudio = new BCheckBox("", B_TRANSLATE("Enable audio encoding"), new BMessage(M_ENABLEAUDIO));
 	enableaudio->SetValue(B_CONTROL_ON);
-	ab = new BSpinner("", B_TRANSLATE("Bitrate (Kbit/s):"), new BMessage(M_AB));
-	ar = new BSpinner("", B_TRANSLATE("Sampling rate (Hz):"), new BMessage(M_AR));
+	abpopup = new BPopUpMenu("");
+	abpopup->AddItem(new BMenuItem("96", new BMessage(M_AB)));
+	abpopup->AddItem(new BMenuItem("128", new BMessage(M_AB)));
+	abpopup->AddItem(new BMenuItem("160", new BMessage(M_AB)));
+	abpopup->AddItem(new BMenuItem("196", new BMessage(M_AB)));
+	abpopup->AddItem(new BMenuItem("320", new BMessage(M_AB)));
+	abpopup->AddItem(new BMenuItem("1411", new BMessage(M_AB)));
+	abpopup->ItemAt(1)->SetMarked(true);
+	ab = new BMenuField(B_TRANSLATE("Bitrate (Kbit/s):"), abpopup);
+	arpopup = new BPopUpMenu("");
+	arpopup->AddItem(new BMenuItem("22050", new BMessage(M_AR)));
+	arpopup->AddItem(new BMenuItem("44100", new BMessage(M_AR)));
+	arpopup->AddItem(new BMenuItem("48000", new BMessage(M_AR)));
+	arpopup->AddItem(new BMenuItem("96000", new BMessage(M_AR)));
+	arpopup->AddItem(new BMenuItem("192000", new BMessage(M_AR)));
+	arpopup->ItemAt(1)->SetMarked(true);
+	ar = new BMenuField(B_TRANSLATE("Sampling rate (Hz):"), arpopup);
 	ac = new BSpinner("", B_TRANSLATE("Audio channels:"), new BMessage(M_AC));
 
 	bframes = new BSpinner("", B_TRANSLATE("'B' frames:"), nullptr);
@@ -220,17 +235,12 @@ ffguiwin::ffguiwin(BRect r, const char *name, window_type type, ulong mode)
 	xres->SetMaxValue(7680);
 	yres->SetMinValue(120);
 	yres->SetMaxValue(4320);
-	ab->SetMinValue(16);
-	ab->SetMaxValue(500);
-	ar->SetMaxValue(192000);
 
 	// set the initial values
 	vbitrate->SetValue(1000);
 	framerate->SetValue(30);
 	xres->SetValue(1280);
 	yres->SetValue(720);
-	ab->SetValue(128);
-	ar->SetValue(44100);
 	ac->SetValue(2);
 
 	// set minimum size for the spinners
@@ -238,8 +248,6 @@ ffguiwin::ffguiwin(BRect r, const char *name, window_type type, ulong mode)
 	set_spinner_minsize(framerate);
 	set_spinner_minsize(xres);
 	set_spinner_minsize(yres);
-	set_spinner_minsize(ab);
-	set_spinner_minsize(ar);
 	set_spinner_minsize(ac);
 	set_spinner_minsize(topcrop);
 	set_spinner_minsize(bottomcrop);
@@ -340,9 +348,9 @@ ffguiwin::ffguiwin(BRect r, const char *name, window_type type, ulong mode)
 		.Add(enableaudio)
 		.AddGrid(B_USE_SMALL_SPACING,B_USE_SMALL_SPACING)
 			.Add(ab->CreateLabelLayoutItem(),0,0)
-			.Add(ab->CreateTextViewLayoutItem(),1,0)
+			.Add(ab->CreateMenuBarLayoutItem(),1,0)
 			.Add(ar->CreateLabelLayoutItem(),0,1)
-			.Add(ar->CreateTextViewLayoutItem(),1,1)
+			.Add(ar->CreateMenuBarLayoutItem(),1,1)
 			.Add(ac->CreateLabelLayoutItem(),0,2)
 			.Add(ac->CreateTextViewLayoutItem(),1,2)
 		.End()

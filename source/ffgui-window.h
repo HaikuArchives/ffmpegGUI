@@ -67,8 +67,10 @@ class ffguiwin : public BWindow
 			BSpinner *bottomcrop;
 			BSpinner *leftcrop;
 			BSpinner *rightcrop;
-			BSpinner *ab;
-			BSpinner *ar;
+			BPopUpMenu *abpopup;
+			BMenuField *ab;
+			BPopUpMenu *arpopup;
+			BMenuField *ar;
 			BSpinner *ac;
 			// advanced spinbuttons
 			BSpinner *fixedquant;
