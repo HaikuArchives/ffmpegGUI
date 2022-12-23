@@ -32,6 +32,7 @@ SRCS = \
 	 source/commandlauncher.cpp  \
 	 source/ffgui-application.cpp  \
 	 source/ffgui-window.cpp  \
+	 source/ffgui-spinner.cpp \
 	 source/main.cpp  \
 
 
