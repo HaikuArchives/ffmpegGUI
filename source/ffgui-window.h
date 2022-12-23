@@ -29,6 +29,7 @@ class BStatusBar;
 class BFilePanel;
 class BString;
 class CommandLauncher;
+class ffguispinner;
 
 
 class ffguiwin : public BWindow
@@ -59,28 +60,24 @@ class ffguiwin : public BWindow
 			BButton *outputfilebutton;
 			BButton *encodebutton;
 			// spin buttons
-			BSpinner *vbitrate;
-			BSpinner *framerate;
-			BSpinner *xres;
-			BSpinner *yres;
-			BSpinner *topcrop;
-			BSpinner *bottomcrop;
-			BSpinner *leftcrop;
-			BSpinner *rightcrop;
-			BPopUpMenu *abpopup;
-			BMenuField *ab;
-			BPopUpMenu *arpopup;
-			BMenuField *ar;
-			BSpinner *ac;
+			ffguispinner *vbitrate;
+			ffguispinner *framerate;
+			ffguispinner *xres;
+			ffguispinner *yres;
+			ffguispinner *topcrop;
+			ffguispinner *bottomcrop;
+			ffguispinner *leftcrop;
+			ffguispinner *rightcrop;
+			ffguispinner *ac;
 			// advanced spinbuttons
-			BSpinner *fixedquant;
-			BSpinner *minquant;
-			BSpinner *maxquant;
-			BSpinner *quantdifference;
-			BSpinner *quantblur;
-			BSpinner *quantcompression;
-			BSpinner *bframes;
-			BSpinner *gop;
+			ffguispinner *fixedquant;
+			ffguispinner *minquant;
+			ffguispinner *maxquant;
+			ffguispinner *quantdifference;
+			ffguispinner *quantblur;
+			ffguispinner *quantcompression;
+			ffguispinner *bframes;
+			ffguispinner *gop;
 			// advanced checkboxes
 			BCheckBox *highquality;
 			BCheckBox *fourmotion;
@@ -98,6 +95,11 @@ class ffguiwin : public BWindow
 			BMenuField *outputvideoformat;
 			BPopUpMenu *outputaudioformatpopup;
 			BMenuField *outputaudioformat;
+			BPopUpMenu *abpopup;
+			BMenuField *ab;
+			BPopUpMenu *arpopup;
+			BMenuField *ar;
+
 			// tab view
 			BTabView	*tabview;
 

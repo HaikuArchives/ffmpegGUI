@@ -12,6 +12,7 @@
 
 #include "ffgui-window.h"
 #include "ffgui-application.h"
+#include "ffgui-spinner.h"
 #include "messages.h"
 #include "commandlauncher.h"
 
@@ -153,21 +154,22 @@ ffguiwin::ffguiwin(BRect r, const char *name, window_type type, ulong mode)
 
 	enablevideo = new BCheckBox("", B_TRANSLATE("Enable video encoding"), new BMessage(M_ENABLEVIDEO));
 	enablevideo->SetValue(B_CONTROL_ON);
-	vbitrate = new BSpinner("", B_TRANSLATE("Bitrate (Kbit/s):"), new BMessage(M_VBITRATE));
-	framerate = new BSpinner("", B_TRANSLATE("Framerate (fps):"), new BMessage(M_FRAMERATE));
+	vbitrate = new ffguispinner("", B_TRANSLATE("Bitrate (Kbit/s):"), new BMessage(M_VBITRATE));
+	framerate = new ffguispinner("", B_TRANSLATE("Framerate (fps):"), new BMessage(M_FRAMERATE));
 	customres = new BCheckBox("", B_TRANSLATE("Use custom resolution"), new BMessage(M_CUSTOMRES));
-	xres = new BSpinner("", B_TRANSLATE("Width:"), new BMessage(M_XRES));
-	yres = new BSpinner("", B_TRANSLATE("Height:"), new BMessage(M_YRES));
+	xres = new ffguispinner("", B_TRANSLATE("Width:"), new BMessage(M_XRES));
+	yres = new ffguispinner("", B_TRANSLATE("Height:"), new BMessage(M_YRES));
 
 	enablecropping = new BCheckBox("", B_TRANSLATE("Enable video cropping"), new BMessage(M_ENABLECROPPING));
 	enablecropping->SetValue(B_CONTROL_OFF);
-	topcrop = new BSpinner("", B_TRANSLATE("Top:"), new BMessage(M_TOPCROP));
-	bottomcrop = new BSpinner("", B_TRANSLATE("Bottom:"), new BMessage(M_BOTTOMCROP));
-    leftcrop = new BSpinner("", B_TRANSLATE("Left:"), new BMessage(M_LEFTCROP));
-	rightcrop = new BSpinner("", B_TRANSLATE("Right:"), new BMessage(M_RIGHTCROP));
+	topcrop = new ffguispinner("", B_TRANSLATE("Top:"), new BMessage(M_TOPCROP));
+	bottomcrop = new ffguispinner("", B_TRANSLATE("Bottom:"), new BMessage(M_BOTTOMCROP));
+    leftcrop = new ffguispinner("", B_TRANSLATE("Left:"), new BMessage(M_LEFTCROP));
+	rightcrop = new ffguispinner("", B_TRANSLATE("Right:"), new BMessage(M_RIGHTCROP));
 
 	enableaudio = new BCheckBox("", B_TRANSLATE("Enable audio encoding"), new BMessage(M_ENABLEAUDIO));
 	enableaudio->SetValue(B_CONTROL_ON);
+
 	abpopup = new BPopUpMenu("");
 	abpopup->AddItem(new BMenuItem("96", new BMessage(M_AB)));
 	abpopup->AddItem(new BMenuItem("128", new BMessage(M_AB)));
@@ -185,21 +187,21 @@ ffguiwin::ffguiwin(BRect r, const char *name, window_type type, ulong mode)
 	arpopup->AddItem(new BMenuItem("192000", new BMessage(M_AR)));
 	arpopup->ItemAt(1)->SetMarked(true);
 	ar = new BMenuField(B_TRANSLATE("Sampling rate (Hz):"), arpopup);
-	ac = new BSpinner("", B_TRANSLATE("Audio channels:"), new BMessage(M_AC));
+	ac = new ffguispinner("", B_TRANSLATE("Audio channels:"), new BMessage(M_AC));
 
-	bframes = new BSpinner("", B_TRANSLATE("'B' frames:"), nullptr);
-	gop = new BSpinner("", B_TRANSLATE("GOP size:"), nullptr);
+	bframes = new ffguispinner("", B_TRANSLATE("'B' frames:"), nullptr);
+	gop = new ffguispinner("", B_TRANSLATE("GOP size:"), nullptr);
 	highquality = new BCheckBox("",B_TRANSLATE("Use high quality settings"), new BMessage(M_HIGHQUALITY));
 	fourmotion = new BCheckBox("", B_TRANSLATE("Use four motion vector"), new BMessage(M_FOURMOTION));
 	deinterlace = new BCheckBox("", B_TRANSLATE("Deinterlace pictures"), new BMessage(M_DEINTERLACE));
 	calcpsnr = new BCheckBox("", B_TRANSLATE("Calculate PSNR of compressed frames"), new BMessage(M_CALCPSNR));
 
-	fixedquant = new BSpinner("", B_TRANSLATE("Use fixed video quantiser scale:"), nullptr);
-	minquant = new BSpinner("", B_TRANSLATE("Min video quantiser scale:"), nullptr);
-	maxquant = new BSpinner("", B_TRANSLATE("Max video quantiser scale:"), nullptr);
-	quantdifference = new BSpinner("", B_TRANSLATE("Max difference between quantiser scale:"), nullptr);
-	quantblur = new BSpinner("", B_TRANSLATE("Video quantiser scale blur:"), nullptr);
-	quantcompression = new BSpinner("", B_TRANSLATE("Video quantiser scale compression:"), nullptr);
+	fixedquant = new ffguispinner("", B_TRANSLATE("Use fixed video quantiser scale:"), nullptr);
+	minquant = new ffguispinner("", B_TRANSLATE("Min video quantiser scale:"), nullptr);
+	maxquant = new ffguispinner("", B_TRANSLATE("Max video quantiser scale:"), nullptr);
+	quantdifference = new ffguispinner("", B_TRANSLATE("Max difference between quantiser scale:"), nullptr);
+	quantblur = new ffguispinner("", B_TRANSLATE("Video quantiser scale blur:"), nullptr);
+	quantcompression = new ffguispinner("", B_TRANSLATE("Video quantiser scale compression:"), nullptr);
 
 	outputtext = new BTextView("");
 	outputtext->SetViewColor(ui_color(B_PANEL_BACKGROUND_COLOR));
@@ -253,6 +255,9 @@ ffguiwin::ffguiwin(BRect r, const char *name, window_type type, ulong mode)
 	set_spinner_minsize(bottomcrop);
 	set_spinner_minsize(leftcrop);
 	set_spinner_minsize(rightcrop);
+
+	// set step values for the spinners
+	vbitrate->SetStep(100);
 
 	// set the default status for the conditional spinners
 	benablecropping = false;
