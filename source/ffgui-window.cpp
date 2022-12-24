@@ -621,6 +621,12 @@ void ffguiwin::MessageReceived(BMessage *message)
 		}
 		case M_OUTPUT:
 		{
+			BPath path = outputfile->Text();
+			if (path.InitCheck() == B_OK) {
+				fOutputFilePanel->SetSaveText(path.Leaf());
+				path.GetParent(&path);
+				fOutputFilePanel->SetPanelDirectory(path.Path());
+			}
 			fOutputFilePanel->Show();
 			break;
 		}
