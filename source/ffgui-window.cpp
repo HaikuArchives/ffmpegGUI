@@ -15,10 +15,10 @@
 #include "messages.h"
 #include "commandlauncher.h"
 
-#include <Alert.h>
 #include <Box.h>
 #include <Catalog.h>
 #include <Entry.h>
+#include <File.h>
 #include <LayoutBuilder.h>
 #include <MenuItem.h>
 #include <Path.h>
@@ -31,6 +31,8 @@
 #include <Button.h>
 #include <CheckBox.h>
 #include <MenuField.h>
+#include <NodeInfo.h>
+#include <Notification.h>
 #include <PopUpMenu.h>
 #include <Spinner.h>
 #include <String.h>
@@ -45,6 +47,8 @@
 
 #undef B_TRANSLATION_CONTEXT
 #define B_TRANSLATION_CONTEXT "Window"
+
+static const char* kIdleText = B_TRANSLATE_MARK("Waiting to start encoding" B_UTF8_ELLIPSIS);
 
 
 void ffguiwin::BuildLine() // ask all the views what they hold, reset the command string
@@ -223,8 +227,11 @@ ffguiwin::ffguiwin(BRect r, const char *name, window_type type, ulong mode)
 									false,
 									new BMessage(M_OUTPUTFILE_REF));
 
+	fPlayCheck = new BCheckBox("play_finished", B_TRANSLATE("Play when finished"), NULL);
+	fPlayCheck->SetValue(B_CONTROL_OFF);
+
 	fStatusBar = new BStatusBar("");
-	fStatusBar->SetText(B_TRANSLATE("Waiting to start encoding" B_UTF8_ELLIPSIS));
+	fStatusBar->SetText(kIdleText);
 
 	// set the min and max values for the spin controls
 	vbitrate->SetMinValue(64);
@@ -435,6 +442,10 @@ ffguiwin::ffguiwin(BRect r, const char *name, window_type type, ulong mode)
 		.AddGroup(B_HORIZONTAL)
 			.SetInsets(B_USE_DEFAULT_SPACING,0,B_USE_DEFAULT_SPACING,0)
 			.Add(fStatusBar)
+			.AddGroup(B_VERTICAL)
+				.AddGlue()
+				.Add(fPlayCheck)
+			.End()
 		.End()
 		.AddGlue()
 	.Layout();
@@ -735,32 +746,39 @@ void ffguiwin::MessageReceived(BMessage *message)
 		}
 		case M_COMMAND_FINISHED:
 		{
+			BNotification encodeFinished(B_INFORMATION_NOTIFICATION);
+			encodeFinished.SetGroup(B_TRANSLATE_SYSTEM_NAME("ffmpeg GUI"));
+			BString title(B_TRANSLATE("Encoding"));
+
 			status_t exit_code;
 			message->FindInt32("exitcode", &exit_code);
-			BString finished_message;
-			const char *play_button_label;
 
-			if(exit_code == 0)
-			{
+			if (exit_code == 0) {
+				encodeFinished.SetContent(B_TRANSLATE("Encoding finished successfully!"));
 
-				finished_message = B_TRANSLATE("Encoding finished successfully.");
-				play_button_label = B_TRANSLATE("Play now");
+				if (fPlayCheck->Value() == B_CONTROL_ON)
+					play_video(outputfile->Text());
+				else {
+					BPath path = outputfile->Text();
+
+					if (path.InitCheck() == B_OK) {
+						title = path.Leaf();
+
+						entry_ref ref;
+						get_ref_for_path(path.Path(), &ref);
+						set_filetype(&ref);
+						encodeFinished.SetOnClickFile(&ref);
+					}
+				}
 			}
 			else
-			{
-				finished_message << B_TRANSLATE("Encoding failed.");
-				play_button_label = nullptr;
-			}
+				encodeFinished.SetContent(B_TRANSLATE("Encoding failed."));
 
-			BAlert *finished_alert = new BAlert("", finished_message, B_TRANSLATE("OK"), play_button_label);
-			int32 button = finished_alert->Go();
-			if (button == 1)
-			{
-				play_video(outputfile->Text());
-			}
+			encodeFinished.SetTitle(title);
+			encodeFinished.Send();
 
 			fStatusBar->Reset();
-			fStatusBar->SetText(B_TRANSLATE("Waiting to start encoding" B_UTF8_ELLIPSIS));
+			fStatusBar->SetText(kIdleText);
 			break;
 		}
 		case B_SIMPLE_DATA:
@@ -788,6 +806,22 @@ void ffguiwin::MessageReceived(BMessage *message)
 		default:
 			BWindow::MessageReceived(message);
 			break;
+	}
+}
+
+
+void ffguiwin::set_filetype(entry_ref* ref)
+{
+	BFile file(ref, B_READ_ONLY);
+	BNodeInfo nodeInfo(&file);
+	char mimeString[B_MIME_TYPE_LENGTH];
+
+	if (nodeInfo.GetType(mimeString) != B_OK) {
+		BMimeType type;
+		if (BMimeType::GuessMimeType(ref, &type) == B_OK) {
+			strlcpy(mimeString, type.Type(), B_MIME_TYPE_LENGTH);
+			nodeInfo.SetType(type.Type());
+		}
 	}
 }
 

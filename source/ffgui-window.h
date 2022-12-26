@@ -41,6 +41,7 @@ class ffguiwin : public BWindow
 
 
 	private:
+			void set_filetype(entry_ref* ref);
 			void set_encodebutton_state();
 			void set_outputfile_extension();
 			int32 get_seconds(BString& time_string);
@@ -105,6 +106,7 @@ class ffguiwin : public BWindow
 			int32 encode_duration;
 			int32 encode_time;
 			bool duration_detected;
+			BCheckBox *fPlayCheck;
 			BStatusBar *fStatusBar;
 
 			//menu bar
