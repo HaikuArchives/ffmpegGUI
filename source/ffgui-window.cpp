@@ -818,24 +818,33 @@ void ffguiwin::MessageReceived(BMessage *message)
 		case B_SIMPLE_DATA:
 		{
 			BPoint drop_point;
+			entry_ref file_ref;
 			message->FindPoint("_drop_point_", &drop_point);
+			message->FindRef("refs", &file_ref);
+			BEntry file_entry(&file_ref, true);
+			BPath file_path(&file_entry);
+
 			BRect sourcefile_rect = sourcefile->Bounds();
 			sourcefile->ConvertToScreen(&sourcefile_rect);
+			BRect outputfile_rect = outputfile->Bounds();
+			outputfile->ConvertToScreen(&outputfile_rect);
 
-			if(sourcefile_rect.Contains(drop_point))
-			{
-				entry_ref sourcefile_ref;
-				message->FindRef("refs", &sourcefile_ref);
-				BEntry sourcefile_entry(&sourcefile_ref, true);
-				BPath sourcefile_path(&sourcefile_entry);
-				sourcefile->SetText(sourcefile_path.Path());
-				outputfile->SetText(sourcefile_path.Path());
-				set_outputfile_extension();
-				BuildLine();
-				set_encodebutton_state();
-				set_playbuttons_state();
-			}
+			// add padding around the text controls for a larger target
+			float padding = (outputfile_rect.top - sourcefile_rect.bottom) / 2;
+			sourcefile_rect.InsetBy(-padding, -padding);
+			outputfile_rect.InsetBy(-padding, -padding);
 
+			if (sourcefile_rect.Contains(drop_point)) {
+				sourcefile->SetText(file_path.Path());
+				outputfile->SetText(file_path.Path());
+			} else if (outputfile_rect.Contains(drop_point))
+				outputfile->SetText(file_path.Path());
+			else
+				break;
+
+			set_outputfile_extension();
+			BuildLine();
+			set_encodebutton_state();
 			break;
 		}
 		default:
@@ -926,7 +935,10 @@ ffguiwin::get_seconds(BString& time_string)
 void
 ffguiwin::set_outputfile_extension()
 {
-	BString output_filename(sourcefile->Text());
+	BString output_filename(outputfile->Text());
+	if (output_filename == "")
+		output_filename = sourcefile->Text();
+
 	int32 begin_ext = output_filename.FindLast(".");
 	if (begin_ext != B_ERROR) //cut away extension if it already exists
 	{
