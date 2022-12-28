@@ -17,6 +17,8 @@ const uint32 M_NOMSG = 0x00000000;
 const uint32 M_SOURCE = 0x1100;
 const uint32 M_OUTPUT = 0x1101;
 const uint32 M_ENCODE = 0x1102;
+const uint32 M_PLAY_SOURCE = 0x1103;
+const uint32 M_PLAY_OUTPUT = 0x1104;
 
 // Spinners
 const uint32 M_VBITRATE = 0x1200;
