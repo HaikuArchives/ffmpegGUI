@@ -688,6 +688,7 @@ void ffguiwin::MessageReceived(BMessage *message)
 			filename.Prepend(directory_path.Path());
 
 			outputfile->SetText(filename);
+			set_outputfile_extension();
 			BuildLine();
 			set_encodebutton_state();
 			set_playbuttons_state();
