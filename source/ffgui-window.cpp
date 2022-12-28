@@ -114,11 +114,23 @@ ffguiwin::ffguiwin(BRect r, const char *name, window_type type, ulong mode)
 
 	sourcefilebutton = new BButton(B_TRANSLATE("Source file"), new BMessage(M_SOURCE));
 	sourcefilebutton->SetExplicitMaxSize(BSize(B_SIZE_UNLIMITED, B_SIZE_UNLIMITED));
-	sourcefile = new BTextControl("", "", new BMessage(M_SOURCEFILE));
+	sourcefile = new BTextControl("", "", NULL);
+	sourcefile->SetModificationMessage(new BMessage(M_OUTPUTFILE));
 
 	outputfilebutton = new BButton(B_TRANSLATE("Output file"), new BMessage(M_OUTPUT));
 	outputfilebutton->SetExplicitMaxSize(BSize(B_SIZE_UNLIMITED, B_SIZE_UNLIMITED));
-	outputfile = new BTextControl("", "", new BMessage(M_OUTPUTFILE));
+	outputfile = new BTextControl("", "", NULL);
+	outputfile->SetModificationMessage(new BMessage(M_OUTPUTFILE));
+
+	sourceplaybutton = new BButton("⯈", new BMessage(M_PLAY_SOURCE));
+	outputplaybutton = new BButton("⯈", new BMessage(M_PLAY_OUTPUT));
+	float height;
+	sourcefile->GetPreferredSize(NULL, &height);
+	BSize size(height, height);
+	sourceplaybutton->SetExplicitSize(size);
+	outputplaybutton->SetExplicitSize(size);
+	sourceplaybutton->SetEnabled(false);
+	outputplaybutton->SetEnabled(false);
 
 	outputfileformatpopup = new BPopUpMenu("");
 	outputfileformatpopup->AddItem(new BMenuItem("avi", new BMessage(M_OUTPUTFILEFORMAT)));
@@ -286,8 +298,10 @@ ffguiwin::ffguiwin(BRect r, const char *name, window_type type, ulong mode)
 		.AddGrid(B_USE_DEFAULT_SPACING)
 			.Add(sourcefilebutton, 0, 0)
 			.Add(sourcefile, 1, 0)
+			.Add(sourceplaybutton, 2, 0)
 			.Add(outputfilebutton, 0, 1)
 			.Add(outputfile, 1, 1)
+			.Add(outputplaybutton, 2, 1)
 			.SetColumnWeight(0, 0)
 			.SetColumnWeight(1, 1)
 		.End()
@@ -491,6 +505,7 @@ void ffguiwin::MessageReceived(BMessage *message)
 		{
 			BuildLine();
 			set_encodebutton_state();
+			set_playbuttons_state();
 			break;
 		}
 		case M_OUTPUTFILEFORMAT:
@@ -500,6 +515,7 @@ void ffguiwin::MessageReceived(BMessage *message)
 			if (!outputfilename.IsEmpty())
 			{
 				set_outputfile_extension();
+				set_playbuttons_state();
 			}
 			BuildLine();
 			break;
@@ -657,6 +673,7 @@ void ffguiwin::MessageReceived(BMessage *message)
 			set_outputfile_extension();
 			BuildLine();
 			set_encodebutton_state();
+			set_playbuttons_state();
 			break;
 		}
 		case M_OUTPUTFILE_REF:
@@ -673,6 +690,7 @@ void ffguiwin::MessageReceived(BMessage *message)
 			outputfile->SetText(filename);
 			BuildLine();
 			set_encodebutton_state();
+			set_playbuttons_state();
 			break;
 		}
 		case M_ENCODE:
@@ -775,6 +793,7 @@ void ffguiwin::MessageReceived(BMessage *message)
 						encodeFinished.SetOnClickFile(&ref);
 					}
 				}
+				set_playbuttons_state();
 			}
 			else
 				encodeFinished.SetContent(B_TRANSLATE("Encoding failed."));
@@ -784,6 +803,16 @@ void ffguiwin::MessageReceived(BMessage *message)
 
 			fStatusBar->Reset();
 			fStatusBar->SetText(kIdleText);
+			break;
+		}
+		case M_PLAY_SOURCE:
+		{
+			play_video(sourcefile->Text());
+			break;
+		}
+		case M_PLAY_OUTPUT:
+		{
+			play_video(outputfile->Text());
 			break;
 		}
 		case B_SIMPLE_DATA:
@@ -804,6 +833,7 @@ void ffguiwin::MessageReceived(BMessage *message)
 				set_outputfile_extension();
 				BuildLine();
 				set_encodebutton_state();
+				set_playbuttons_state();
 			}
 
 			break;
@@ -812,6 +842,25 @@ void ffguiwin::MessageReceived(BMessage *message)
 			BWindow::MessageReceived(message);
 			break;
 	}
+}
+
+
+void ffguiwin::set_playbuttons_state()
+{
+	bool valid = file_exists(sourcefile->Text());
+	sourceplaybutton->SetEnabled(valid);
+
+	valid = file_exists(outputfile->Text());
+	outputplaybutton->SetEnabled(valid);
+}
+
+
+bool ffguiwin::file_exists(const char* filepath)
+{
+	BEntry entry(filepath);
+	bool status = entry.Exists();
+
+	return status;
 }
 
 

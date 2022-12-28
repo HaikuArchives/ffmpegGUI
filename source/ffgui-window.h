@@ -42,6 +42,8 @@ class ffguiwin : public BWindow
 
 
 	private:
+			void set_playbuttons_state();
+			bool file_exists(const char* filepath);
 			void set_filetype(entry_ref* ref);
 			void set_encodebutton_state();
 			void set_outputfile_extension();
@@ -59,6 +61,8 @@ class ffguiwin : public BWindow
 			//buttons
 			BButton *sourcefilebutton;
 			BButton *outputfilebutton;
+			BButton *sourceplaybutton;
+			BButton *outputplaybutton;
 			BButton *encodebutton;
 			// spin buttons
 			ffguispinner *vbitrate;
