@@ -57,8 +57,11 @@ const uint32 M_SOURCEFILE_REF = 0x1600;
 const uint32 M_OUTPUTFILE_REF = 0x1601;
 
 //Command Launcher
-const uint32 M_RUN_COMMAND = 0x1700;
-const uint32 M_PROGRESS = 0x1701;
-const uint32 M_COMMAND_FINISHED = 0x1702;
+const uint32 M_ENCODE_COMMAND = 0x1700;
+const uint32 M_ENCODE_PROGRESS = 0x1701;
+const uint32 M_ENCODE_FINISHED = 0x1702;
+const uint32 M_INFO_COMMAND = 0x1703;
+const uint32 M_INFO_OUTPUT = 0x1704;
+const uint32 M_INFO_FINISHED = 0x1705;
 
 #endif
