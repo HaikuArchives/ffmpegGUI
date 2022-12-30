@@ -15,6 +15,7 @@
 #include "ffgui-spinner.h"
 #include "messages.h"
 #include "commandlauncher.h"
+#include "DurationToString.h"
 
 #include <Box.h>
 #include <Catalog.h>
@@ -37,6 +38,8 @@
 #include <PopUpMenu.h>
 #include <Spinner.h>
 #include <String.h>
+#include <StringList.h>
+#include <StringView.h>
 #include <FilePanel.h>
 #include <TabView.h>
 #include <StringList.h>
@@ -44,6 +47,7 @@
 #include <MenuBar.h>
 
 #include <cstdlib>
+#include <stdio.h>
 
 
 #undef B_TRANSLATION_CONTEXT
@@ -115,12 +119,19 @@ ffguiwin::ffguiwin(BRect r, const char *name, window_type type, ulong mode)
 	sourcefilebutton = new BButton(B_TRANSLATE("Source file"), new BMessage(M_SOURCE));
 	sourcefilebutton->SetExplicitMaxSize(BSize(B_SIZE_UNLIMITED, B_SIZE_UNLIMITED));
 	sourcefile = new BTextControl("", "", NULL);
-	sourcefile->SetModificationMessage(new BMessage(M_OUTPUTFILE));
+	sourcefile->SetModificationMessage(new BMessage(M_SOURCEFILE));
 
 	outputfilebutton = new BButton(B_TRANSLATE("Output file"), new BMessage(M_OUTPUT));
 	outputfilebutton->SetExplicitMaxSize(BSize(B_SIZE_UNLIMITED, B_SIZE_UNLIMITED));
 	outputfile = new BTextControl("", "", NULL);
 	outputfile->SetModificationMessage(new BMessage(M_OUTPUTFILE));
+
+	mediainfo = new BStringView("mediainfo", B_TRANSLATE("Select a source file."));
+	mediainfo->SetExplicitMaxSize(BSize(B_SIZE_UNLIMITED, B_SIZE_UNSET));
+	BFont font(be_plain_font);
+	font.SetSize(ceilf(font.Size() * 0.9));
+	mediainfo->SetFont(&font, B_FONT_SIZE);
+//	mediainfo->Parent()->SetHighColor(tint_color(ui_color(B_PANEL_TEXT_COLOR), 0.6));
 
 	sourceplaybutton = new BButton("⯈", new BMessage(M_PLAY_SOURCE));
 	outputplaybutton = new BButton("⯈", new BMessage(M_PLAY_OUTPUT));
@@ -295,15 +306,18 @@ ffguiwin::ffguiwin(BRect r, const char *name, window_type type, ulong mode)
 	BGroupLayout *fileoptionslayout = BLayoutBuilder::Group<>(B_VERTICAL, B_USE_SMALL_SPACING)
 		.SetInsets(B_USE_DEFAULT_SPACING, B_USE_DEFAULT_SPACING,
 					B_USE_DEFAULT_SPACING, B_USE_DEFAULT_SPACING)
-		.AddGrid(B_USE_DEFAULT_SPACING)
+		.AddGrid(B_USE_SMALL_SPACING, 0.0)
 			.Add(sourcefilebutton, 0, 0)
 			.Add(sourcefile, 1, 0)
 			.Add(sourceplaybutton, 2, 0)
-			.Add(outputfilebutton, 0, 1)
-			.Add(outputfile, 1, 1)
-			.Add(outputplaybutton, 2, 1)
+			.Add(mediainfo, 1, 1, 2, 1)
+			.Add(BSpaceLayoutItem::CreateVerticalStrut(B_USE_SMALL_SPACING), 1, 2)
+			.Add(outputfilebutton, 0, 3)
+			.Add(outputfile, 1, 3)
+			.Add(outputplaybutton, 2, 3)
 			.SetColumnWeight(0, 0)
 			.SetColumnWeight(1, 1)
+			.SetColumnWeight(2, 0)
 		.End()
 		.AddGroup(B_HORIZONTAL)
 			.Add(outputfileformat)
@@ -499,8 +513,14 @@ void ffguiwin::MessageReceived(BMessage *message)
 		case B_ABOUT_REQUESTED:
 		{
 			be_app->PostMessage(B_ABOUT_REQUESTED);
+			break;
 		}
 		case M_SOURCEFILE:
+		{
+			// Dropped files and from the file dialog end up setting off
+			// outputfile's ModificationMessage. Only call get_media_info once:
+			get_media_info();
+		} // intentional fall-though
 		case M_OUTPUTFILE:
 		{
 			BuildLine();
@@ -689,9 +709,19 @@ void ffguiwin::MessageReceived(BMessage *message)
 
 			outputfile->SetText(filename);
 			set_outputfile_extension();
-			BuildLine();
-			set_encodebutton_state();
-			set_playbuttons_state();
+			break;
+		}
+		case M_INFO_OUTPUT:
+		{
+			BString info_data;
+			message->FindString("data", &info_data);
+			fMediainfo << info_data;
+			break;
+		}
+		case M_INFO_FINISHED:
+		{
+			parse_media_output();
+			update_media_info();
 			break;
 		}
 		case M_ENCODE:
@@ -705,7 +735,7 @@ void ffguiwin::MessageReceived(BMessage *message)
 			files_string << sourcefile->Text() << " -> " << outputfile->Text();
 			fStatusBar->SetText(files_string.String());
 
-			BMessage start_encode_message(M_RUN_COMMAND);
+			BMessage start_encode_message(M_ENCODE_COMMAND);
 			start_encode_message.AddString("cmdline", commandline);
 			fCommandLauncher->PostMessage(&start_encode_message);
 			encode_duration = 0;
@@ -713,7 +743,7 @@ void ffguiwin::MessageReceived(BMessage *message)
 			duration_detected = false;
 			break;
 		}
-		case M_PROGRESS:
+		case M_ENCODE_PROGRESS:
 		{
 			BString progress_data;
 			message->FindString("data", &progress_data);
@@ -768,7 +798,7 @@ void ffguiwin::MessageReceived(BMessage *message)
 
 			break;
 		}
-		case M_COMMAND_FINISHED:
+		case M_ENCODE_FINISHED:
 		{
 			BNotification encodeFinished(B_INFORMATION_NOTIFICATION);
 			encodeFinished.SetGroup(B_TRANSLATE_SYSTEM_NAME("ffmpeg GUI"));
@@ -844,14 +874,144 @@ void ffguiwin::MessageReceived(BMessage *message)
 				break;
 
 			set_outputfile_extension();
-			BuildLine();
-			set_encodebutton_state();
 			break;
 		}
 		default:
 			BWindow::MessageReceived(message);
 			break;
 	}
+}
+
+
+void ffguiwin::get_media_info()
+{
+	// Reset media info and video/audio tags
+	fMediainfo = fVideoCodec = fAudioCodec = fVideoWidth = fVideoHeight = fVideoFramerate
+		= fDuration = fVideoBitrate = fAudioBitrate = fAudioSamplerate = fAudioChannelLayout
+		= "";
+
+	BString command;
+	command << "ffprobe -v error -show_entries format=duration,bit_rate:"
+		"stream=codec_name,width,height,r_frame_rate,sample_rate,channel_layout "
+		"-of default=noprint_wrappers=1 -select_streams v:0 "
+		<< "\"" << sourcefile->Text() << "\" ; ";
+	command << "ffprobe -v error -show_entries format=duration:"
+		"stream=codec_name,sample_rate,channel_layout,bit_rate "
+		"-of default=noprint_wrappers=1 -select_streams a:0 "
+		<< "\"" << sourcefile->Text() << "\"";
+
+	BMessage get_info_message(M_INFO_COMMAND);
+	get_info_message.AddString("cmdline", command);
+	fCommandLauncher->PostMessage(&get_info_message);
+}
+
+
+void ffguiwin::parse_media_output()
+{
+	BStringList list;
+	fMediainfo.ReplaceAll("\n", "=");
+	fMediainfo.Split("=", true, list);
+
+	if (list.HasString("width")) {	// video stream is always first
+		int32 index = list.IndexOf("codec_name");
+		fVideoCodec = list.StringAt(index + 1);
+		// Remove in case of 2nd "codec_name" of audio stream
+		list.Remove(index);
+
+		fVideoWidth = list.StringAt(list.IndexOf("width") + 1);
+		fVideoHeight = list.StringAt(list.IndexOf("height") + 1);
+		fVideoFramerate = list.StringAt(list.IndexOf("r_frame_rate") + 1);
+
+		fDuration = list.StringAt(list.IndexOf("duration") + 1);
+
+		index = list.IndexOf("bit_rate");
+		fVideoBitrate = list.StringAt(index + 1);
+		// Remove in case of 2nd "bit_rate" of audio stream
+		list.Remove(index);
+	}
+	if (list.HasString("sample_rate")) { // audio stream is second
+		fAudioCodec = list.StringAt(list.IndexOf("codec_name") + 1);
+		fAudioSamplerate = list.StringAt(list.IndexOf("sample_rate") + 1);
+		fAudioChannelLayout = list.StringAt(list.IndexOf("channel_layout") + 1);
+
+		if (fDuration == "") // if audio-only (not filled by video ffprobe above)
+			fDuration = list.StringAt(list.IndexOf("duration") + 1);
+
+		int32 index = list.IndexOf("bit_rate");
+		fAudioBitrate = list.StringAt(index + 1);
+	}
+}
+
+
+void ffguiwin::remove_over_precision(BString& float_string)
+{
+	// Remove trailing "0" and "."
+	while (true) {
+		if (float_string.EndsWith("0")) {
+			float_string.Truncate(float_string.CountChars() - 1);
+			if (float_string.EndsWith(".")) {
+				float_string.Truncate(float_string.CountChars() - 1);
+				break;
+			}
+		}
+		else break;
+	}
+}
+
+
+void ffguiwin::update_media_info()
+{
+	if (fVideoFramerate != "" && fVideoFramerate != "N/A") {
+		// Convert fractional representation (e.g. 50/1) to floating number
+		BStringList calclist;
+		bool status = fVideoFramerate.Split("/", true, calclist);
+		if (calclist.StringAt(1) != "0") {
+			float framerate = atof(calclist.StringAt(0)) / atof(calclist.StringAt(1));
+			fVideoFramerate.SetToFormat("%.3f", framerate);
+			remove_over_precision(fVideoFramerate);
+		}
+	}
+	if (fVideoBitrate != "" && fVideoFramerate != "N/A") {
+		// Convert bits/s to kBit/s
+		int32 vbitrate = int32(ceil(atof(fVideoBitrate) / 1024));
+		fVideoBitrate.SetToFormat("%" B_PRId32, vbitrate);
+	}
+	if (fAudioSamplerate != "" && fAudioSamplerate != "N/A") {
+		// Convert Hz to kHz
+		float samplerate = atof(fAudioSamplerate) / 1000;
+		fAudioSamplerate.SetToFormat("%.2f", samplerate);
+		remove_over_precision(fAudioSamplerate);
+	}
+	if (fAudioBitrate != "" && fAudioBitrate != "N/A") {
+		// Convert bits/s to kBit/s
+		int32 abitrate = ceil(atoi(fAudioBitrate) / 1024);
+		fAudioBitrate.SetToFormat("%" B_PRId32, abitrate);
+	}
+	if (fDuration != "N/A") {
+		// Convert seconds to HH:MM:SS
+		char durationText[64];
+		duration_to_string(atoi(fDuration), durationText, sizeof(durationText));
+		fDuration = durationText;
+	}
+	BString text;
+	text << "📺: "  ;
+	if (fVideoCodec == "")
+		text << B_TRANSLATE("No video track");
+	else {
+		text << fVideoCodec << ", " << fVideoWidth << "x" << fVideoHeight << ", ";
+		text << fVideoFramerate << " " << B_TRANSLATE("fps") << ", ";
+		text << fVideoBitrate << " " << "Kbit/s";
+	}
+	text << "    🔈: " ;
+	if (fAudioCodec == "")
+		text << B_TRANSLATE("No audio track");
+	else {
+		text << fAudioCodec << ", " << fAudioSamplerate << " " << "kHz, ";
+		text << fAudioChannelLayout << ", " << fAudioBitrate << " " <<  "Kbits/s";
+	}
+	text << "    🕛: "  << fDuration;
+
+	mediainfo->SetText(text.String());
 }
 
 

@@ -9,6 +9,7 @@
 /*
 	ffgui-window.h , 1/06/03
 	Zach Dykstra
+	Humdinger, humdingerb@gmail.com, 2022
 	Andi Machovec (BlueSky), andi.machovec@gmail.com, 2022
 */
 
@@ -28,6 +29,7 @@ class BTabView;
 class BStatusBar;
 class BFilePanel;
 class BString;
+class BStringView;
 class CommandLauncher;
 class ffguispinner;
 
@@ -42,6 +44,10 @@ class ffguiwin : public BWindow
 
 
 	private:
+			void get_media_info();
+			void parse_media_output();
+			void update_media_info();
+			void remove_over_precision(BString& float_string);
 			void set_playbuttons_state();
 			bool file_exists(const char* filepath);
 			void set_filetype(entry_ref* ref);
@@ -54,6 +60,7 @@ class ffguiwin : public BWindow
 			BView *topview;
 			// text views
 			BTextView *outputtext;
+			BStringView *mediainfo;
 			// text controls
 			BTextControl *sourcefile;
 			BTextControl *outputfile;
@@ -120,8 +127,23 @@ class ffguiwin : public BWindow
 
 			// bools
 			bool benablevideo, benableaudio, benablecropping, bdeletesource,bcustomres;
+
 			// bstrings
 			BString commandline;
+			BString fMediainfo;
+
+			// ffprobe stream tags
+			BString fVideoCodec;
+			BString fAudioCodec;
+			BString fVideoWidth;
+			BString fVideoHeight;
+			BString fVideoFramerate;
+			BString fDuration;
+			BString fVideoBitrate;
+			BString fAudioBitrate;
+			BString fAudioSamplerate;
+			BString fAudioChannelLayout;
+
 			// file panels
 			BFilePanel *fSourceFilePanel;
 			BFilePanel *fOutputFilePanel;

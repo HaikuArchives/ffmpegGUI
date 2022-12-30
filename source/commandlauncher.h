@@ -6,6 +6,12 @@
 #include <Messenger.h>
 #include <String.h>
 
+enum {
+	ENCODING = 0,
+	INFO
+};
+
+
 class CommandLauncher : public BLooper{
 public:
 	CommandLauncher(BMessenger *target_messenger);
@@ -15,8 +21,11 @@ private:
 	void run_command();
 
 	BString 	fCmdline;
+	BMessage	*fOutputMessage;
+	BMessage	*fFinishMessage;
 	BMessenger	*fTargetMessenger;
 	bool 		fBusy;
+	int32		fCommandFlag;
 };
 
 #endif
