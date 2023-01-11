@@ -15,6 +15,7 @@ CommandLauncher::CommandLauncher(BMessenger *target_messenger)
 	fFinishMessage(NULL)
 {
 	fBusy = false;
+	fErrorCode = 0;
 	Run();
 }
 
@@ -24,6 +25,15 @@ CommandLauncher::MessageReceived(BMessage *message)
 {
 	switch(message->what)
 	{
+		case M_STOP_COMMAND:
+		{
+			if(fBusy)
+			{
+				fErrorCode = ABORTED;
+				kill_thread(fThread);
+			}
+			break;
+		}
 		case M_ENCODE_COMMAND:
 		{
 			if(!fBusy)
@@ -32,8 +42,13 @@ CommandLauncher::MessageReceived(BMessage *message)
 				fFinishMessage = new BMessage(M_ENCODE_FINISHED);
 				message->FindString("cmdline", &fCmdline);
 				fBusy = true;
+				fErrorCode = 0;
 				fCommandFlag = ENCODING;
-				run_command();
+
+				thread_id thread = spawn_thread(_ffmpeg_command, "ffmpeg command",
+					B_LOW_PRIORITY, this);
+				if (thread >= B_OK)
+					resume_thread(thread);
 			}
 			break;
 		}
@@ -45,8 +60,13 @@ CommandLauncher::MessageReceived(BMessage *message)
 				fFinishMessage = new BMessage(M_INFO_FINISHED);
 				message->FindString("cmdline", &fCmdline);
 				fBusy = true;
+				fErrorCode = 0;
 				fCommandFlag = INFO;
-				run_command();
+
+				thread_id thread = spawn_thread(_ffmpeg_command, "ffprobe command",
+					B_LOW_PRIORITY, this);
+				if (thread >= B_OK)
+					resume_thread(thread);
 			}
 			break;
 		}
@@ -54,6 +74,14 @@ CommandLauncher::MessageReceived(BMessage *message)
 			BLooper::MessageReceived(message);
 	}
 
+}
+
+status_t
+CommandLauncher::_ffmpeg_command(void* _self)
+{
+	CommandLauncher* self = (CommandLauncher*)_self;
+	self->run_command();
+	return B_OK;
 }
 
 
@@ -93,20 +121,19 @@ CommandLauncher::run_command()
 	arguments[2] = fCmdline.String();
 	arguments[3] = nullptr;
 
-	thread_id proc_id = load_image(3, arguments, const_cast<const char **>(environ));
-	status_t error_code = proc_id;
+	fThread = load_image(3, arguments, const_cast<const char **>(environ));
+	status_t error_code = fThread;
 
 	if (error_code >= 0)
 	{
-		setpgid(proc_id, proc_id);
-		error_code = resume_thread(proc_id);
+		setpgid(fThread, fThread);
+		error_code = resume_thread(fThread);
 	}
 
 	dup2(original_stderr, STDERR_FILENO);
 	dup2(original_stdout, STDOUT_FILENO);
 
 	//read stderr output and send to target
-	bool error_detected = false;
 	if (error_code >= 0)
 	{
 		char buffer[4096];
@@ -132,8 +159,8 @@ CommandLauncher::run_command()
 			BString output_string(buffer);
 			if(output_string.FindFirst("Error while decoding stream") != B_ERROR)
 			{
-				error_detected = true;
-				kill_thread(proc_id);
+				fErrorCode = FAILED;
+				kill_thread(fThread);
 				break;
 			}
 		}
@@ -146,13 +173,12 @@ CommandLauncher::run_command()
 	close(stdout_pipe[0]);
 
 	status_t proc_exit_code = 0;
-	wait_for_thread(proc_id, &proc_exit_code);
+	wait_for_thread(fThread, &proc_exit_code);
 
 	//inform target that the command has finished
-	if(error_detected)
-	{
-		proc_exit_code = 911;
-	}
+	if (fErrorCode != SUCCESS)
+		proc_exit_code = fErrorCode;
+
 	fFinishMessage->AddInt32("exitcode", proc_exit_code);
 	fTargetMessenger->SendMessage(fFinishMessage);
 	fBusy = false;

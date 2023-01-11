@@ -131,7 +131,6 @@ ffguiwin::ffguiwin(BRect r, const char *name, window_type type, ulong mode)
 	BFont font(be_plain_font);
 	font.SetSize(ceilf(font.Size() * 0.9));
 	mediainfo->SetFont(&font, B_FONT_SIZE);
-//	mediainfo->Parent()->SetHighColor(tint_color(ui_color(B_PANEL_TEXT_COLOR), 0.6));
 
 	sourceplaybutton = new BButton("⯈", new BMessage(M_PLAY_SOURCE));
 	outputplaybutton = new BButton("⯈", new BMessage(M_PLAY_OUTPUT));
@@ -726,6 +725,9 @@ void ffguiwin::MessageReceived(BMessage *message)
 		}
 		case M_ENCODE:
 		{
+			encodebutton->SetLabel(B_TRANSLATE("Stop"));
+			encodebutton->SetMessage(new BMessage(M_STOP_ENCODING));
+
 			outputtext->SelectAll();
 			outputtext->Clear();
 			commandline.SetTo(encode->Text());
@@ -741,6 +743,12 @@ void ffguiwin::MessageReceived(BMessage *message)
 			encode_duration = 0;
 			encode_time = 0;
 			duration_detected = false;
+			break;
+		}
+		case M_STOP_ENCODING:
+		{
+			BMessage stop_encode_message(M_STOP_COMMAND);
+			fCommandLauncher->PostMessage(&stop_encode_message);
 			break;
 		}
 		case M_ENCODE_PROGRESS:
@@ -800,14 +808,23 @@ void ffguiwin::MessageReceived(BMessage *message)
 		}
 		case M_ENCODE_FINISHED:
 		{
-			BNotification encodeFinished(B_INFORMATION_NOTIFICATION);
-			encodeFinished.SetGroup(B_TRANSLATE_SYSTEM_NAME("ffmpeg GUI"));
-			BString title(B_TRANSLATE("Encoding"));
+			encodebutton->SetLabel(B_TRANSLATE("Encode"));
+			encodebutton->SetMessage(new BMessage(M_ENCODE));
+
+			fStatusBar->Reset();
+			fStatusBar->SetText(kIdleText);
 
 			status_t exit_code;
 			message->FindInt32("exitcode", &exit_code);
 
-			if (exit_code == 0) {
+			if (exit_code == ABORTED)
+				break;
+
+			BNotification encodeFinished(B_INFORMATION_NOTIFICATION);
+			encodeFinished.SetGroup(B_TRANSLATE_SYSTEM_NAME("ffmpeg GUI"));
+			BString title(B_TRANSLATE("Encoding"));
+
+			if (exit_code == SUCCESS) {
 				encodeFinished.SetContent(B_TRANSLATE("Encoding finished successfully!"));
 
 				if (fPlayCheck->Value() == B_CONTROL_ON)
@@ -831,9 +848,6 @@ void ffguiwin::MessageReceived(BMessage *message)
 
 			encodeFinished.SetTitle(title);
 			encodeFinished.Send();
-
-			fStatusBar->Reset();
-			fStatusBar->SetText(kIdleText);
 			break;
 		}
 		case M_PLAY_SOURCE:
