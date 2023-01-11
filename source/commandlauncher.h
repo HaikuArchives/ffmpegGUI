@@ -11,6 +11,11 @@ enum {
 	INFO
 };
 
+enum {
+	SUCCESS = 0,
+	FAILED ,
+	ABORTED
+};
 
 class CommandLauncher : public BLooper{
 public:
@@ -18,7 +23,8 @@ public:
 	void MessageReceived(BMessage *message);
 
 private:
-	void run_command();
+	static status_t		_ffmpeg_command(void* self);
+	void 				run_command();
 
 	BString 	fCmdline;
 	BMessage	*fOutputMessage;
@@ -26,6 +32,8 @@ private:
 	BMessenger	*fTargetMessenger;
 	bool 		fBusy;
 	int32		fCommandFlag;
+	thread_id	fThread;
+	status_t	fErrorCode;
 };
 
 #endif
