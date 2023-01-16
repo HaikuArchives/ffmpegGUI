@@ -13,12 +13,14 @@
 	Andi Machovec (BlueSky), andi.machovec@gmail.com, 2022
 */
 
+#include <Invoker.h>
 #include <Window.h>
 
 
 class BView;
 class BTextView;
 class BTextControl;
+class BAlert;
 class BButton;
 class BSpinner;
 class BCheckBox;
@@ -120,6 +122,7 @@ class ffguiwin : public BWindow
 			int32 encode_time;
 			BCheckBox *fPlayCheck;
 			BStatusBar *fStatusBar;
+			time_t encode_starttime;
 
 			//menu bar
 			BMenuBar *fTopMenuBar;
@@ -147,8 +150,11 @@ class ffguiwin : public BWindow
 			BFilePanel *fSourceFilePanel;
 			BFilePanel *fOutputFilePanel;
 
-			CommandLauncher *fCommandLauncher;
+			// alerts
+			BAlert* fStopAlert;
+			BInvoker fAlertInvoker;
 
+			CommandLauncher *fCommandLauncher;
 };
 
 #endif
