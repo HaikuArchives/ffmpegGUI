@@ -118,7 +118,6 @@ class ffguiwin : public BWindow
 			//progress bar
 			int32 encode_duration;
 			int32 encode_time;
-			bool duration_detected;
 			BCheckBox *fPlayCheck;
 			BStatusBar *fStatusBar;
 

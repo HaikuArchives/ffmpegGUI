@@ -6,7 +6,7 @@
 /*
 	ffgui-window.cpp , 1/06/03
 	Zach Dykstra
-	Humdinger, humdingerb@gmail.com, 2022
+	Humdinger, humdingerb@gmail.com, 2022-2023
 	Andi Machovec (BlueSky), andi.machovec@gmail.com, 2022
 */
 
@@ -719,6 +719,7 @@ void ffguiwin::MessageReceived(BMessage *message)
 		}
 		case M_INFO_FINISHED:
 		{
+			encode_duration = 0;
 			parse_media_output();
 			update_media_info();
 			break;
@@ -740,9 +741,7 @@ void ffguiwin::MessageReceived(BMessage *message)
 			BMessage start_encode_message(M_ENCODE_COMMAND);
 			start_encode_message.AddString("cmdline", commandline);
 			fCommandLauncher->PostMessage(&start_encode_message);
-			encode_duration = 0;
 			encode_time = 0;
-			duration_detected = false;
 			break;
 		}
 		case M_STOP_ENCODING:
@@ -759,49 +758,31 @@ void ffguiwin::MessageReceived(BMessage *message)
 			outputtext->ScrollTo(0.0, 1000000.0);
 
 			//calculate progress percentage
-			if (duration_detected) 	//the duration appears in the data all the time but
-			{						//we need it only once
-
-				int32 time_startpos = progress_data.FindFirst("time=");
-				if (time_startpos > -1)
-				{
-					time_startpos+=5;
-					int32 time_endpos = progress_data.FindFirst(".", time_startpos);
-					BString time_string;
-					progress_data.CopyInto(time_string, time_startpos, time_endpos-time_startpos);
-					encode_time = get_seconds(time_string);
-
-					int32 encode_percentage;
-					if (encode_duration > 0)
-					{
-						encode_percentage = (encode_time * 100) / encode_duration;
-					}
-					else
-					{
-						encode_percentage = 0;
-					}
-
-					BMessage progress_update_message(B_UPDATE_STATUS_BAR);
-					progress_update_message.AddFloat("delta", encode_percentage - fStatusBar->CurrentValue());
-					BString percentage_string;
-					percentage_string << encode_percentage << "%";
-					progress_update_message.AddString("trailing_text", percentage_string.String());
-					PostMessage(&progress_update_message, fStatusBar);
-				}
-
-			}
-			else
+			int32 time_startpos = progress_data.FindFirst("time=");
+			if (time_startpos > -1)
 			{
-				int32 duration_startpos = progress_data.FindFirst("Duration:");
-				if (duration_startpos > -1)
+				time_startpos+=5;
+				int32 time_endpos = progress_data.FindFirst(".", time_startpos);
+				BString time_string;
+				progress_data.CopyInto(time_string, time_startpos, time_endpos-time_startpos);
+				encode_time = get_seconds(time_string);
+
+				int32 encode_percentage;
+				if (encode_duration > 0)
 				{
-					duration_startpos+=9;
-					int32 duration_endpos = progress_data.FindFirst(".", duration_startpos);
-					BString duration_string;
-					progress_data.CopyInto(duration_string, duration_startpos, duration_endpos-duration_startpos);
-					encode_duration = get_seconds(duration_string);
-					duration_detected = true;
+					encode_percentage = (encode_time * 100) / encode_duration;
 				}
+				else
+				{
+					encode_percentage = 0;
+				}
+
+				BMessage progress_update_message(B_UPDATE_STATUS_BAR);
+				progress_update_message.AddFloat("delta", encode_percentage - fStatusBar->CurrentValue());
+				BString percentage_string;
+				percentage_string << encode_percentage << "%";
+				progress_update_message.AddString("trailing_text", percentage_string.String());
+				PostMessage(&progress_update_message, fStatusBar);
 			}
 
 			break;
@@ -1002,9 +983,10 @@ void ffguiwin::update_media_info()
 		fAudioBitrate.SetToFormat("%" B_PRId32, abitrate);
 	}
 	if (fDuration != "N/A") {
+		encode_duration = atoi(fDuration); // Also used to calculate progress bar
 		// Convert seconds to HH:MM:SS
 		char durationText[64];
-		duration_to_string(atoi(fDuration), durationText, sizeof(durationText));
+		duration_to_string(encode_duration, durationText, sizeof(durationText));
 		fDuration = durationText;
 	}
 	BString text;
