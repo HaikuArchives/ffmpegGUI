@@ -22,6 +22,7 @@ class BTextView;
 class BTextControl;
 class BAlert;
 class BButton;
+class BDecimalSpinner;
 class BSpinner;
 class BCheckBox;
 class BPopUpMenu;
@@ -34,6 +35,7 @@ class BString;
 class BStringView;
 class CommandLauncher;
 class ffguispinner;
+class ffguidecspinner;
 
 
 class ffguiwin : public BWindow
@@ -57,6 +59,7 @@ class ffguiwin : public BWindow
 			void set_outputfile_extension();
 			int32 get_seconds(BString& time_string);
 			void set_spinner_minsize(BSpinner *spinner);
+			void set_spinner_minsize(BDecimalSpinner *spinner);
 			void play_video(const char* filepath);
 			//main view
 			BView *topview;
@@ -75,7 +78,7 @@ class ffguiwin : public BWindow
 			BButton *encodebutton;
 			// spin buttons
 			ffguispinner *vbitrate;
-			ffguispinner *framerate;
+			ffguidecspinner *framerate;
 			ffguispinner *xres;
 			ffguispinner *yres;
 			ffguispinner *topcrop;
