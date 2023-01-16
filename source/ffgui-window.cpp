@@ -731,8 +731,17 @@ void ffguiwin::MessageReceived(BMessage *message)
 			commandline.SetTo(encode->Text());
 			commandline.Append(" -y");
 
-			BString files_string;
-			files_string << sourcefile->Text() << " -> " << outputfile->Text();
+			BString files_string(B_TRANSLATE("Encoding: %source%   →   %output%"));
+			BString name;
+			BString filename = sourcefile->Text();
+			int32 position = filename.FindLast("/") + 1;
+			filename.CopyInto(name, position, filename.Length() - position);
+			files_string.ReplaceFirst("%source%", name);
+			filename = outputfile->Text();
+			position = filename.FindLast("/") + 1;
+			filename.CopyInto(name, position, filename.Length() - position);
+			files_string.ReplaceFirst("%output%", name);
+
 			fStatusBar->SetText(files_string.String());
 
 			BMessage start_encode_message(M_ENCODE_COMMAND);
