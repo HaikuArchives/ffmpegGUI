@@ -300,10 +300,9 @@ ffguiwin::ffguiwin(BRect r, const char *name, window_type type, ulong mode)
 	BuildLine();
 
 	// create tabs and boxes
-	BBox *fileoptionsbox = new BBox("");
-	fileoptionsbox->SetLabel(B_TRANSLATE("File options"));
-	BGroupLayout *fileoptionslayout = BLayoutBuilder::Group<>(B_VERTICAL, B_USE_SMALL_SPACING)
-		.SetInsets(B_USE_DEFAULT_SPACING, B_USE_DEFAULT_SPACING,
+	BView *fileoptionsview = new BView("fileoptions", B_SUPPORTS_LAYOUT);
+	BLayoutBuilder::Group<>(fileoptionsview,B_VERTICAL, B_USE_SMALL_SPACING)
+		.SetInsets(B_USE_DEFAULT_SPACING, 0,
 					B_USE_DEFAULT_SPACING, B_USE_DEFAULT_SPACING)
 		.AddGrid(B_USE_SMALL_SPACING, 0.0)
 			.Add(sourcefilebutton, 0, 0)
@@ -325,7 +324,6 @@ ffguiwin::ffguiwin(BRect r, const char *name, window_type type, ulong mode)
 			.AddStrut(B_USE_SMALL_SPACING)
 			.Add(outputaudioformat)
 		.End();
-	fileoptionsbox->AddChild(fileoptionslayout->View());
 
 	BBox *encodebox = new BBox("");
 	encodebox->SetLabel(B_TRANSLATE("Encode"));
@@ -468,7 +466,7 @@ ffguiwin::ffguiwin(BRect r, const char *name, window_type type, ulong mode)
 	BLayoutBuilder::Group<>(this, B_VERTICAL)
 		.SetInsets(-2,0,-2,0)
 		.Add(fTopMenuBar)
-		.Add(fileoptionsbox)
+		.Add(fileoptionsview)
 		.Add(tabview)
 		.Add(encodebox)
 		.AddGroup(B_HORIZONTAL)
