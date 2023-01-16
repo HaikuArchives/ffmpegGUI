@@ -181,7 +181,7 @@ ffguiwin::ffguiwin(BRect r, const char *name, window_type type, ulong mode)
 	enablevideo = new BCheckBox("", B_TRANSLATE("Enable video encoding"), new BMessage(M_ENABLEVIDEO));
 	enablevideo->SetValue(B_CONTROL_ON);
 	vbitrate = new ffguispinner("", B_TRANSLATE("Bitrate (Kbit/s):"), new BMessage(M_VBITRATE));
-	framerate = new ffguispinner("", B_TRANSLATE("Framerate (fps):"), new BMessage(M_FRAMERATE));
+	framerate = new ffguidecspinner("", B_TRANSLATE("Framerate (fps):"), new BMessage(M_FRAMERATE));
 	customres = new BCheckBox("", B_TRANSLATE("Use custom resolution"), new BMessage(M_CUSTOMRES));
 	xres = new ffguispinner("", B_TRANSLATE("Width:"), new BMessage(M_XRES));
 	yres = new ffguispinner("", B_TRANSLATE("Height:"), new BMessage(M_YRES));
@@ -261,7 +261,7 @@ ffguiwin::ffguiwin(BRect r, const char *name, window_type type, ulong mode)
 	vbitrate->SetMinValue(64);
 	vbitrate->SetMaxValue(50000);
 	framerate->SetMinValue(1);
-	framerate->SetMaxValue(60);
+	framerate->SetMaxValue(120);
 	xres->SetMinValue(160);
 	xres->SetMaxValue(7680);
 	yres->SetMinValue(120);
@@ -1138,6 +1138,17 @@ ffguiwin::set_spinner_minsize(BSpinner *spinner)
 	textview_prefsize.height=B_SIZE_UNSET;
 	spinner->CreateTextViewLayoutItem()->SetExplicitMinSize(textview_prefsize);
 }
+
+
+void
+ffguiwin::set_spinner_minsize(BDecimalSpinner *spinner)
+{
+	BSize textview_prefsize = spinner->TextView()->PreferredSize();
+	textview_prefsize.width+=20;
+	textview_prefsize.height=B_SIZE_UNSET;
+	spinner->CreateTextViewLayoutItem()->SetExplicitMinSize(textview_prefsize);
+}
+
 
 void
 ffguiwin::play_video(const char* filepath)
