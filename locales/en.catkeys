@@ -1,4 +1,4 @@
-1	English	application/x-vnd.HaikuArchives-ffmpegGUI	967741674
+1	English	application/x-vnd.HaikuArchives-ffmpegGUI	399343023
 Deinterlace pictures	Window		Deinterlace pictures
 Use four motion vector	Window		Use four motion vector
 Start	Window		Start
@@ -8,11 +8,13 @@ Left:	Window		Left:
 Min video quantiser scale:	Window		Min video quantiser scale:
 Output	Window		Output
 Video quantiser scale compression:	Window		Video quantiser scale compression:
+ffmpegGUI	System name		ffmpegGUI
 GOP size:	Window		GOP size:
 Bitrate (Kbit/s):	Window		Bitrate (Kbit/s):
 Audio channels:	Window		Audio channels:
 Quit	Window		Quit
 Framerate (fps):	Window		Framerate (fps):
+Stop	Window		Stop
 Use high quality settings	Window		Use high quality settings
 Encode	Window		Encode
 No audio track	Window		No audio track
@@ -35,8 +37,8 @@ Enable video cropping	Window		Enable video cropping
 Enable video encoding	Window		Enable video encoding
 Output audio format:	Window		Output audio format:
 Top:	Window		Top:
-About	Window		About
 Encoding	Window		Encoding
+About	Window		About
 Source file	Window		Source file
 App	Window		App
 Advanced options	Window		Advanced options
@@ -44,7 +46,7 @@ Encoding finished successfully!	Window		Encoding finished successfully!
 Height:	Window		Height:
 Video quantiser scale blur:	Window		Video quantiser scale blur:
 Thanks to:\nmmu_man, Jeremy, DeadYak, Marco, etc.\nmd@geekport.com\nreds <reds@sakamoto.pl> for making it more or less usable.\nHave fun!	Application		Thanks to:\nmmu_man, Jeremy, DeadYak, Marco, etc.\nmd@geekport.com\nreds <reds@sakamoto.pl> for making it more or less usable.\nHave fun!
-File options	Window		File options
+Encoding: %source%   →   %output%	Window		Encoding: %source%   →   %output%
 Bottom:	Window		Bottom:
 Right:	Window		Right:
 Max difference between quantiser scale:	Window		Max difference between quantiser scale:
