@@ -17,6 +17,7 @@
 #include "commandlauncher.h"
 #include "DurationToString.h"
 
+#include <Alert.h>
 #include <Box.h>
 #include <Catalog.h>
 #include <Entry.h>
@@ -113,6 +114,10 @@ void ffguiwin::BuildLine() // ask all the views what they hold, reset the comman
 ffguiwin::ffguiwin(BRect r, const char *name, window_type type, ulong mode)
 	: BWindow(r,name,type,mode)
 {
+	// Invoker for the Alerts to use to send their messages to the timer
+	fAlertInvoker.SetMessage(new BMessage(M_STOP_ALERT_BUTTON));
+	fAlertInvoker.SetTarget(this);
+
 	//initialize GUI elements
 	fTopMenuBar = new BMenuBar("topmenubar");
 
@@ -725,6 +730,7 @@ void ffguiwin::MessageReceived(BMessage *message)
 		}
 		case M_ENCODE:
 		{
+			encode_starttime = real_time_clock();
 			encodebutton->SetLabel(B_TRANSLATE("Stop"));
 			encodebutton->SetMessage(new BMessage(M_STOP_ENCODING));
 
@@ -747,8 +753,26 @@ void ffguiwin::MessageReceived(BMessage *message)
 		}
 		case M_STOP_ENCODING:
 		{
-			BMessage stop_encode_message(M_STOP_COMMAND);
-			fCommandLauncher->PostMessage(&stop_encode_message);
+			time_t now = (time_t)real_time_clock();
+			// Only show if encoding has been running for more than 30s
+			if (now - encode_starttime > 30) {
+				fStopAlert = new BAlert("abort", B_TRANSLATE(
+					"Are you sure, that you want to abort the encoding?\n"),
+					B_TRANSLATE("Cancel"), B_TRANSLATE("Stop encoding"));
+				fStopAlert->SetShortcut(0, B_ESCAPE);
+				fStopAlert->Go(&fAlertInvoker);
+			}
+			break;
+		}
+		case M_STOP_ALERT_BUTTON:
+		{
+			fStopAlert = NULL;
+			int32 selection = -1;
+			message->FindInt32("which", &selection);
+			if (selection == 1) {
+				BMessage stop_encode_message(M_STOP_COMMAND);
+				fCommandLauncher->PostMessage(&stop_encode_message);
+			}
 			break;
 		}
 		case M_ENCODE_PROGRESS:
@@ -848,6 +872,16 @@ void ffguiwin::MessageReceived(BMessage *message)
 
 			encodeFinished.SetTitle(title);
 			encodeFinished.Send();
+
+			if (fStopAlert != NULL) {
+				fStopAlert->Lock();
+				fStopAlert->TextView()->SetText(B_TRANSLATE(
+					"Too late! Encoding has already finished.\n"));
+				BButton* button = fStopAlert->ButtonAt(1);
+				button->SetLabel(B_TRANSLATE_COMMENT("Duh!",
+					"Button label of stop-encoding-alert if you're too late..."));
+				fStopAlert->Unlock();
+			}
 			break;
 		}
 		case M_PLAY_SOURCE:
