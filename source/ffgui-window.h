@@ -51,7 +51,7 @@ class ffguiwin : public BWindow
 			void set_playbuttons_state();
 			bool file_exists(const char* filepath);
 			void set_filetype(entry_ref* ref);
-			void set_encodebutton_state();
+			void is_ready_to_encode();
 			void set_outputfile_extension();
 			int32 get_seconds(BString& time_string);
 			void set_spinner_minsize(BSpinner *spinner);
@@ -61,6 +61,7 @@ class ffguiwin : public BWindow
 			// text views
 			BTextView *outputtext;
 			BStringView *mediainfo;
+			BStringView *outputcheck;
 			// text controls
 			BTextControl *sourcefile;
 			BTextControl *outputfile;
