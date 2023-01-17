@@ -55,12 +55,22 @@
 #define B_TRANSLATION_CONTEXT "Window"
 
 static const char* kIdleText = B_TRANSLATE_MARK("Waiting to start encoding" B_UTF8_ELLIPSIS);
-
+static const char* kEmptySource = B_TRANSLATE_MARK("Please select a source file.");
+static const char* kSourceDoesntExist = B_TRANSLATE_MARK(
+	"There's no file with that name.");
+static const char* kOutputExists = B_TRANSLATE_MARK(
+	"This file already exists. It will be overwritten!");
+static const char* kOutputIsSource = B_TRANSLATE_MARK(
+	"Cannot overwrite the source file. Please choose another output file name.");
 
 void ffguiwin::BuildLine() // ask all the views what they hold, reset the command string
 {
+	BString source_filename(sourcefile->Text());
+	BString output_filename(outputfile->Text());
+	source_filename.Trim();
+	output_filename.Trim();
 	BString commandline("ffmpeg -i ");
-	commandline << "\"" << sourcefile->Text() << "\"";  //append the input file name
+	commandline << "\"" << source_filename << "\"";  //append the input file name
 
 	//this really is a hack to get mkv output working. Should and will be replaced by a proper formats class
 	//that handles format name, commandline option and file extension in a proper way
@@ -106,7 +116,7 @@ void ffguiwin::BuildLine() // ask all the views what they hold, reset the comman
 	{
 		commandline << (" -an");
 	}
-	commandline << " \"" << outputfile->Text() << "\"";
+	commandline << " \"" << output_filename << "\"";
 	encode->SetText(commandline.String());
 }
 
@@ -123,19 +133,23 @@ ffguiwin::ffguiwin(BRect r, const char *name, window_type type, ulong mode)
 
 	sourcefilebutton = new BButton(B_TRANSLATE("Source file"), new BMessage(M_SOURCE));
 	sourcefilebutton->SetExplicitMaxSize(BSize(B_SIZE_UNLIMITED, B_SIZE_UNLIMITED));
-	sourcefile = new BTextControl("", "", NULL);
+	sourcefile = new BTextControl("", "", new BMessage('srcf'));
 	sourcefile->SetModificationMessage(new BMessage(M_SOURCEFILE));
 
-	outputfilebutton = new BButton(B_TRANSLATE("Output file"), new BMessage(M_OUTPUT));
-	outputfilebutton->SetExplicitMaxSize(BSize(B_SIZE_UNLIMITED, B_SIZE_UNLIMITED));
-	outputfile = new BTextControl("", "", NULL);
-	outputfile->SetModificationMessage(new BMessage(M_OUTPUTFILE));
-
-	mediainfo = new BStringView("mediainfo", B_TRANSLATE("Select a source file."));
+	mediainfo = new BStringView("mediainfo", kEmptySource);
 	mediainfo->SetExplicitMaxSize(BSize(B_SIZE_UNLIMITED, B_SIZE_UNSET));
 	BFont font(be_plain_font);
 	font.SetSize(ceilf(font.Size() * 0.9));
 	mediainfo->SetFont(&font, B_FONT_SIZE);
+
+	outputfilebutton = new BButton(B_TRANSLATE("Output file"), new BMessage(M_OUTPUT));
+	outputfilebutton->SetExplicitMaxSize(BSize(B_SIZE_UNLIMITED, B_SIZE_UNLIMITED));
+	outputfile = new BTextControl("", "", new BMessage('outf'));
+	outputfile->SetModificationMessage(new BMessage(M_OUTPUTFILE));
+
+	outputcheck = new BStringView("outputcheck", "");
+	outputcheck->SetExplicitMaxSize(BSize(B_SIZE_UNLIMITED, B_SIZE_UNSET));
+	outputcheck->SetFont(&font, B_FONT_SIZE);
 
 	sourceplaybutton = new BButton("⯈", new BMessage(M_PLAY_SOURCE));
 	outputplaybutton = new BButton("⯈", new BMessage(M_PLAY_OUTPUT));
@@ -314,10 +328,10 @@ ffguiwin::ffguiwin(BRect r, const char *name, window_type type, ulong mode)
 			.Add(sourcefile, 1, 0)
 			.Add(sourceplaybutton, 2, 0)
 			.Add(mediainfo, 1, 1, 2, 1)
-			.Add(BSpaceLayoutItem::CreateVerticalStrut(B_USE_SMALL_SPACING), 1, 2)
 			.Add(outputfilebutton, 0, 3)
 			.Add(outputfile, 1, 3)
 			.Add(outputplaybutton, 2, 3)
+			.Add(outputcheck, 1, 4, 2, 1)
 			.SetColumnWeight(0, 0)
 			.SetColumnWeight(1, 1)
 			.SetColumnWeight(2, 0)
@@ -519,26 +533,28 @@ void ffguiwin::MessageReceived(BMessage *message)
 		}
 		case M_SOURCEFILE:
 		{
-			// Dropped files and from the file dialog end up setting off
-			// outputfile's ModificationMessage. Only call get_media_info once:
 			get_media_info();
 		} // intentional fall-though
 		case M_OUTPUTFILE:
 		{
 			BuildLine();
-			set_encodebutton_state();
+			is_ready_to_encode();
 			set_playbuttons_state();
+
 			break;
 		}
 		case M_OUTPUTFILEFORMAT:
 		{
 			BString outputfilename(outputfile->Text());
 			outputfilename=outputfilename.Trim();
+
 			if (!outputfilename.IsEmpty())
 			{
 				set_outputfile_extension();
+				is_ready_to_encode();
 				set_playbuttons_state();
 			}
+
 			BuildLine();
 			break;
 		}
@@ -693,9 +709,6 @@ void ffguiwin::MessageReceived(BMessage *message)
 			sourcefile->SetText(file_path.Path());
 			outputfile->SetText(file_path.Path());
 			set_outputfile_extension();
-			BuildLine();
-			set_encodebutton_state();
-			set_playbuttons_state();
 			break;
 		}
 		case M_OUTPUTFILE_REF:
@@ -826,6 +839,11 @@ void ffguiwin::MessageReceived(BMessage *message)
 			fStatusBar->Reset();
 			fStatusBar->SetText(kIdleText);
 
+			if (file_exists(outputfile->Text()))
+				outputcheck->SetText(kOutputExists);
+			else
+				outputcheck->SetText("");
+
 			status_t exit_code;
 			message->FindInt32("exitcode", &exit_code);
 
@@ -925,7 +943,6 @@ void ffguiwin::get_media_info()
 	fMediainfo = fVideoCodec = fAudioCodec = fVideoWidth = fVideoHeight = fVideoFramerate
 		= fDuration = fVideoBitrate = fAudioBitrate = fAudioSamplerate = fAudioChannelLayout
 		= "";
-
 	BString command;
 	command << "ffprobe -v error -show_entries format=duration,bit_rate:"
 		"stream=codec_name,width,height,r_frame_rate,sample_rate,channel_layout "
@@ -1049,6 +1066,7 @@ void ffguiwin::update_media_info()
 	text << "    🕛: "  << fDuration;
 
 	mediainfo->SetText(text.String());
+	is_ready_to_encode();
 }
 
 
@@ -1087,26 +1105,47 @@ void ffguiwin::set_filetype(entry_ref* ref)
 }
 
 
-void ffguiwin::set_encodebutton_state()
+void ffguiwin::is_ready_to_encode()
 {
-	bool encodebutton_enabled;
-
 	BString source_filename(sourcefile->Text());
 	BString output_filename(outputfile->Text());
 	source_filename.Trim();
 	output_filename.Trim();
 
+	bool ready = true;
+	sourcefile->MarkAsInvalid(false);
+	outputfile->MarkAsInvalid(false);
 
-	if (!(source_filename.IsEmpty()) && !(output_filename.IsEmpty()))
-	{
-		encodebutton_enabled = true;
+	if (source_filename.IsEmpty()) {
+		mediainfo->SetText(kEmptySource);
+		outputcheck->SetText("");
+		sourceplaybutton->SetEnabled(false);
+		ready = false;
 	}
+
+	if (!file_exists(source_filename)) {
+		mediainfo->SetText(kSourceDoesntExist);
+		sourcefile->MarkAsInvalid(true);
+		outputcheck->SetText("");
+		sourceplaybutton->SetEnabled(false);
+		ready = false;
+	}
+
+	if (file_exists(output_filename))
+		outputcheck->SetText(kOutputExists);
 	else
-	{
-		encodebutton_enabled = false;
+		outputcheck->SetText("");
+
+	if (output_filename == source_filename) {
+		outputcheck->SetText(kOutputIsSource);
+		outputfile->MarkAsInvalid(true);
+		ready = false;
 	}
 
-	encodebutton->SetEnabled(encodebutton_enabled);
+	if (output_filename.IsEmpty())
+		ready = false;
+
+	encodebutton->SetEnabled(ready);
 }
 
 
