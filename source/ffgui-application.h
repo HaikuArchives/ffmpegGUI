@@ -12,14 +12,20 @@
 	Andi Machovec (BlueSky), andi.machovec@gmail.com, 2022
 */
 
-#include "Application.h"
+#include "ffgui-window.h"
+
+#include <Application.h>
 
 
 class ffguiapp : public BApplication
 {
-	public: ffguiapp();
-			virtual void MessageReceived(BMessage* message);
-			void AboutRequested();
+public: 			ffguiapp();
+	virtual void	RefsReceived(BMessage* message);
+	virtual void 	MessageReceived(BMessage* message);
+			void 	AboutRequested();
+
+private:
+		ffguiwin*	fWindow;
 };
 
 #endif

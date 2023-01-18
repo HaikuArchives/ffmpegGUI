@@ -903,6 +903,18 @@ void ffguiwin::MessageReceived(BMessage *message)
 			play_video(outputfile->Text());
 			break;
 		}
+		case B_REFS_RECEIVED:
+		{
+			entry_ref file_ref;
+			if (message->FindRef("refs", &file_ref) == B_OK) {
+				BEntry file_entry(&file_ref, true);
+				BPath file_path(&file_entry);
+				sourcefile->SetText(file_path.Path());
+				outputfile->SetText(file_path.Path());
+				set_outputfile_extension();
+			}
+			break;
+		}
 		case B_SIMPLE_DATA:
 		{
 			BPoint drop_point;

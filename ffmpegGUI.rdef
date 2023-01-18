@@ -9,9 +9,12 @@ resource app_version {
 	internal = 0,
 
 	short_info = "ffmpeg GUI",
-	long_info = "a GUI frontend for ffmpeg"
+	long_info = "A GUI frontend for ffmpeg"
 };
 
+resource file_types message {
+	"types" = "video"
+};
 
 resource vector_icon array {
 	$"6E6369660B050105FF05DE01023F6EB4020006023502B63AD643BC348236570F"

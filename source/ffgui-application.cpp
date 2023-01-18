@@ -6,14 +6,13 @@
 /*
 	ffgui-application.cpp , 1/06/03
 	Zach Dykstra
-	Humdinger, humdingerb@gmail.com, 2022
+	Humdinger, humdingerb@gmail.com, 2022-2023
 	Andi Machovec (BlueSky), andi.machovec@gmail.com, 2022
 */
 
 // new app object
 
 #include "ffgui-application.h"
-#include "ffgui-window.h"
 #include "messages.h"
 
 #include <AboutWindow.h>
@@ -30,11 +29,16 @@ const char *kAppSignature = "application/x-vnd.HaikuArchives-ffmpegGUI";
 ffguiapp::ffguiapp()
 	: BApplication(kAppSignature)
 {
-	ffguiwin *window;
-	window = new ffguiwin(BRect(0,0,0,0),B_TRANSLATE_SYSTEM_NAME("ffmpegGUI"),B_TITLED_WINDOW,B_NOT_V_RESIZABLE);
-	window->Show();
+
+	fWindow = new ffguiwin(BRect(0,0,0,0),B_TRANSLATE_SYSTEM_NAME("ffmpegGUI"),B_TITLED_WINDOW,B_NOT_V_RESIZABLE);
+	fWindow->Show();
 }
 
+
+void ffguiapp::RefsReceived(BMessage* message)
+{
+	fWindow->PostMessage(message);
+}
 
 
 //message received
