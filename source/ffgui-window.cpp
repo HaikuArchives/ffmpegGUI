@@ -836,7 +836,7 @@ void ffguiwin::MessageReceived(BMessage *message)
 		}
 		case M_ENCODE_FINISHED:
 		{
-			encodebutton->SetLabel(B_TRANSLATE("Encode"));
+			encodebutton->SetLabel(B_TRANSLATE("Start"));
 			encodebutton->SetMessage(new BMessage(M_ENCODE));
 
 			fStatusBar->Reset();
