@@ -68,5 +68,6 @@ const uint32 M_STOP_COMMAND = 0x1706;
 
 //Misc
 const uint32 M_STOP_ALERT_BUTTON = 0x1800;
+const uint32 M_QUIT_ALERT_BUTTON = 0x1801;
 
 #endif
