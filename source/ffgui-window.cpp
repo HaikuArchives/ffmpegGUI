@@ -128,6 +128,8 @@ ffguiwin::ffguiwin(BRect r, const char *name, window_type type, ulong mode)
 	fAlertInvoker.SetMessage(new BMessage(M_STOP_ALERT_BUTTON));
 	fAlertInvoker.SetTarget(this);
 
+	encode_starttime = 0; // 0 means: no encoding in progress
+
 	//initialize GUI elements
 	fTopMenuBar = new BMenuBar("topmenubar");
 
@@ -515,7 +517,17 @@ ffguiwin::ffguiwin(BRect r, const char *name, window_type type, ulong mode)
 //quitting
 bool ffguiwin::QuitRequested()
 {
-	fCommandLauncher->PostMessage(B_QUIT_REQUESTED);
+	// encoding in progress
+	if (encode_starttime > 0) {
+		fAlertInvoker.SetMessage(new BMessage(M_QUIT_ALERT_BUTTON));
+		fStopAlert = new BAlert("abort", B_TRANSLATE(
+			"Are you sure, that you want to abort the encoding?\n"),
+			B_TRANSLATE("Cancel"), B_TRANSLATE("Stop encoding"));
+		fStopAlert->SetShortcut(0, B_ESCAPE);
+		fStopAlert->Go(&fAlertInvoker);
+		return false;
+	}
+
 	be_app->PostMessage(B_QUIT_REQUESTED);
 	return true;
 }
@@ -783,6 +795,7 @@ void ffguiwin::MessageReceived(BMessage *message)
 			} else {
 				BMessage stop_encode_message(M_STOP_COMMAND);
 				fCommandLauncher->PostMessage(&stop_encode_message);
+				encode_starttime = 0; // 0 means: no encoding in progress
 			}
 			break;
 		}
@@ -794,7 +807,22 @@ void ffguiwin::MessageReceived(BMessage *message)
 			if (selection == 1) {
 				BMessage stop_encode_message(M_STOP_COMMAND);
 				fCommandLauncher->PostMessage(&stop_encode_message);
+				encode_starttime = 0; // 0 means: no encoding in progress
 			}
+			break;
+		}
+		case M_QUIT_ALERT_BUTTON:
+		{
+			fStopAlert = NULL;
+			int32 selection = -1;
+			message->FindInt32("which", &selection);
+			if (selection == 1) {
+				BMessage stop_encode_message(M_STOP_COMMAND);
+				fCommandLauncher->PostMessage(&stop_encode_message);
+				encode_starttime = 0; // 0 means: no encoding in progress
+				be_app->PostMessage(B_QUIT_REQUESTED);
+			} else
+				fAlertInvoker.SetMessage(new BMessage(M_STOP_ALERT_BUTTON));
 			break;
 		}
 		case M_ENCODE_PROGRESS:
@@ -836,6 +864,8 @@ void ffguiwin::MessageReceived(BMessage *message)
 		}
 		case M_ENCODE_FINISHED:
 		{
+			encode_starttime = 0; // 0 means: no encoding in progress
+
 			encodebutton->SetLabel(B_TRANSLATE("Start"));
 			encodebutton->SetMessage(new BMessage(M_ENCODE));
 
