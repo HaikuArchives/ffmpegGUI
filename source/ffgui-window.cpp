@@ -136,7 +136,7 @@ ffguiwin::ffguiwin(BRect r, const char *name, window_type type, ulong mode)
 	sourcefile = new BTextControl("", "", new BMessage('srcf'));
 	sourcefile->SetModificationMessage(new BMessage(M_SOURCEFILE));
 
-	mediainfo = new BStringView("mediainfo", kEmptySource);
+	mediainfo = new BStringView("mediainfo", B_TRANSLATE_NOCOLLECT(kEmptySource));
 	mediainfo->SetExplicitMaxSize(BSize(B_SIZE_UNLIMITED, B_SIZE_UNSET));
 	BFont font(be_plain_font);
 	font.SetSize(ceilf(font.Size() * 0.9));
@@ -274,7 +274,7 @@ ffguiwin::ffguiwin(BRect r, const char *name, window_type type, ulong mode)
 	fPlayCheck->SetValue(B_CONTROL_OFF);
 
 	fStatusBar = new BStatusBar("");
-	fStatusBar->SetText(kIdleText);
+	fStatusBar->SetText(B_TRANSLATE_NOCOLLECT(kIdleText));
 
 	// set the min and max values for the spin controls
 	vbitrate->SetMinValue(64);
@@ -840,10 +840,10 @@ void ffguiwin::MessageReceived(BMessage *message)
 			encodebutton->SetMessage(new BMessage(M_ENCODE));
 
 			fStatusBar->Reset();
-			fStatusBar->SetText(kIdleText);
+			fStatusBar->SetText(B_TRANSLATE_NOCOLLECT(kIdleText));
 
 			if (file_exists(outputfile->Text()))
-				outputcheck->SetText(kOutputExists);
+				outputcheck->SetText(B_TRANSLATE_NOCOLLECT(kOutputExists));
 			else
 				outputcheck->SetText("");
 
@@ -1132,14 +1132,14 @@ void ffguiwin::is_ready_to_encode()
 	outputfile->MarkAsInvalid(false);
 
 	if (source_filename.IsEmpty()) {
-		mediainfo->SetText(kEmptySource);
+		mediainfo->SetText(B_TRANSLATE_NOCOLLECT(kEmptySource));
 		outputcheck->SetText("");
 		sourceplaybutton->SetEnabled(false);
 		ready = false;
 	}
 
 	if (!file_exists(source_filename)) {
-		mediainfo->SetText(kSourceDoesntExist);
+		mediainfo->SetText(B_TRANSLATE_NOCOLLECT(kSourceDoesntExist));
 		sourcefile->MarkAsInvalid(true);
 		outputcheck->SetText("");
 		sourceplaybutton->SetEnabled(false);
@@ -1147,12 +1147,12 @@ void ffguiwin::is_ready_to_encode()
 	}
 
 	if (file_exists(output_filename))
-		outputcheck->SetText(kOutputExists);
+		outputcheck->SetText(B_TRANSLATE_NOCOLLECT(kOutputExists));
 	else
 		outputcheck->SetText("");
 
 	if (output_filename == source_filename) {
-		outputcheck->SetText(kOutputIsSource);
+		outputcheck->SetText(B_TRANSLATE_NOCOLLECT(kOutputIsSource));
 		outputfile->MarkAsInvalid(true);
 		ready = false;
 	}
