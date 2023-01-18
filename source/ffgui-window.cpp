@@ -780,6 +780,9 @@ void ffguiwin::MessageReceived(BMessage *message)
 					B_TRANSLATE("Cancel"), B_TRANSLATE("Stop encoding"));
 				fStopAlert->SetShortcut(0, B_ESCAPE);
 				fStopAlert->Go(&fAlertInvoker);
+			} else {
+				BMessage stop_encode_message(M_STOP_COMMAND);
+				fCommandLauncher->PostMessage(&stop_encode_message);
 			}
 			break;
 		}
