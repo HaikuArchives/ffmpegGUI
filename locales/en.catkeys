@@ -1,34 +1,35 @@
-1	English	application/x-vnd.HaikuArchives-ffmpegGUI	2513581661
+1	English	application/x-vnd.HaikuArchives-ffmpegGUI	2039973223
 Deinterlace pictures	Window		Deinterlace pictures
+Min video quantizer scale:	Window		Min video quantizer scale:
+Copy commandline	Window		Copy commandline
 Use four motion vector	Window		Use four motion vector
 Start	Window		Start
 No video track	Window		No video track
-Use fixed video quantiser scale:	Window		Use fixed video quantiser scale:
 There's no file with that name.	Window		There's no file with that name.
 Left:	Window		Left:
-Min video quantiser scale:	Window		Min video quantiser scale:
 Output	Window		Output
 This file already exists. It will be overwritten!	Window		This file already exists. It will be overwritten!
-Video quantiser scale compression:	Window		Video quantiser scale compression:
 ffmpegGUI	System name		ffmpegGUI
 Cannot overwrite the source file. Please choose another output file name.	Window		Cannot overwrite the source file. Please choose another output file name.
 GOP size:	Window		GOP size:
 Bitrate (Kbit/s):	Window		Bitrate (Kbit/s):
 Audio channels:	Window		Audio channels:
-Stop encoding	Window		Stop encoding
 Please select a source file.	Window		Please select a source file.
+About ffmpegGUI	Window		About ffmpegGUI
 Quit	Window		Quit
+Abort encoding	Window		Abort encoding
 Framerate (fps):	Window		Framerate (fps):
 Duh!	Window	Button label of stop-encoding-alert if you're too late...	Duh!
 Cancel	Window		Cancel
-Stop	Window		Stop
 Use high quality settings	Window		Use high quality settings
 Are you sure, that you want to abort the encoding?\n	Window		Are you sure, that you want to abort the encoding?\n
+Video quantizer scale compression:	Window		Video quantizer scale compression:
 Encode	Window		Encode
 No audio track	Window		No audio track
 Cropping options	Window		Cropping options
 Audio	Window		Audio
 ffmpeg GUI	System name		ffmpeg GUI
+Select output file…	Window		Select output file…
 Width:	Window		Width:
 Play when finished	Window		Play when finished
 Output video format:	Window		Output video format:
@@ -39,28 +40,33 @@ Output file format:	Window		Output file format:
 Output file	Window		Output file
 Calculate PSNR of compressed frames	Window		Calculate PSNR of compressed frames
 A GUI frontend for ffmpeg	Application		A GUI frontend for ffmpeg
+Play output file	Window		Play output file
 Enable video cropping	Window		Enable video cropping
 'B' frames:	Window		'B' frames:
+File	Window		File
 Enable video encoding	Window		Enable video encoding
 Output audio format:	Window		Output audio format:
+Start encoding	Window		Start encoding
 Top:	Window		Top:
 Encoding	Window		Encoding
-About	Window		About
 Source file	Window		Source file
-App	Window		App
+Play source file	Window		Play source file
+Max difference between quantizer scale:	Window		Max difference between quantizer scale:
+Video quantizer scale blur:	Window		Video quantizer scale blur:
+Max video quantizer scale:	Window		Max video quantizer scale:
 Advanced options	Window		Advanced options
 Encoding finished successfully!	Window		Encoding finished successfully!
 Height:	Window		Height:
 Too late! Encoding has already finished.\n	Window		Too late! Encoding has already finished.\n
-Video quantiser scale blur:	Window		Video quantiser scale blur:
 Thanks to:\nmmu_man, Jeremy, DeadYak, Marco, etc.\nmd@geekport.com\nreds <reds@sakamoto.pl> for making it more or less usable.\nHave fun!	Application		Thanks to:\nmmu_man, Jeremy, DeadYak, Marco, etc.\nmd@geekport.com\nreds <reds@sakamoto.pl> for making it more or less usable.\nHave fun!
+Open source file…	Window		Open source file…
+Abort	Window		Abort
 Encoding: %source%   →   %output%	Window		Encoding: %source%   →   %output%
 Bottom:	Window		Bottom:
 Right:	Window		Right:
-Max difference between quantiser scale:	Window		Max difference between quantiser scale:
 Encoding failed.	Window		Encoding failed.
-Max video quantiser scale:	Window		Max video quantiser scale:
 Waiting to start encoding…	Window		Waiting to start encoding…
 Sampling rate (Hz):	Window		Sampling rate (Hz):
 fps	Window		fps
+Use fixed video quantizer scale:	Window		Use fixed video quantizer scale:
 Use custom resolution	Window		Use custom resolution
