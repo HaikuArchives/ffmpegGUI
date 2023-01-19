@@ -69,4 +69,9 @@ const uint32 M_STOP_COMMAND = 0x1706;
 //Misc
 const uint32 M_STOP_ALERT_BUTTON = 0x1800;
 
+// Menus
+const uint32 M_COPY_COMMAND = 0x1900;
+const uint32 M_DEFAULTS = 0x1901;
+
+
 #endif

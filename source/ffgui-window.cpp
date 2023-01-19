@@ -20,6 +20,7 @@
 #include <Alert.h>
 #include <Box.h>
 #include <Catalog.h>
+#include <Clipboard.h>
 #include <Entry.h>
 #include <File.h>
 #include <LayoutBuilder.h>
@@ -129,8 +130,6 @@ ffguiwin::ffguiwin(BRect r, const char *name, window_type type, ulong mode)
 	fAlertInvoker.SetTarget(this);
 
 	//initialize GUI elements
-	fTopMenuBar = new BMenuBar("topmenubar");
-
 	sourcefilebutton = new BButton(B_TRANSLATE("Source file"), new BMessage(M_SOURCE));
 	sourcefilebutton->SetExplicitMaxSize(BSize(B_SIZE_UNLIMITED, B_SIZE_UNLIMITED));
 	sourcefile = new BTextControl("", "", new BMessage('srcf'));
@@ -241,12 +240,12 @@ ffguiwin::ffguiwin(BRect r, const char *name, window_type type, ulong mode)
 	deinterlace = new BCheckBox("", B_TRANSLATE("Deinterlace pictures"), new BMessage(M_DEINTERLACE));
 	calcpsnr = new BCheckBox("", B_TRANSLATE("Calculate PSNR of compressed frames"), new BMessage(M_CALCPSNR));
 
-	fixedquant = new ffguispinner("", B_TRANSLATE("Use fixed video quantiser scale:"), nullptr);
-	minquant = new ffguispinner("", B_TRANSLATE("Min video quantiser scale:"), nullptr);
-	maxquant = new ffguispinner("", B_TRANSLATE("Max video quantiser scale:"), nullptr);
-	quantdifference = new ffguispinner("", B_TRANSLATE("Max difference between quantiser scale:"), nullptr);
-	quantblur = new ffguispinner("", B_TRANSLATE("Video quantiser scale blur:"), nullptr);
-	quantcompression = new ffguispinner("", B_TRANSLATE("Video quantiser scale compression:"), nullptr);
+	fixedquant = new ffguispinner("", B_TRANSLATE("Use fixed video quantizer scale:"), nullptr);
+	minquant = new ffguispinner("", B_TRANSLATE("Min video quantizer scale:"), nullptr);
+	maxquant = new ffguispinner("", B_TRANSLATE("Max video quantizer scale:"), nullptr);
+	quantdifference = new ffguispinner("", B_TRANSLATE("Max difference between quantizer scale:"), nullptr);
+	quantblur = new ffguispinner("", B_TRANSLATE("Video quantizer scale blur:"), nullptr);
+	quantcompression = new ffguispinner("", B_TRANSLATE("Video quantizer scale compression:"), nullptr);
 
 	outputtext = new BTextView("");
 	outputtext->SetViewColor(ui_color(B_PANEL_BACKGROUND_COLOR));
@@ -472,19 +471,51 @@ ffguiwin::ffguiwin(BRect r, const char *name, window_type type, ulong mode)
 	advancedoptionstab->SetLabel(B_TRANSLATE("Advanced options"));
 	outputtab->SetLabel(B_TRANSLATE("Output"));
 
-	//menu bar layout
-	BLayoutBuilder::Menu<>(fTopMenuBar)
-		.AddMenu(B_TRANSLATE("App"))
-			.AddItem(B_TRANSLATE("About"), B_ABOUT_REQUESTED)
-			.AddSeparator()
-			.AddItem(B_TRANSLATE("Quit"), B_QUIT_REQUESTED, 'Q')
-		.End()
-	.End();
+	//menu bar
+	BMenuBar* menuBar = new BMenuBar("menubar");
+	BMenu* menu;
+	BMenuItem* item;
+
+	menu = new BMenu(B_TRANSLATE("File"));
+	item = new BMenuItem(
+		B_TRANSLATE("Open source file" B_UTF8_ELLIPSIS), new BMessage(M_SOURCE), 'O');
+	menu->AddItem(item);
+	item = new BMenuItem(
+		B_TRANSLATE("Select output file" B_UTF8_ELLIPSIS), new BMessage(M_OUTPUT), 'S');
+	menu->AddItem(item);
+	menu->AddSeparatorItem();
+	fMenuPlaySource = new BMenuItem(B_TRANSLATE("Play source file"), new BMessage(M_PLAY_SOURCE), 'P');
+	fMenuPlaySource->SetEnabled(false);
+	menu->AddItem(fMenuPlaySource);
+	fMenuPlayOutput = new BMenuItem(
+		B_TRANSLATE("Play output file"), new BMessage(M_PLAY_OUTPUT), 'P', B_SHIFT_KEY);
+	fMenuPlayOutput->SetEnabled(false);
+	menu->AddItem(fMenuPlayOutput);
+	menu->AddSeparatorItem();
+	item = new BMenuItem(B_TRANSLATE("About ffmpegGUI"), new BMessage(B_ABOUT_REQUESTED));
+	menu->AddItem(item);
+	item = new BMenuItem(B_TRANSLATE("Quit"), new BMessage(B_QUIT_REQUESTED), 'Q');
+	menu->AddItem(item);
+	menuBar->AddItem(menu);
+
+	menu = new BMenu(B_TRANSLATE("Encoding"));
+	fMenuStartEncode = new BMenuItem(B_TRANSLATE("Start encoding"), new BMessage(M_ENCODE), 'E');
+	fMenuStartEncode->SetEnabled(false);
+	menu->AddItem(fMenuStartEncode);
+	fMenuStopEncode = new BMenuItem(B_TRANSLATE("Abort encoding"), new BMessage(M_STOP_ENCODING), 'A');
+	fMenuStopEncode->SetEnabled(false);
+	menu->AddItem(fMenuStopEncode);
+	menu->AddSeparatorItem();
+	item = new BMenuItem(B_TRANSLATE("Copy commandline"), new BMessage(M_COPY_COMMAND), 'C');
+	menu->AddItem(item);
+//	item = new BMenuItem(B_TRANSLATE("Default options"), new BMessage(M_DEFAULTS), 'D');
+//	menu->AddItem(item);
+	menuBar->AddItem(menu);
 
 	//main layout
 	BLayoutBuilder::Group<>(this, B_VERTICAL)
 		.SetInsets(-2,0,-2,0)
-		.Add(fTopMenuBar)
+		.Add(menuBar)
 		.Add(fileoptionsview)
 		.Add(tabview)
 		.Add(encodebox)
@@ -529,6 +560,22 @@ void ffguiwin::MessageReceived(BMessage *message)
 		case B_ABOUT_REQUESTED:
 		{
 			be_app->PostMessage(B_ABOUT_REQUESTED);
+			break;
+		}
+		case M_COPY_COMMAND:
+		{
+			BString text(encode->Text());
+			ssize_t textLen = text.Length();
+			BMessage* clip = (BMessage*)NULL;
+
+			if (be_clipboard->Lock()) {
+				be_clipboard->Clear();
+				if ((clip = be_clipboard->Data())) {
+					clip->AddData("text/plain", B_MIME_TYPE, text.String(), textLen);
+					be_clipboard->Commit();
+				}
+				be_clipboard->Unlock();
+			}
 			break;
 		}
 		case M_SOURCEFILE:
@@ -743,8 +790,10 @@ void ffguiwin::MessageReceived(BMessage *message)
 		case M_ENCODE:
 		{
 			encode_starttime = real_time_clock();
-			encodebutton->SetLabel(B_TRANSLATE("Stop"));
+			encodebutton->SetLabel(B_TRANSLATE("Abort"));
 			encodebutton->SetMessage(new BMessage(M_STOP_ENCODING));
+			fMenuStartEncode->SetEnabled(false);
+			fMenuStopEncode->SetEnabled(true);
 
 			outputtext->SelectAll();
 			outputtext->Clear();
@@ -777,7 +826,7 @@ void ffguiwin::MessageReceived(BMessage *message)
 			if (now - encode_starttime > 30) {
 				fStopAlert = new BAlert("abort", B_TRANSLATE(
 					"Are you sure, that you want to abort the encoding?\n"),
-					B_TRANSLATE("Cancel"), B_TRANSLATE("Stop encoding"));
+					B_TRANSLATE("Cancel"), B_TRANSLATE("Abort encoding"));
 				fStopAlert->SetShortcut(0, B_ESCAPE);
 				fStopAlert->Go(&fAlertInvoker);
 			} else {
@@ -838,6 +887,8 @@ void ffguiwin::MessageReceived(BMessage *message)
 		{
 			encodebutton->SetLabel(B_TRANSLATE("Start"));
 			encodebutton->SetMessage(new BMessage(M_ENCODE));
+			fMenuStartEncode->SetEnabled(true);
+			fMenuStopEncode->SetEnabled(false);
 
 			fStatusBar->Reset();
 			fStatusBar->SetText(B_TRANSLATE_NOCOLLECT(kIdleText));
@@ -1089,9 +1140,11 @@ void ffguiwin::set_playbuttons_state()
 {
 	bool valid = file_exists(sourcefile->Text());
 	sourceplaybutton->SetEnabled(valid);
+	fMenuPlaySource->SetEnabled(valid);
 
 	valid = file_exists(outputfile->Text());
 	outputplaybutton->SetEnabled(valid);
+	fMenuPlayOutput->SetEnabled(valid);
 }
 
 
@@ -1135,6 +1188,7 @@ void ffguiwin::is_ready_to_encode()
 		mediainfo->SetText(B_TRANSLATE_NOCOLLECT(kEmptySource));
 		outputcheck->SetText("");
 		sourceplaybutton->SetEnabled(false);
+		fMenuPlaySource->SetEnabled(false);
 		ready = false;
 	}
 
@@ -1143,6 +1197,7 @@ void ffguiwin::is_ready_to_encode()
 		sourcefile->MarkAsInvalid(true);
 		outputcheck->SetText("");
 		sourceplaybutton->SetEnabled(false);
+		fMenuPlaySource->SetEnabled(false);
 		ready = false;
 	}
 
@@ -1161,6 +1216,7 @@ void ffguiwin::is_ready_to_encode()
 		ready = false;
 
 	encodebutton->SetEnabled(ready);
+	fMenuStartEncode->SetEnabled(ready);
 }
 
 

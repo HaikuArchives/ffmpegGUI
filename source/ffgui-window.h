@@ -44,7 +44,7 @@ class ffguiwin : public BWindow
 			ffguiwin(BRect, const char* name,window_type type,ulong mode);
 			void BuildLine();
 			virtual bool	QuitRequested();
-			virtual void MessageReceived(BMessage* message);
+			virtual void 	MessageReceived(BMessage* message);
 
 
 	private:
@@ -129,7 +129,10 @@ class ffguiwin : public BWindow
 			time_t encode_starttime;
 
 			//menu bar
-			BMenuBar *fTopMenuBar;
+			BMenuItem* fMenuPlaySource;
+			BMenuItem* fMenuPlayOutput;
+			BMenuItem* fMenuStartEncode;
+			BMenuItem* fMenuStopEncode;
 
 			// bools
 			bool benablevideo, benableaudio, benablecropping, bdeletesource,bcustomres;
