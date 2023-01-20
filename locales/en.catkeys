@@ -1,4 +1,4 @@
-1	English	application/x-vnd.HaikuArchives-ffmpegGUI	2039973223
+1	English	application/x-vnd.HaikuArchives-ffmpegGUI	2853809895
 Deinterlace pictures	Window		Deinterlace pictures
 Min video quantizer scale:	Window		Min video quantizer scale:
 Copy commandline	Window		Copy commandline
@@ -14,6 +14,7 @@ Cannot overwrite the source file. Please choose another output file name.	Window
 GOP size:	Window		GOP size:
 Bitrate (Kbit/s):	Window		Bitrate (Kbit/s):
 Audio channels:	Window		Audio channels:
+Stop encoding	Window		Stop encoding
 Please select a source file.	Window		Please select a source file.
 About ffmpegGUI	Window		About ffmpegGUI
 Quit	Window		Quit
@@ -51,6 +52,7 @@ Top:	Window		Top:
 Encoding	Window		Encoding
 Source file	Window		Source file
 Play source file	Window		Play source file
+Default options	Window		Default options
 Max difference between quantizer scale:	Window		Max difference between quantizer scale:
 Video quantizer scale blur:	Window		Video quantizer scale blur:
 Max video quantizer scale:	Window		Max video quantizer scale:

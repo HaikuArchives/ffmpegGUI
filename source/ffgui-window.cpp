@@ -82,20 +82,20 @@ void ffguiwin::BuildLine() // ask all the views what they hold, reset the comman
 	}
 	commandline << " -f " << fileformat_option; // grab and set the file format
 
-	if (benablevideo == false) // is video enabled, add options
+	// is video enabled, add options
+	if (enablevideo->Value())
 	{
 		commandline << " -vcodec " << outputvideoformat->MenuItem()->Label(); // grab and set the video encoder
 		commandline << " -b:v " << vbitrate->Value() << "k";
 		commandline << " -r " << framerate->Value();
-		if (bcustomres == true)
+		if (customres->IsEnabled() && customres->Value())
 		{
 			commandline << " -s " << xres->Value() << "x" << yres->Value();
 		}
 
 		// cropping options
-		if (benablecropping == true)
+		if (enablecropping->IsEnabled() && enablecropping->Value())
 		{
-
 			commandline << " -vf crop=iw-" << leftcrop->Value() + rightcrop->Value()
 						<< ":ih-" << topcrop->Value()+bottomcrop->Value() << ":"
 						<< leftcrop->Value() << ":" << topcrop->Value();
@@ -106,8 +106,8 @@ void ffguiwin::BuildLine() // ask all the views what they hold, reset the comman
 		commandline << " -vn";
 	}
 
-	if (benableaudio == true) // audio encoding enabled, grab the values
-	{
+	// audio encoding enabled, grab the values
+	if (enableaudio->Value())	{
 		commandline << " -acodec " << outputaudioformat->MenuItem()->Label();
 		commandline << " -b:a " << std::atoi(abpopup->FindMarked()->Label()) << "k";
 		commandline << " -ar " << std::atoi(arpopup->FindMarked()->Label());
@@ -217,11 +217,13 @@ ffguiwin::ffguiwin(BRect r, const char *name, window_type type, ulong mode)
 	enableaudio->SetValue(B_CONTROL_ON);
 
 	abpopup = new BPopUpMenu("");
+	abpopup->AddItem(new BMenuItem("48", new BMessage(M_AB)));
 	abpopup->AddItem(new BMenuItem("96", new BMessage(M_AB)));
 	abpopup->AddItem(new BMenuItem("128", new BMessage(M_AB)));
 	abpopup->AddItem(new BMenuItem("160", new BMessage(M_AB)));
 	abpopup->AddItem(new BMenuItem("196", new BMessage(M_AB)));
 	abpopup->AddItem(new BMenuItem("320", new BMessage(M_AB)));
+	abpopup->AddItem(new BMenuItem("625", new BMessage(M_AB)));
 	abpopup->AddItem(new BMenuItem("1411", new BMessage(M_AB)));
 	abpopup->ItemAt(1)->SetMarked(true);
 	ab = new BMenuField(B_TRANSLATE("Bitrate (Kbit/s):"), abpopup);
@@ -308,15 +310,8 @@ ffguiwin::ffguiwin(BRect r, const char *name, window_type type, ulong mode)
 	// set step values for the spinners
 	vbitrate->SetStep(100);
 
-	// set the default status for the conditional spinners
-	benablecropping = false;
-	benableaudio = true;
-	bcustomres = false;
-	benablevideo = false; // changing this breaks UI enabled/disabled behaviour
-	xres->SetEnabled(false);
-	yres->SetEnabled(false);
-
 	// set the initial command line
+	set_defaults();
 	BuildLine();
 
 	// create tabs and boxes
@@ -510,8 +505,8 @@ ffguiwin::ffguiwin(BRect r, const char *name, window_type type, ulong mode)
 	menu->AddSeparatorItem();
 	item = new BMenuItem(B_TRANSLATE("Copy commandline"), new BMessage(M_COPY_COMMAND), 'C');
 	menu->AddItem(item);
-//	item = new BMenuItem(B_TRANSLATE("Default options"), new BMessage(M_DEFAULTS), 'D');
-//	menu->AddItem(item);
+	fMenuDefaults = new BMenuItem(B_TRANSLATE("Default options"), new BMessage(M_DEFAULTS), 'D');
+	menu->AddItem(fMenuDefaults);
 	menuBar->AddItem(menu);
 
 	//main layout
@@ -590,6 +585,13 @@ void ffguiwin::MessageReceived(BMessage *message)
 			}
 			break;
 		}
+		case M_DEFAULTS:
+		{
+			set_defaults();
+			if (file_exists(sourcefile->Text()))
+				adopt_defaults();
+			break;
+		}
 		case M_SOURCEFILE:
 		{
 			get_media_info();
@@ -637,110 +639,25 @@ void ffguiwin::MessageReceived(BMessage *message)
 
 		case M_ENABLEVIDEO:
 		{
-			// turn all the video spin buttons off
-			if (benablevideo == true)
-			{
-				vbitrate->SetEnabled(true);
-				framerate->SetEnabled(true);
-				customres->SetEnabled(true);
-
-				if (bcustomres == true)
-				{
-					xres->SetEnabled(true);
-					yres->SetEnabled(true);
-				}
-
-				enablecropping->SetEnabled(true);
-				if (benablecropping == true)
-				{
-					topcrop->SetEnabled(true);
-					bottomcrop->SetEnabled(true);
-					leftcrop->SetEnabled(true);
-					rightcrop->SetEnabled(true);
-				}
-				benablevideo = false;
-				BuildLine();
-			}
-			else
-			{
-				vbitrate->SetEnabled(false);
-				framerate->SetEnabled(false);
-				customres->SetEnabled(false);
-				xres->SetEnabled(false);
-				yres->SetEnabled(false);
-				enablecropping->SetEnabled(false);
-				topcrop->SetEnabled(false);
-				bottomcrop->SetEnabled(false);
-				leftcrop->SetEnabled(false);
-				rightcrop->SetEnabled(false);
-				benablevideo = true;
-				BuildLine();
-			}
+			toggle_video();
 			break;
 		}
 
 		case M_CUSTOMRES:
 		{
-			if (bcustomres == false)
-			{
-				xres->SetEnabled(true);
-				yres->SetEnabled(true);
-				bcustomres = true;
-				BuildLine();
-			}
-			else
-			{
-				xres->SetEnabled(false);
-				yres->SetEnabled(false);
-				bcustomres = false;
-				BuildLine();
-			}
+			toggle_custom_resolution();
 			break;
 		}
 
 		case M_ENABLECROPPING:
 		{
-			//turn the cropping spinbuttons on or off, set a bool
-			if (benablecropping == false)
-			{
-				topcrop->SetEnabled(true);
-				bottomcrop->SetEnabled(true);
-				leftcrop->SetEnabled(true);
-				rightcrop->SetEnabled(true);
-				benablecropping = true;
-				BuildLine();
-			}
-			else
-			{
-				topcrop->SetEnabled(false);
-				bottomcrop->SetEnabled(false);
-				leftcrop->SetEnabled(false);
-				rightcrop->SetEnabled(false);
-				benablecropping = false;
-				BuildLine();
-			}
+			toggle_cropping();
 			break;
 		}
 
 		case M_ENABLEAUDIO:
 		{
-			//turn the audio spinbuttons on or off, set a bool
-			if (benableaudio == true)
-			{
-				ab->SetEnabled(false);
-				ac->SetEnabled(false);
-				ar->SetEnabled(false);
-				benableaudio = false;
-				BuildLine();
-			}
-			else
-			{
-				ab->SetEnabled(true);
-				ac->SetEnabled(true);
-				ar->SetEnabled(true);
-				benableaudio = true;
-				BuildLine();
-			}
+			toggle_audio();
 			break;
 		}
 		case M_SOURCE:
@@ -797,6 +714,7 @@ void ffguiwin::MessageReceived(BMessage *message)
 			encode_duration = 0;
 			parse_media_output();
 			update_media_info();
+			adopt_defaults();
 			break;
 		}
 		case M_ENCODE:
@@ -1045,7 +963,7 @@ void ffguiwin::get_media_info()
 		"-of default=noprint_wrappers=1 -select_streams v:0 "
 		<< "\"" << sourcefile->Text() << "\" ; ";
 	command << "ffprobe -v error -show_entries format=duration:"
-		"stream=codec_name,sample_rate,channel_layout,bit_rate "
+		"stream=codec_name,sample_rate,channels,channel_layout,bit_rate "
 		"-of default=noprint_wrappers=1 -select_streams a:0 "
 		<< "\"" << sourcefile->Text() << "\"";
 
@@ -1081,6 +999,7 @@ void ffguiwin::parse_media_output()
 	if (list.HasString("sample_rate")) { // audio stream is second
 		fAudioCodec = list.StringAt(list.IndexOf("codec_name") + 1);
 		fAudioSamplerate = list.StringAt(list.IndexOf("sample_rate") + 1);
+		fAudioChannels = list.StringAt(list.IndexOf("channels") + 1);
 		fAudioChannelLayout = list.StringAt(list.IndexOf("channel_layout") + 1);
 
 		if (fDuration == "") // if audio-only (not filled by video ffprobe above)
@@ -1088,22 +1007,6 @@ void ffguiwin::parse_media_output()
 
 		int32 index = list.IndexOf("bit_rate");
 		fAudioBitrate = list.StringAt(index + 1);
-	}
-}
-
-
-void ffguiwin::remove_over_precision(BString& float_string)
-{
-	// Remove trailing "0" and "."
-	while (true) {
-		if (float_string.EndsWith("0")) {
-			float_string.Truncate(float_string.CountChars() - 1);
-			if (float_string.EndsWith(".")) {
-				float_string.Truncate(float_string.CountChars() - 1);
-				break;
-			}
-		}
-		else break;
 	}
 }
 
@@ -1163,6 +1066,85 @@ void ffguiwin::update_media_info()
 
 	mediainfo->SetText(text.String());
 	is_ready_to_encode();
+}
+
+
+void ffguiwin::set_defaults()
+{
+	// set the initial values
+	vbitrate->SetValue(1000);
+	framerate->SetValue(30);
+	xres->SetValue(1280);
+	yres->SetValue(720);
+
+	topcrop->SetValue(0);
+	bottomcrop->SetValue(0);
+	leftcrop->SetValue(0);
+	rightcrop->SetValue(0);
+
+	abpopup->ItemAt(2)->SetMarked(true);
+	arpopup->ItemAt(1)->SetMarked(true);
+	ac->SetValue(2);
+
+	// set the default status
+	enablevideo->SetValue(true);
+	enablevideo->SetEnabled(B_CONTROL_ON);
+	enableaudio->SetValue(true);
+	enableaudio->SetEnabled(B_CONTROL_ON);
+
+	enablecropping->SetValue(false);
+	enablecropping->SetEnabled(B_CONTROL_OFF);
+	customres->SetValue(false);
+	customres->SetEnabled(B_CONTROL_OFF);
+	xres->SetEnabled(B_CONTROL_OFF);
+	yres->SetEnabled(B_CONTROL_OFF);
+
+	// create internal logic
+	toggle_video();
+	toggle_custom_resolution();
+	toggle_cropping();
+	toggle_audio();
+}
+
+
+void ffguiwin::adopt_defaults()
+{
+	if (!fVideoBitrate.IsEmpty() && fVideoBitrate != "N/A") {
+		vbitrate->SetValue(atoi(fVideoBitrate));
+	}
+	if (!fVideoFramerate.IsEmpty() && fVideoFramerate != "N/A") {
+		int32 point = fVideoFramerate.FindFirst(".");
+		int32 places = fVideoFramerate.CountChars() - (point + 1);
+		framerate->SetPrecision((point == B_ERROR) ? 0 : places);
+		framerate->TextView()->SetText(fVideoFramerate);
+		framerate->SetValueFromText();
+	}
+
+	if (!fAudioSamplerate.IsEmpty() && fAudioSamplerate != "N/A") {
+		BString rate;
+		rate.SetToFormat("%.f", atof(fAudioSamplerate) * 1000);
+		BMenuItem* item = arpopup->FindItem(rate);
+		if (item != NULL)
+			item->SetMarked(true);
+	}
+	if (!fAudioChannels.IsEmpty() && fAudioChannels != "N/A")
+		ac->SetValue(atoi(fAudioChannels));
+}
+
+
+void ffguiwin::remove_over_precision(BString& float_string)
+{
+	// Remove trailing "0" and "."
+	while (true) {
+		if (float_string.EndsWith("0")) {
+			float_string.Truncate(float_string.CountChars() - 1);
+			if (float_string.EndsWith(".")) {
+				float_string.Truncate(float_string.CountChars() - 1);
+				break;
+			}
+		}
+		else break;
+	}
 }
 
 
@@ -1321,4 +1303,69 @@ ffguiwin::play_video(const char* filepath)
 	video_entry.GetRef(&video_ref);
 	be_roster->Launch(&video_ref);
 
+}
+
+
+void
+ffguiwin::toggle_video()
+{
+	int32 state = enablevideo->Value();
+
+	vbitrate->SetEnabled(state);
+	framerate->SetEnabled(state);
+	customres->SetEnabled(state);
+	enablecropping->SetEnabled(state);
+
+	if (customres->Value() == true) {
+		xres->SetEnabled(state);
+		yres->SetEnabled(state);
+	}
+
+	if (enablecropping->Value() == true) {
+		topcrop->SetEnabled(state);
+		bottomcrop->SetEnabled(state);
+		leftcrop->SetEnabled(state);
+		rightcrop->SetEnabled(state);
+	}
+
+	BuildLine();
+}
+
+
+void
+ffguiwin::toggle_custom_resolution()
+{
+	int32 state = customres->Value();
+
+	xres->SetEnabled(state);
+	yres->SetEnabled(state);
+
+	BuildLine();
+}
+
+
+void
+ffguiwin::toggle_cropping()
+{
+	int32 state = enablecropping->Value();
+
+	topcrop->SetEnabled(state);
+	bottomcrop->SetEnabled(state);
+	leftcrop->SetEnabled(state);
+	rightcrop->SetEnabled(state);
+
+	BuildLine();
+}
+
+
+void
+ffguiwin::toggle_audio()
+{
+	int32 state = enableaudio->Value();
+
+	ab->SetEnabled(state);
+	ac->SetEnabled(state);
+	ar->SetEnabled(state);
+
+	BuildLine();
 }
