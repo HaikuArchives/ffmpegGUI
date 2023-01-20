@@ -50,6 +50,8 @@ class ffguiwin : public BWindow
 	private:
 			void get_media_info();
 			void parse_media_output();
+			void adopt_defaults();
+			void set_defaults();
 			void update_media_info();
 			void remove_over_precision(BString& float_string);
 			void set_playbuttons_state();
@@ -61,6 +63,12 @@ class ffguiwin : public BWindow
 			void set_spinner_minsize(BSpinner *spinner);
 			void set_spinner_minsize(BDecimalSpinner *spinner);
 			void play_video(const char* filepath);
+			void toggle_video();
+			void toggle_custom_resolution();
+			void toggle_cropping();
+			void toggle_audio();
+
+
 			//main view
 			BView *topview;
 			// text views
@@ -133,9 +141,7 @@ class ffguiwin : public BWindow
 			BMenuItem* fMenuPlayOutput;
 			BMenuItem* fMenuStartEncode;
 			BMenuItem* fMenuStopEncode;
-
-			// bools
-			bool benablevideo, benableaudio, benablecropping, bdeletesource,bcustomres;
+			BMenuItem* fMenuDefaults;
 
 			// bstrings
 			BString commandline;
@@ -151,6 +157,7 @@ class ffguiwin : public BWindow
 			BString fVideoBitrate;
 			BString fAudioBitrate;
 			BString fAudioSamplerate;
+			BString fAudioChannels;
 			BString fAudioChannelLayout;
 
 			// file panels
