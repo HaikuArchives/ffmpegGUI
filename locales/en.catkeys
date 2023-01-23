@@ -1,4 +1,4 @@
-1	English	application/x-vnd.HaikuArchives-ffmpegGUI	2853809895
+1	English	application/x-vnd.HaikuArchives-ffmpegGUI	2830448870
 Deinterlace pictures	Window		Deinterlace pictures
 Min video quantizer scale:	Window		Min video quantizer scale:
 Copy commandline	Window		Copy commandline
@@ -71,4 +71,5 @@ Waiting to start encoding…	Window		Waiting to start encoding…
 Sampling rate (Hz):	Window		Sampling rate (Hz):
 fps	Window		fps
 Use fixed video quantizer scale:	Window		Use fixed video quantizer scale:
+Options	Window		Options
 Use custom resolution	Window		Use custom resolution

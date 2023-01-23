@@ -505,6 +505,9 @@ ffguiwin::ffguiwin(BRect r, const char *name, window_type type, ulong mode)
 	menu->AddSeparatorItem();
 	item = new BMenuItem(B_TRANSLATE("Copy commandline"), new BMessage(M_COPY_COMMAND), 'C');
 	menu->AddItem(item);
+	menuBar->AddItem(menu);
+
+	menu = new BMenu(B_TRANSLATE("Options"));
 	fMenuDefaults = new BMenuItem(B_TRANSLATE("Default options"), new BMessage(M_DEFAULTS), 'D');
 	menu->AddItem(fMenuDefaults);
 	menuBar->AddItem(menu);
