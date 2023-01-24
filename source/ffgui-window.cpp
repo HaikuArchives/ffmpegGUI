@@ -645,6 +645,10 @@ void ffguiwin::MessageReceived(BMessage *message)
 			break;
 		}
 		case M_OUTPUTVIDEOFORMAT:
+		{
+			toggle_cropping();
+			break;
+		}
 		case M_OUTPUTAUDIOFORMAT:
 		case M_VBITRATE:
 		case M_FRAMERATE:
@@ -1372,12 +1376,31 @@ ffguiwin::toggle_custom_resolution()
 void
 ffguiwin::toggle_cropping()
 {
-	int32 state = enablecropping->Value();
 
-	topcrop->SetEnabled(state);
-	bottomcrop->SetEnabled(state);
-	leftcrop->SetEnabled(state);
-	rightcrop->SetEnabled(state);
+	if (outputvideoformatpopup->FindMarkedIndex() == 0)
+	{
+		enablecropping->SetEnabled(false);
+	}
+	else
+	{
+		enablecropping->SetEnabled(true);
+	}
+
+	bool options_enabled;
+	if ((enablecropping->IsEnabled()) and (enablecropping->Value() == B_CONTROL_ON))
+	{
+		options_enabled = true;
+	}
+	else
+	{
+		options_enabled = false;
+	}
+
+	topcrop->SetEnabled(options_enabled);
+	bottomcrop->SetEnabled(options_enabled);
+	leftcrop->SetEnabled(options_enabled);
+	rightcrop->SetEnabled(options_enabled);
+
 
 	BuildLine();
 }
