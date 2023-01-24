@@ -85,7 +85,17 @@ void ffguiwin::BuildLine() // ask all the views what they hold, reset the comman
 	// is video enabled, add options
 	if (enablevideo->Value())
 	{
-		commandline << " -vcodec " << outputvideoformat->MenuItem()->Label(); // grab and set the video encoder
+		BString vcodec;
+		if (outputvideoformatpopup->FindMarkedIndex() == 0)
+		{
+			vcodec = "copy";
+		}
+		else
+		{
+			vcodec = outputvideoformat->MenuItem()->Label();
+		}
+
+		commandline << " -vcodec " << vcodec; // grab and set the video encoder
 		commandline << " -b:v " << vbitrate->Value() << "k";
 		commandline << " -r " << framerate->Value();
 		if (customres->IsEnabled() && customres->Value())
@@ -108,7 +118,17 @@ void ffguiwin::BuildLine() // ask all the views what they hold, reset the comman
 
 	// audio encoding enabled, grab the values
 	if (enableaudio->Value())	{
-		commandline << " -acodec " << outputaudioformat->MenuItem()->Label();
+		BString acodec;
+		if (outputaudioformatpopup->FindMarkedIndex() == 0)
+		{
+			acodec = "copy";
+		}
+		else
+		{
+			acodec = outputaudioformat->MenuItem()->Label();
+		}
+
+		commandline << " -acodec " << acodec;
 		commandline << " -b:a " << std::atoi(abpopup->FindMarked()->Label()) << "k";
 		commandline << " -ar " << std::atoi(arpopup->FindMarked()->Label());
 		commandline << " -ac " << ac->Value();
@@ -176,6 +196,7 @@ ffguiwin::ffguiwin(BRect r, const char *name, window_type type, ulong mode)
 	outputfileformat->SetExplicitMinSize(menuWidth);
 
 	outputvideoformatpopup = new BPopUpMenu("");
+	outputvideoformatpopup->AddItem(new BMenuItem(B_TRANSLATE("copy from source"), new BMessage(M_OUTPUTVIDEOFORMAT)));
 	outputvideoformatpopup->AddItem(new BMenuItem("mpeg4", new BMessage(M_OUTPUTVIDEOFORMAT)));
 	outputvideoformatpopup->AddItem(new BMenuItem("vp7", new BMessage(M_OUTPUTVIDEOFORMAT)));
 	outputvideoformatpopup->AddItem(new BMenuItem("vp8", new BMessage(M_OUTPUTVIDEOFORMAT)));
@@ -188,6 +209,7 @@ ffguiwin::ffguiwin(BRect r, const char *name, window_type type, ulong mode)
 	outputvideoformat->SetExplicitMinSize(menuWidth);
 
 	outputaudioformatpopup = new BPopUpMenu("");
+	outputaudioformatpopup->AddItem(new BMenuItem(B_TRANSLATE("copy from source"), new BMessage(M_OUTPUTAUDIOFORMAT)));
 	outputaudioformatpopup->AddItem(new BMenuItem("ac3", new BMessage(M_OUTPUTAUDIOFORMAT)));
 	outputaudioformatpopup->AddItem(new BMenuItem("aac", new BMessage(M_OUTPUTAUDIOFORMAT)));
 	outputaudioformatpopup->AddItem(new BMenuItem("opus", new BMessage(M_OUTPUTAUDIOFORMAT)));
