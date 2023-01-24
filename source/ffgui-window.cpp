@@ -358,16 +358,14 @@ ffguiwin::ffguiwin(BRect r, const char *name, window_type type, ulong mode)
 			.Add(outputaudioformat)
 		.End();
 
-	BBox *encodebox = new BBox("");
-	encodebox->SetLabel(B_TRANSLATE("Encode"));
-	BGroupLayout *encodelayout = BLayoutBuilder::Group<>(B_VERTICAL)
-		.SetInsets(B_USE_DEFAULT_SPACING, B_USE_DEFAULT_SPACING,
-					B_USE_DEFAULT_SPACING, B_USE_DEFAULT_SPACING)
+	BView *encodeview = new BView("encodeview", B_SUPPORTS_LAYOUT);
+	BLayoutBuilder::Group<>(encodeview, B_VERTICAL)
 		.AddGroup(B_HORIZONTAL)
+		.SetInsets(B_USE_DEFAULT_SPACING, 0, B_USE_DEFAULT_SPACING, 0)
 			.Add(encodebutton)
 			.Add(encode)
-		.End();
-	encodebox->AddChild(encodelayout->View());
+		.End()
+		.Add(new BSeparatorView(B_HORIZONTAL));
 
 	BBox *videobox = new BBox("");
 	videobox->SetLabel(B_TRANSLATE("Video"));
@@ -536,7 +534,7 @@ ffguiwin::ffguiwin(BRect r, const char *name, window_type type, ulong mode)
 		.Add(menuBar)
 		.Add(fileoptionsview)
 		.Add(tabview)
-		.Add(encodebox)
+		.Add(encodeview)
 		.AddGroup(B_HORIZONTAL)
 			.SetInsets(B_USE_DEFAULT_SPACING,0,B_USE_DEFAULT_SPACING,0)
 			.Add(fStatusBar)
