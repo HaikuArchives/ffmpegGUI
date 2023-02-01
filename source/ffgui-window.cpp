@@ -199,7 +199,7 @@ ffguiwin::ffguiwin(BRect r, const char *name, window_type type, ulong mode)
 	outputvideoformatpopup->AddItem(new BMenuItem("vp9", new BMessage(M_OUTPUTVIDEOFORMAT)));
 	outputvideoformatpopup->AddItem(new BMenuItem("wmv1", new BMessage(M_OUTPUTVIDEOFORMAT)));
 	outputvideoformatpopup->ItemAt(0)->SetMarked(true);
-	outputvideoformat = new BMenuField(B_TRANSLATE("Output video format:"), outputvideoformatpopup);
+	outputvideoformat = new BMenuField(B_TRANSLATE("Video codec:"), outputvideoformatpopup);
 	menuWidth = outputvideoformat->PreferredSize();
 	menuWidth.height=B_SIZE_UNSET;
 	outputvideoformat->SetExplicitMinSize(menuWidth);
@@ -211,7 +211,7 @@ ffguiwin::ffguiwin(BRect r, const char *name, window_type type, ulong mode)
 	outputaudioformatpopup->AddItem(new BMenuItem("opus", new BMessage(M_OUTPUTAUDIOFORMAT)));
 	outputaudioformatpopup->AddItem(new BMenuItem("vorbis", new BMessage(M_OUTPUTAUDIOFORMAT)));
 	outputaudioformatpopup->ItemAt(0)->SetMarked(true);
-	outputaudioformat = new BMenuField(B_TRANSLATE("Output audio format:"), outputaudioformatpopup);
+	outputaudioformat = new BMenuField(B_TRANSLATE("Audio codec:"), outputaudioformatpopup);
 	menuWidth = outputaudioformat->PreferredSize();
 	menuWidth.height=B_SIZE_UNSET;
 	outputaudioformat->SetExplicitMinSize(menuWidth);
@@ -352,10 +352,7 @@ ffguiwin::ffguiwin(BRect r, const char *name, window_type type, ulong mode)
 		.End()
 		.AddGroup(B_HORIZONTAL)
 			.Add(outputfileformat)
-			.AddStrut(B_USE_SMALL_SPACING)
-			.Add(outputvideoformat)
-			.AddStrut(B_USE_SMALL_SPACING)
-			.Add(outputaudioformat)
+			.AddGlue()
 		.End();
 
 	BView *encodeview = new BView("encodeview", B_SUPPORTS_LAYOUT);
@@ -373,6 +370,7 @@ ffguiwin::ffguiwin(BRect r, const char *name, window_type type, ulong mode)
 		.SetInsets(B_USE_DEFAULT_SPACING, B_USE_DEFAULT_SPACING,
 					B_USE_DEFAULT_SPACING, B_USE_DEFAULT_SPACING)
 		.Add(enablevideo)
+		.Add(outputvideoformat)
 		.AddGrid(B_USE_SMALL_SPACING,B_USE_SMALL_SPACING)
 			.Add(vbitrate->CreateLabelLayoutItem(),0,0)
 			.Add(vbitrate->CreateTextViewLayoutItem(),1,0)
@@ -414,6 +412,7 @@ ffguiwin::ffguiwin(BRect r, const char *name, window_type type, ulong mode)
 		.SetInsets(B_USE_DEFAULT_SPACING, B_USE_DEFAULT_SPACING,
 					B_USE_DEFAULT_SPACING, B_USE_DEFAULT_SPACING)
 		.Add(enableaudio)
+		.Add(outputaudioformat)
 		.AddGrid(B_USE_SMALL_SPACING,B_USE_SMALL_SPACING)
 			.Add(ab->CreateLabelLayoutItem(),0,0)
 			.Add(ab->CreateMenuBarLayoutItem(),1,0)
