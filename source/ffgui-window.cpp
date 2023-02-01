@@ -682,7 +682,7 @@ void ffguiwin::MessageReceived(BMessage *message)
 
 		case M_CUSTOMRES:
 		{
-			toggle_custom_resolution();
+			toggle_video();
 			BuildLine();
 			break;
 		}
@@ -1141,7 +1141,6 @@ void ffguiwin::set_defaults()
 
 	// create internal logic
 	toggle_video();
-	toggle_custom_resolution();
 	toggle_cropping();
 	toggle_audio();
 }
@@ -1349,36 +1348,34 @@ ffguiwin::play_video(const char* filepath)
 void
 ffguiwin::toggle_video()
 {
-	int32 state = enablevideo->Value();
-
-	vbitrate->SetEnabled(state);
-	framerate->SetEnabled(state);
-	customres->SetEnabled(state);
-	enablecropping->SetEnabled(state);
-
-	if (customres->Value() == true) {
-		xres->SetEnabled(state);
-		yres->SetEnabled(state);
+	//disable video options if audio codec copy is selected
+	if (outputvideoformatpopup->FindMarkedIndex() == 0)
+	{
+		enablevideo->SetEnabled(false);
+	}
+	else
+	{
+		enablevideo->SetEnabled(true);
 	}
 
-	if (enablecropping->Value() == true) {
-		topcrop->SetEnabled(state);
-		bottomcrop->SetEnabled(state);
-		leftcrop->SetEnabled(state);
-		rightcrop->SetEnabled(state);
-	}
+	bool video_options_enabled;
+	if ((enablevideo->IsEnabled()) and (enablevideo->Value() == B_CONTROL_ON))
+		video_options_enabled = true;
+	else
+		video_options_enabled = false;
 
-}
+	vbitrate->SetEnabled(video_options_enabled);
+	framerate->SetEnabled(video_options_enabled);
+	customres->SetEnabled(video_options_enabled);
 
+	bool customres_options_enabled;
+	if ((customres->IsEnabled()) and (customres->Value() == B_CONTROL_ON))
+		customres_options_enabled = true;
+	else
+		customres_options_enabled = false;
 
-void
-ffguiwin::toggle_custom_resolution()
-{
-	int32 state = customres->Value();
-
-	xres->SetEnabled(state);
-	yres->SetEnabled(state);
-
+	xres->SetEnabled(customres_options_enabled);
+	yres->SetEnabled(customres_options_enabled);
 }
 
 
@@ -1386,6 +1383,7 @@ void
 ffguiwin::toggle_cropping()
 {
 
+	/*
 	if (outputvideoformatpopup->FindMarkedIndex() == 0)
 	{
 		enablecropping->SetEnabled(false);
@@ -1409,6 +1407,7 @@ ffguiwin::toggle_cropping()
 	bottomcrop->SetEnabled(options_enabled);
 	leftcrop->SetEnabled(options_enabled);
 	rightcrop->SetEnabled(options_enabled);
+	*/
 
 }
 
