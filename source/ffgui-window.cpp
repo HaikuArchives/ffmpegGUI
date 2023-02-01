@@ -83,60 +83,56 @@ void ffguiwin::BuildLine() // ask all the views what they hold, reset the comman
 	commandline << " -f " << fileformat_option; // grab and set the file format
 
 	// is video enabled, add options
-	if (enablevideo->Value())
+	if (outputvideoformatpopup->FindMarkedIndex() == 0)
 	{
-		BString vcodec;
-		if (outputvideoformatpopup->FindMarkedIndex() == 0)
-		{
-			vcodec = "copy";
-		}
-		else
-		{
-			vcodec = outputvideoformat->MenuItem()->Label();
-		}
-
-		commandline << " -vcodec " << vcodec; // grab and set the video encoder
-		commandline << " -b:v " << vbitrate->Value() << "k";
-		commandline << " -r " << framerate->Value();
-		if (customres->IsEnabled() && customres->Value())
-		{
-			commandline << " -s " << xres->Value() << "x" << yres->Value();
-		}
-
-		// cropping options
-		if (enablecropping->IsEnabled() && enablecropping->Value())
-		{
-			commandline << " -vf crop=iw-" << leftcrop->Value() + rightcrop->Value()
-						<< ":ih-" << topcrop->Value()+bottomcrop->Value() << ":"
-						<< leftcrop->Value() << ":" << topcrop->Value();
-		}
-	}
-	else //nope, add the no video encoding flag
-	{
-		commandline << " -vn";
-	}
-
-	// audio encoding enabled, grab the values
-	if (enableaudio->Value())	{
-		BString acodec;
-		if (outputaudioformatpopup->FindMarkedIndex() == 0)
-		{
-			acodec = "copy";
-		}
-		else
-		{
-			acodec = outputaudioformat->MenuItem()->Label();
-		}
-
-		commandline << " -acodec " << acodec;
-		commandline << " -b:a " << std::atoi(abpopup->FindMarked()->Label()) << "k";
-		commandline << " -ar " << std::atoi(arpopup->FindMarked()->Label());
-		commandline << " -ac " << ac->Value();
+		commandline << " -vcodec copy";
 	}
 	else
 	{
-		commandline << (" -an");
+		if ((enablevideo->IsEnabled()) and (enablevideo->Value() == B_CONTROL_ON))
+		{
+			commandline << " -vcodec " << outputvideoformat->MenuItem()->Label();
+			commandline << " -b:v " << vbitrate->Value() << "k";
+			commandline << " -r " << framerate->Value();
+			if (customres->IsEnabled() && customres->Value())
+			{
+				commandline << " -s " << xres->Value() << "x" << yres->Value();
+			}
+
+			// cropping options
+			if (enablecropping->IsEnabled() && enablecropping->Value())
+			{
+				commandline << " -vf crop=iw-" << leftcrop->Value() + rightcrop->Value()
+							<< ":ih-" << topcrop->Value()+bottomcrop->Value() << ":"
+							<< leftcrop->Value() << ":" << topcrop->Value();
+			}
+		}
+		else
+		{
+			commandline << " -vn";
+		}
 	}
+
+	// audio encoding enabled, grab the values
+	if (outputaudioformatpopup->FindMarkedIndex() == 0)
+	{
+		commandline << " -acodec copy";
+	}
+	else
+	{
+		if ((enableaudio->IsEnabled()) and (enableaudio->Value() == B_CONTROL_ON))
+		{
+			commandline << " -acodec " << outputaudioformat->MenuItem()->Label();
+			commandline << " -b:a " << std::atoi(abpopup->FindMarked()->Label()) << "k";
+			commandline << " -ar " << std::atoi(arpopup->FindMarked()->Label());
+			commandline << " -ac " << ac->Value();
+		}
+		else
+		{
+			commandline << (" -an");
+		}
+	}
+
 	commandline << " \"" << output_filename << "\"";
 	encode->SetText(commandline.String());
 }
