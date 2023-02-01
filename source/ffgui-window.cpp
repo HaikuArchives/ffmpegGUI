@@ -646,10 +646,17 @@ void ffguiwin::MessageReceived(BMessage *message)
 		}
 		case M_OUTPUTVIDEOFORMAT:
 		{
+			toggle_video();
 			toggle_cropping();
+			BuildLine();
 			break;
 		}
 		case M_OUTPUTAUDIOFORMAT:
+		{
+			toggle_audio();
+			BuildLine();
+			break;
+		}
 		case M_VBITRATE:
 		case M_FRAMERATE:
 		case M_XRES:
@@ -669,24 +676,28 @@ void ffguiwin::MessageReceived(BMessage *message)
 		case M_ENABLEVIDEO:
 		{
 			toggle_video();
+			BuildLine();
 			break;
 		}
 
 		case M_CUSTOMRES:
 		{
 			toggle_custom_resolution();
+			BuildLine();
 			break;
 		}
 
 		case M_ENABLECROPPING:
 		{
 			toggle_cropping();
+			BuildLine();
 			break;
 		}
 
 		case M_ENABLEAUDIO:
 		{
 			toggle_audio();
+			BuildLine();
 			break;
 		}
 		case M_SOURCE:
@@ -1357,7 +1368,6 @@ ffguiwin::toggle_video()
 		rightcrop->SetEnabled(state);
 	}
 
-	BuildLine();
 }
 
 
@@ -1369,7 +1379,6 @@ ffguiwin::toggle_custom_resolution()
 	xres->SetEnabled(state);
 	yres->SetEnabled(state);
 
-	BuildLine();
 }
 
 
@@ -1401,8 +1410,6 @@ ffguiwin::toggle_cropping()
 	leftcrop->SetEnabled(options_enabled);
 	rightcrop->SetEnabled(options_enabled);
 
-
-	BuildLine();
 }
 
 
@@ -1414,6 +1421,4 @@ ffguiwin::toggle_audio()
 	ab->SetEnabled(state);
 	ac->SetEnabled(state);
 	ar->SetEnabled(state);
-
-	BuildLine();
 }
