@@ -676,6 +676,7 @@ void ffguiwin::MessageReceived(BMessage *message)
 		case M_ENABLEVIDEO:
 		{
 			toggle_video();
+			toggle_cropping();
 			BuildLine();
 			break;
 		}
@@ -1383,31 +1384,30 @@ void
 ffguiwin::toggle_cropping()
 {
 
-	/*
-	if (outputvideoformatpopup->FindMarkedIndex() == 0)
-	{
-		enablecropping->SetEnabled(false);
-	}
-	else
+	//disable cropping if video options are not enabled;
+	if ((enablevideo->IsEnabled()) and (enablevideo->Value() == B_CONTROL_ON))
 	{
 		enablecropping->SetEnabled(true);
 	}
+	else
+	{
+		enablecropping->SetEnabled(false);
+	}
 
-	bool options_enabled;
+	bool cropping_options_enabled;
 	if ((enablecropping->IsEnabled()) and (enablecropping->Value() == B_CONTROL_ON))
 	{
-		options_enabled = true;
+		cropping_options_enabled = true;
 	}
 	else
 	{
-		options_enabled = false;
+		cropping_options_enabled = false;
 	}
 
-	topcrop->SetEnabled(options_enabled);
-	bottomcrop->SetEnabled(options_enabled);
-	leftcrop->SetEnabled(options_enabled);
-	rightcrop->SetEnabled(options_enabled);
-	*/
+	topcrop->SetEnabled(cropping_options_enabled);
+	bottomcrop->SetEnabled(cropping_options_enabled);
+	leftcrop->SetEnabled(cropping_options_enabled);
+	rightcrop->SetEnabled(cropping_options_enabled);
 
 }
 
