@@ -83,13 +83,13 @@ void ffguiwin::BuildLine() // ask all the views what they hold, reset the comman
 	commandline << " -f " << fileformat_option; // grab and set the file format
 
 	// is video enabled, add options
-	if (outputvideoformatpopup->FindMarkedIndex() == 0)
+	if (enablevideo->Value() == B_CONTROL_ON)
 	{
-		commandline << " -vcodec copy";
-	}
-	else
-	{
-		if ((enablevideo->IsEnabled()) and (enablevideo->Value() == B_CONTROL_ON))
+		if (outputvideoformatpopup->FindMarkedIndex() == 0)
+		{
+			commandline << " -vcodec copy";
+		}
+		else
 		{
 			commandline << " -vcodec " << outputvideoformat->MenuItem()->Label();
 			commandline << " -b:v " << vbitrate->Value() << "k";
@@ -107,30 +107,30 @@ void ffguiwin::BuildLine() // ask all the views what they hold, reset the comman
 							<< leftcrop->Value() << ":" << topcrop->Value();
 			}
 		}
-		else
-		{
-			commandline << " -vn";
-		}
-	}
-
-	// audio encoding enabled, grab the values
-	if (outputaudioformatpopup->FindMarkedIndex() == 0)
-	{
-		commandline << " -acodec copy";
 	}
 	else
 	{
-		if ((enableaudio->IsEnabled()) and (enableaudio->Value() == B_CONTROL_ON))
+		commandline << " -vn";
+	}
+
+	// audio encoding enabled, grab the values
+	if (enableaudio->Value() == B_CONTROL_ON)
+	{
+		if (outputaudioformatpopup->FindMarkedIndex() == 0)
+		{
+			commandline << " -acodec copy";
+		}
+		else
 		{
 			commandline << " -acodec " << outputaudioformat->MenuItem()->Label();
 			commandline << " -b:a " << std::atoi(abpopup->FindMarked()->Label()) << "k";
 			commandline << " -ar " << std::atoi(arpopup->FindMarked()->Label());
 			commandline << " -ac " << ac->Value();
 		}
-		else
-		{
-			commandline << (" -an");
-		}
+	}
+	else
+	{
+		commandline << (" -an");
 	}
 
 	commandline << " \"" << output_filename << "\"";
