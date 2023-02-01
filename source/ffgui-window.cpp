@@ -134,6 +134,7 @@ void ffguiwin::BuildLine() // ask all the views what they hold, reset the comman
 	}
 
 	commandline << " \"" << output_filename << "\"";
+	commandline	<< " -loglevel error -stats";
 	encode->SetText(commandline.String());
 }
 
@@ -831,6 +832,7 @@ void ffguiwin::MessageReceived(BMessage *message)
 		{
 			BString progress_data;
 			message->FindString("data", &progress_data);
+			progress_data << "\n";
 			outputtext->Insert(progress_data.String());
 			outputtext->ScrollTo(0.0, 1000000.0);
 
@@ -910,9 +912,11 @@ void ffguiwin::MessageReceived(BMessage *message)
 				}
 				set_playbuttons_state();
 			}
-			else
+			else {
 				encodeFinished.SetContent(B_TRANSLATE("Encoding failed."));
-
+				tabview->Select(1);
+				outputtext->ScrollTo(0.0, 1000000.0);
+			}
 			encodeFinished.SetTitle(title);
 			encodeFinished.Send();
 
