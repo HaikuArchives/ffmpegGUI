@@ -196,7 +196,7 @@ ffguiwin::ffguiwin(BRect r, const char *name, window_type type, ulong mode)
 	outputfileformat->SetExplicitMinSize(menuWidth);
 
 	outputvideoformatpopup = new BPopUpMenu("");
-	outputvideoformatpopup->AddItem(new BMenuItem(B_TRANSLATE("copy from source"), new BMessage(M_OUTPUTVIDEOFORMAT)));
+	outputvideoformatpopup->AddItem(new BMenuItem(B_TRANSLATE("1:1 copy"), new BMessage(M_OUTPUTVIDEOFORMAT)));
 	outputvideoformatpopup->AddItem(new BMenuItem("mpeg4", new BMessage(M_OUTPUTVIDEOFORMAT)));
 	outputvideoformatpopup->AddItem(new BMenuItem("vp7", new BMessage(M_OUTPUTVIDEOFORMAT)));
 	outputvideoformatpopup->AddItem(new BMenuItem("vp8", new BMessage(M_OUTPUTVIDEOFORMAT)));
@@ -209,7 +209,7 @@ ffguiwin::ffguiwin(BRect r, const char *name, window_type type, ulong mode)
 	outputvideoformat->SetExplicitMinSize(menuWidth);
 
 	outputaudioformatpopup = new BPopUpMenu("");
-	outputaudioformatpopup->AddItem(new BMenuItem(B_TRANSLATE("copy from source"), new BMessage(M_OUTPUTAUDIOFORMAT)));
+	outputaudioformatpopup->AddItem(new BMenuItem(B_TRANSLATE("1:1 copy"), new BMessage(M_OUTPUTAUDIOFORMAT)));
 	outputaudioformatpopup->AddItem(new BMenuItem("ac3", new BMessage(M_OUTPUTAUDIOFORMAT)));
 	outputaudioformatpopup->AddItem(new BMenuItem("aac", new BMessage(M_OUTPUTAUDIOFORMAT)));
 	outputaudioformatpopup->AddItem(new BMenuItem("opus", new BMessage(M_OUTPUTAUDIOFORMAT)));
