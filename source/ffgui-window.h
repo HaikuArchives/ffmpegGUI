@@ -64,7 +64,6 @@ class ffguiwin : public BWindow
 			void set_spinner_minsize(BDecimalSpinner *spinner);
 			void play_video(const char* filepath);
 			void toggle_video();
-			void toggle_custom_resolution();
 			void toggle_cropping();
 			void toggle_audio();
 
