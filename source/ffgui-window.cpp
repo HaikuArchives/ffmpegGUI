@@ -1342,21 +1342,21 @@ ffguiwin::play_video(const char* filepath)
 void
 ffguiwin::toggle_video()
 {
-	//disable video options if audio codec copy is selected
-	if (outputvideoformatpopup->FindMarkedIndex() == 0)
-	{
-		enablevideo->SetEnabled(false);
-	}
-	else
-	{
-		enablevideo->SetEnabled(true);
-	}
-
 	bool video_options_enabled;
-	if ((enablevideo->IsEnabled()) and (enablevideo->Value() == B_CONTROL_ON))
-		video_options_enabled = true;
+
+	if (enablevideo->Value() == B_CONTROL_ON)
+	{
+		outputvideoformat->SetEnabled(true);
+		if (outputvideoformatpopup->FindMarkedIndex() != 0)
+			video_options_enabled = true;
+		else
+			video_options_enabled = false;
+	}
 	else
+	{
+		outputvideoformat->SetEnabled(false);
 		video_options_enabled = false;
+	}
 
 	vbitrate->SetEnabled(video_options_enabled);
 	framerate->SetEnabled(video_options_enabled);
