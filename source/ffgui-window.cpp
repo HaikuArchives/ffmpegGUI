@@ -1378,7 +1378,7 @@ ffguiwin::toggle_cropping()
 {
 
 	//disable cropping if video options are not enabled;
-	if ((enablevideo->IsEnabled()) and (enablevideo->Value() == B_CONTROL_ON))
+	if ((enablevideo->IsEnabled()) and (enablevideo->Value() == B_CONTROL_ON) and (outputvideoformatpopup->FindMarkedIndex() != 0))
 	{
 		enablecropping->SetEnabled(true);
 	}
