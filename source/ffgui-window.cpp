@@ -1416,9 +1416,24 @@ ffguiwin::toggle_cropping()
 void
 ffguiwin::toggle_audio()
 {
-	int32 state = enableaudio->Value();
 
-	ab->SetEnabled(state);
-	ac->SetEnabled(state);
-	ar->SetEnabled(state);
+	//disable audio options if audio codec copy is selected
+	if (outputaudioformatpopup->FindMarkedIndex() == 0)
+	{
+		enableaudio->SetEnabled(false);
+	}
+	else
+	{
+		enableaudio->SetEnabled(true);
+	}
+
+	bool audio_options_enabled;
+	if ((enableaudio->IsEnabled()) and (enableaudio->Value() == B_CONTROL_ON))
+		audio_options_enabled = true;
+	else
+		audio_options_enabled = false;
+
+	ab->SetEnabled(audio_options_enabled);
+	ac->SetEnabled(audio_options_enabled);
+	ar->SetEnabled(audio_options_enabled);
 }
