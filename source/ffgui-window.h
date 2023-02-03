@@ -16,7 +16,6 @@
 #include <Invoker.h>
 #include <Window.h>
 #include <vector>
-#include <utility>
 
 
 class BView;
@@ -38,6 +37,23 @@ class BStringView;
 class CommandLauncher;
 class ffguispinner;
 class ffguidecspinner;
+
+
+class ContainerOption {
+public:
+	ContainerOption(const BString& option, const BString& extension, const BString& description);
+	BString Option;
+	BString Extension;
+	BString Description;
+};
+
+
+class CodecOption {
+public:
+	CodecOption(const BString& option, const BString& description);
+	BString Option;
+	BString Description;
+};
 
 
 class ffguiwin : public BWindow
@@ -170,9 +186,9 @@ class ffguiwin : public BWindow
 			BInvoker fAlertInvoker;
 
 			// menu options for container format, video and audio codecs
-			std::vector<std::pair<BString, BString>> fContainerFormats;
-			std::vector<std::pair<BString, BString>> fVideoCodecs;
-			std::vector<std::pair<BString, BString>> fAudioCodecs;
+			std::vector<ContainerOption> fContainerFormats;
+			std::vector<CodecOption> fVideoCodecs;
+			std::vector<CodecOption> fAudioCodecs;
 
 
 			CommandLauncher *fCommandLauncher;

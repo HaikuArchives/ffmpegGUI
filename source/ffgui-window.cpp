@@ -64,6 +64,26 @@ static const char* kOutputExists = B_TRANSLATE_MARK(
 static const char* kOutputIsSource = B_TRANSLATE_MARK(
 	"Cannot overwrite the source file. Please choose another output file name.");
 
+
+ContainerOption::ContainerOption(const BString& option, const BString& extension, const BString& description)
+	:
+	Option(option),
+	Extension(extension),
+	Description(description)
+{
+
+}
+
+
+CodecOption::CodecOption(const BString& option,const BString& description)
+	:
+	Option(option),
+	Description(description)
+{
+
+}
+
+
 void ffguiwin::BuildLine() // ask all the views what they hold, reset the command string
 {
 	BString source_filename(sourcefile->Text());
@@ -75,14 +95,14 @@ void ffguiwin::BuildLine() // ask all the views what they hold, reset the comman
 
 	// file format
 	int32 option_index = outputfileformatpopup->FindMarkedIndex();
-	BString fileformat_option = fContainerFormats[option_index].first;
+	BString fileformat_option = fContainerFormats[option_index].Option;
 	commandline << " -f " << fileformat_option; // grab and set the file format
 
 	// is video enabled, add options
 	if (enablevideo->Value() == B_CONTROL_ON)
 	{
 		option_index = outputvideoformatpopup->FindMarkedIndex();
-		commandline << " -vcodec " << fVideoCodecs[option_index].first;
+		commandline << " -vcodec " << fVideoCodecs[option_index].Option;
 		if (option_index !=0)
 		{
 			commandline << " -b:v " << vbitrate->Value() << "k";
@@ -110,7 +130,7 @@ void ffguiwin::BuildLine() // ask all the views what they hold, reset the comman
 	if (enableaudio->Value() == B_CONTROL_ON)
 	{
 		option_index = outputaudioformatpopup->FindMarkedIndex();
-		commandline << " -acodec " << fAudioCodecs[option_index].first;
+		commandline << " -acodec " << fAudioCodecs[option_index].Option;
 		if (option_index != 0)
 		{
 			commandline << " -b:a " << std::atoi(abpopup->FindMarked()->Label()) << "k";
@@ -171,10 +191,12 @@ ffguiwin::ffguiwin(BRect r, const char *name, window_type type, ulong mode)
 
 	populate_codec_options();
 	outputfileformatpopup = new BPopUpMenu("");
-	std::vector<std::pair<BString, BString>>::iterator options_iter;
-	for (options_iter=fContainerFormats.begin(); options_iter!=fContainerFormats.end(); ++options_iter)
+	std::vector<ContainerOption>::iterator container_iter;
+	for (	container_iter=fContainerFormats.begin();
+			container_iter!=fContainerFormats.end();
+			++container_iter)
 	{
-		outputfileformatpopup->AddItem(	new BMenuItem(	options_iter->second.String(),
+		outputfileformatpopup->AddItem(	new BMenuItem(	container_iter->Description.String(),
 														new BMessage(M_OUTPUTFILEFORMAT)));
 	}
 
@@ -185,9 +207,10 @@ ffguiwin::ffguiwin(BRect r, const char *name, window_type type, ulong mode)
 	outputfileformat->SetExplicitMinSize(menuWidth);
 
 	outputvideoformatpopup = new BPopUpMenu("");
-	for (options_iter=fVideoCodecs.begin(); options_iter!=fVideoCodecs.end(); ++options_iter)
+	std::vector<CodecOption>::iterator codec_iter;
+	for (codec_iter=fVideoCodecs.begin(); codec_iter!=fVideoCodecs.end(); ++codec_iter)
 	{
-		outputvideoformatpopup->AddItem(new BMenuItem(	options_iter->second.String(),
+		outputvideoformatpopup->AddItem(new BMenuItem(	codec_iter->Description.String(),
 														new BMessage(M_OUTPUTVIDEOFORMAT)));
 	}
 	outputvideoformatpopup->ItemAt(0)->SetMarked(true);
@@ -197,9 +220,9 @@ ffguiwin::ffguiwin(BRect r, const char *name, window_type type, ulong mode)
 	outputvideoformat->SetExplicitMinSize(menuWidth);
 
 	outputaudioformatpopup = new BPopUpMenu("");
-	for (options_iter=fAudioCodecs.begin(); options_iter!=fAudioCodecs.end(); ++options_iter)
+	for (codec_iter=fAudioCodecs.begin(); codec_iter!=fAudioCodecs.end(); ++codec_iter)
 	{
-		outputaudioformatpopup->AddItem(new BMenuItem(	options_iter->second.String(),
+		outputaudioformatpopup->AddItem(new BMenuItem(	codec_iter->Description.String(),
 														new BMessage(M_OUTPUTAUDIOFORMAT)));
 	}
 	outputaudioformatpopup->ItemAt(0)->SetMarked(true);
@@ -1301,7 +1324,7 @@ ffguiwin::set_outputfile_extension()
 	}
 
 	int32 option_index = outputfileformatpopup->FindMarkedIndex();
-	output_filename.Append(fContainerFormats[option_index].first);
+	output_filename.Append(fContainerFormats[option_index].Extension);
 	outputfile->SetText(output_filename);
 }
 
@@ -1436,30 +1459,29 @@ ffguiwin::populate_codec_options()
 {
 
 	//	container formats
-	fContainerFormats.push_back(std::pair("avi","AVI (Audio Video Interleaved)"));
-	fContainerFormats.push_back(std::pair("matroska","Matroska"));
-	fContainerFormats.push_back(std::pair("mp4","MPEG-4 Part 14"));
-	fContainerFormats.push_back(std::pair("mpeg","MPEG-1 Systems/MPEG Program Stream"));
-	fContainerFormats.push_back(std::pair("ogg","Ogg"));
-	fContainerFormats.push_back(std::pair("webm","WebM"));
+	fContainerFormats.push_back(ContainerOption("avi","avi","AVI (Audio Video Interleaved)"));
+	fContainerFormats.push_back(ContainerOption("matroska","mkv","Matroska"));
+	fContainerFormats.push_back(ContainerOption("mp4","mp4","MPEG-4 Part 14"));
+	fContainerFormats.push_back(ContainerOption("mpeg","mpg","MPEG-1 Systems/MPEG Program Stream"));
+	fContainerFormats.push_back(ContainerOption("ogg","ogg","Ogg"));
+	fContainerFormats.push_back(ContainerOption("webm","webm","WebM"));
 
 	// video codecs
-	fVideoCodecs.push_back(std::pair("copy","1:1 copy"));
-	fVideoCodecs.push_back(std::pair("mpeg4","MPEG-4 part 2"));
-	fVideoCodecs.push_back(std::pair("theora","Theora"));
-	fVideoCodecs.push_back(std::pair("vp8","On2 VP8"));
-	fVideoCodecs.push_back(std::pair("vp9","Google VP9"));
-	fVideoCodecs.push_back(std::pair("wmv1","Windows Media Video 7"));
-	fVideoCodecs.push_back(std::pair("wmv2","Windows Media Video 8"));
-	//fVideoCodecs.push_back(std::pair("",""));
-
+	fVideoCodecs.push_back(CodecOption("copy","1:1 copy"));
+	fVideoCodecs.push_back(CodecOption("mpeg4","MPEG-4 part 2"));
+	fVideoCodecs.push_back(CodecOption("theora","Theora"));
+	fVideoCodecs.push_back(CodecOption("vp8","On2 VP8"));
+	fVideoCodecs.push_back(CodecOption("vp9","Google VP9"));
+	fVideoCodecs.push_back(CodecOption("wmv1","Windows Media Video 7"));
+	fVideoCodecs.push_back(CodecOption("wmv2","Windows Media Video 8"));
+	//fVideoCodecs.push_back(CodecOption("",""));
 
 	//audio codecs
-	fAudioCodecs.push_back(std::pair("copy","1:1 copy"));
-	fAudioCodecs.push_back(std::pair("aac","AAC (Advanced Audio Coding"));
-	fAudioCodecs.push_back(std::pair("ac3","ATSC A/52A (AC-3)"));
-	fAudioCodecs.push_back(std::pair("libvorbis","Vorbis"));
-	fAudioCodecs.push_back(std::pair("flac","FLAC (Free Lossless Audio Codec)"));
-	//fAudioCodecs.push_back(std::pair("",""));
+	fAudioCodecs.push_back(CodecOption("copy","1:1 copy"));
+	fAudioCodecs.push_back(CodecOption("aac","AAC (Advanced Audio Coding"));
+	fAudioCodecs.push_back(CodecOption("ac3","ATSC A/52A (AC-3)"));
+	fAudioCodecs.push_back(CodecOption("libvorbis","Vorbis"));
+	fAudioCodecs.push_back(CodecOption("flac","FLAC (Free Lossless Audio Codec)"));
+	//fAudioCodecs.push_back(CodecOption("",""));
 
 }
