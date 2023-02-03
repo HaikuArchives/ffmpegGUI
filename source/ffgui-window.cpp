@@ -187,10 +187,7 @@ ffguiwin::ffguiwin(BRect r, const char *name, window_type type, ulong mode)
 	outputfileformatpopup->AddItem(new BMenuItem("mkv", new BMessage(M_OUTPUTFILEFORMAT)));
 	outputfileformatpopup->AddItem(new BMenuItem("webm", new BMessage(M_OUTPUTFILEFORMAT)));
 	outputfileformatpopup->ItemAt(0)->SetMarked(true);
-	outputfileformat = new BMenuField(B_TRANSLATE("Output file format:"), outputfileformatpopup);
-	BSize menuWidth = outputfileformat->PreferredSize();
-	menuWidth.height=B_SIZE_UNSET;
-	outputfileformat->SetExplicitMinSize(menuWidth);
+	outputfileformat = new BMenuField(NULL, outputfileformatpopup);
 
 	outputvideoformatpopup = new BPopUpMenu("");
 	outputvideoformatpopup->AddItem(new BMenuItem(B_TRANSLATE("1:1 copy"), new BMessage(M_OUTPUTVIDEOFORMAT)));
@@ -201,9 +198,6 @@ ffguiwin::ffguiwin(BRect r, const char *name, window_type type, ulong mode)
 	outputvideoformatpopup->AddItem(new BMenuItem("wmv1", new BMessage(M_OUTPUTVIDEOFORMAT)));
 	outputvideoformatpopup->ItemAt(0)->SetMarked(true);
 	outputvideoformat = new BMenuField(B_TRANSLATE("Video codec:"), outputvideoformatpopup);
-	menuWidth = outputvideoformat->PreferredSize();
-	menuWidth.height=B_SIZE_UNSET;
-	outputvideoformat->SetExplicitMinSize(menuWidth);
 
 	outputaudioformatpopup = new BPopUpMenu("");
 	outputaudioformatpopup->AddItem(new BMenuItem(B_TRANSLATE("1:1 copy"), new BMessage(M_OUTPUTAUDIOFORMAT)));
@@ -213,9 +207,6 @@ ffguiwin::ffguiwin(BRect r, const char *name, window_type type, ulong mode)
 	outputaudioformatpopup->AddItem(new BMenuItem("vorbis", new BMessage(M_OUTPUTAUDIOFORMAT)));
 	outputaudioformatpopup->ItemAt(0)->SetMarked(true);
 	outputaudioformat = new BMenuField(B_TRANSLATE("Audio codec:"), outputaudioformatpopup);
-	menuWidth = outputaudioformat->PreferredSize();
-	menuWidth.height=B_SIZE_UNSET;
-	outputaudioformat->SetExplicitMinSize(menuWidth);
 
 	enablevideo = new BCheckBox("", B_TRANSLATE("Enable video encoding"), new BMessage(M_ENABLEVIDEO));
 	enablevideo->SetValue(B_CONTROL_ON);
@@ -336,30 +327,27 @@ ffguiwin::ffguiwin(BRect r, const char *name, window_type type, ulong mode)
 	// create tabs and boxes
 	BView *fileoptionsview = new BView("fileoptions", B_SUPPORTS_LAYOUT);
 	BLayoutBuilder::Group<>(fileoptionsview,B_VERTICAL, B_USE_SMALL_SPACING)
-		.SetInsets(B_USE_DEFAULT_SPACING, 0,
-					B_USE_DEFAULT_SPACING, B_USE_DEFAULT_SPACING)
+		.SetInsets(B_USE_DEFAULT_SPACING, B_USE_DEFAULT_SPACING, B_USE_DEFAULT_SPACING, 0)
 		.AddGrid(B_USE_SMALL_SPACING, 0.0)
 			.Add(sourcefilebutton, 0, 0)
-			.Add(sourcefile, 1, 0)
-			.Add(sourceplaybutton, 2, 0)
+			.Add(sourcefile, 1, 0, 2, 1)
+			.Add(sourceplaybutton, 3, 0)
 			.Add(mediainfo, 1, 1, 2, 1)
 			.Add(outputfilebutton, 0, 3)
 			.Add(outputfile, 1, 3)
-			.Add(outputplaybutton, 2, 3)
-			.Add(outputcheck, 1, 4, 2, 1)
+			.Add(outputfileformat, 2, 3)
+			.Add(outputplaybutton, 3, 3)
+			.Add(outputcheck, 1, 4, 3, 1)
 			.SetColumnWeight(0, 0)
 			.SetColumnWeight(1, 1)
 			.SetColumnWeight(2, 0)
-		.End()
-		.AddGroup(B_HORIZONTAL)
-			.Add(outputfileformat)
-			.AddGlue()
+			.SetColumnWeight(3, 0)
 		.End();
 
 	BView *encodeview = new BView("encodeview", B_SUPPORTS_LAYOUT);
 	BLayoutBuilder::Group<>(encodeview, B_VERTICAL)
 		.AddGroup(B_HORIZONTAL)
-		.SetInsets(B_USE_DEFAULT_SPACING, 0, B_USE_DEFAULT_SPACING, 0)
+		.SetInsets(B_USE_DEFAULT_SPACING, B_USE_DEFAULT_SPACING, B_USE_DEFAULT_SPACING, 0)
 			.Add(encodebutton)
 			.Add(encode)
 		.End()
@@ -531,14 +519,15 @@ ffguiwin::ffguiwin(BRect r, const char *name, window_type type, ulong mode)
 	menuBar->AddItem(menu);
 
 	//main layout
-	BLayoutBuilder::Group<>(this, B_VERTICAL)
+	BLayoutBuilder::Group<>(this, B_VERTICAL, 0)
 		.SetInsets(-2,0,-2,0)
 		.Add(menuBar)
 		.Add(fileoptionsview)
 		.Add(tabview)
 		.Add(encodeview)
 		.AddGroup(B_HORIZONTAL)
-			.SetInsets(B_USE_DEFAULT_SPACING,0,B_USE_DEFAULT_SPACING,0)
+			.SetInsets(B_USE_DEFAULT_SPACING, B_USE_DEFAULT_SPACING,
+				B_USE_DEFAULT_SPACING, B_USE_DEFAULT_SPACING)
 			.Add(fStatusBar)
 			.AddGroup(B_VERTICAL)
 				.AddGlue()
