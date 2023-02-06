@@ -101,7 +101,7 @@ void ffguiwin::BuildLine() // ask all the views what they hold, reset the comman
 	commandline << " -f " << fileformat_option; // grab and set the file format
 
 	// is video enabled, add options
-	if (enablevideo->Value() == B_CONTROL_ON)
+	if ((enablevideo->Value() == B_CONTROL_ON) and (enablevideo->IsEnabled()))
 	{
 		option_index = outputvideoformatpopup->FindMarkedIndex();
 		commandline << " -vcodec " << fVideoCodecs[option_index].Option;
