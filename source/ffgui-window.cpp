@@ -65,11 +65,13 @@ static const char* kOutputIsSource = B_TRANSLATE_MARK(
 	"Cannot overwrite the source file. Please choose another output file name.");
 
 
-ContainerOption::ContainerOption(const BString& option, const BString& extension, const BString& description)
+ContainerOption::ContainerOption(	const BString& option, const BString& extension,
+									const BString& description, format_capability capability)
 	:
 	Option(option),
 	Extension(extension),
-	Description(description)
+	Description(description),
+	Capability(capability)
 {
 
 }
@@ -650,6 +652,12 @@ void ffguiwin::MessageReceived(BMessage *message)
 				is_ready_to_encode();
 				set_playbuttons_state();
 			}
+
+			int32 option_index = outputfileformatpopup->FindMarkedIndex();
+			if (fContainerFormats[option_index].Capability == CAP_AUDIO_ONLY)
+				enablevideo->SetEnabled(false);
+			else
+				enablevideo->SetEnabled(true);
 
 			BuildLine();
 			break;
@@ -1459,12 +1467,16 @@ ffguiwin::populate_codec_options()
 {
 
 	//	container formats
-	fContainerFormats.push_back(ContainerOption("avi","avi","AVI (Audio Video Interleaved)"));
-	fContainerFormats.push_back(ContainerOption("matroska","mkv","Matroska"));
-	fContainerFormats.push_back(ContainerOption("mp4","mp4","MPEG-4 Part 14"));
-	fContainerFormats.push_back(ContainerOption("mpeg","mpg","MPEG-1 Systems/MPEG Program Stream"));
-	fContainerFormats.push_back(ContainerOption("ogg","ogg","Ogg"));
-	fContainerFormats.push_back(ContainerOption("webm","webm","WebM"));
+	fContainerFormats.push_back(ContainerOption("avi","avi","AVI (Audio Video Interleaved)",
+												CAP_AUDIO_VIDEO));
+	fContainerFormats.push_back(ContainerOption("matroska","mkv","Matroska", CAP_AUDIO_VIDEO));
+	fContainerFormats.push_back(ContainerOption("mp4","mp4","MPEG-4 Part 14", CAP_AUDIO_VIDEO));
+	fContainerFormats.push_back(ContainerOption("mpeg","mpg","MPEG-1 Systems/MPEG Program Stream",
+												CAP_AUDIO_VIDEO));
+	fContainerFormats.push_back(ContainerOption("ogg","ogg","Ogg", CAP_AUDIO_VIDEO));
+	fContainerFormats.push_back(ContainerOption("webm","webm","WebM", CAP_AUDIO_VIDEO));
+	fContainerFormats.push_back(ContainerOption("flac","flac","FLAC", CAP_AUDIO_ONLY));
+	fContainerFormats.push_back(ContainerOption("mp3","mp3","MPEG audio layer 3", CAP_AUDIO_ONLY));
 
 	// video codecs
 	fVideoCodecs.push_back(CodecOption("copy","1:1 copy"));

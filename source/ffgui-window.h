@@ -39,12 +39,20 @@ class ffguispinner;
 class ffguidecspinner;
 
 
+enum format_capability {
+	CAP_AUDIO_VIDEO,
+	CAP_AUDIO_ONLY
+};
+
+
 class ContainerOption {
 public:
-	ContainerOption(const BString& option, const BString& extension, const BString& description);
+	ContainerOption(const BString& option, const BString& extension,
+					const BString& description, format_capability capability);
 	BString Option;
 	BString Extension;
 	BString Description;
+	format_capability Capability;
 };
 
 
