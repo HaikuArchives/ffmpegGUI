@@ -215,9 +215,10 @@ ffguiwin::ffguiwin(BRect r, const char *name, window_type type, ulong mode)
 	}
 	outputvideoformatpopup->ItemAt(0)->SetMarked(true);
 	outputvideoformat = new BMenuField(B_TRANSLATE("Video codec:"), outputvideoformatpopup);
-	menuWidth = outputvideoformat->PreferredSize();
-	menuWidth.height=B_SIZE_UNSET;
-	outputvideoformat->SetExplicitMinSize(menuWidth);
+	float popup_width;
+	outputvideoformatpopup->GetPreferredSize(&popup_width, nullptr);
+	outputvideoformat->CreateMenuBarLayoutItem()->SetExplicitMinSize(BSize(popup_width, B_SIZE_UNSET));
+
 
 	outputaudioformatpopup = new BPopUpMenu("");
 	for (codec_iter=fAudioCodecs.begin(); codec_iter!=fAudioCodecs.end(); ++codec_iter)
@@ -227,9 +228,8 @@ ffguiwin::ffguiwin(BRect r, const char *name, window_type type, ulong mode)
 	}
 	outputaudioformatpopup->ItemAt(0)->SetMarked(true);
 	outputaudioformat = new BMenuField(B_TRANSLATE("Audio codec:"), outputaudioformatpopup);
-	menuWidth = outputaudioformat->PreferredSize();
-	menuWidth.height=B_SIZE_UNSET;
-	outputaudioformat->SetExplicitMinSize(menuWidth);
+	outputaudioformatpopup->GetPreferredSize(&popup_width, nullptr);
+	outputaudioformat->CreateMenuBarLayoutItem()->SetExplicitMinSize(BSize(popup_width, B_SIZE_UNSET));
 
 	enablevideo = new BCheckBox("", B_TRANSLATE("Enable video encoding"), new BMessage(M_ENABLEVIDEO));
 	enablevideo->SetValue(B_CONTROL_ON);
