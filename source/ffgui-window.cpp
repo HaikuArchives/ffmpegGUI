@@ -1478,6 +1478,8 @@ ffguiwin::populate_codec_options()
 	fContainerFormats.push_back(ContainerOption("webm","webm","WebM", CAP_AUDIO_VIDEO));
 	fContainerFormats.push_back(ContainerOption("flac","flac","FLAC", CAP_AUDIO_ONLY));
 	fContainerFormats.push_back(ContainerOption("mp3","mp3","MPEG audio layer 3", CAP_AUDIO_ONLY));
+	fContainerFormats.push_back(ContainerOption("oga","oga","Ogg Audio", CAP_AUDIO_ONLY));
+	fContainerFormats.push_back(ContainerOption("wav","wav","WAV/WAVE (Waveform Audio)", CAP_AUDIO_ONLY));
 
 	// video codecs
 	fVideoCodecs.push_back(CodecOption("copy","1:1 copy"));
@@ -1487,14 +1489,15 @@ ffguiwin::populate_codec_options()
 	fVideoCodecs.push_back(CodecOption("vp9","Google VP9"));
 	fVideoCodecs.push_back(CodecOption("wmv1","Windows Media Video 7"));
 	fVideoCodecs.push_back(CodecOption("wmv2","Windows Media Video 8"));
-	//fVideoCodecs.push_back(CodecOption("",""));
+	fVideoCodecs.push_back(CodecOption("mjpeg","Motion JPEG"));
 
 	//audio codecs
 	fAudioCodecs.push_back(CodecOption("copy","1:1 copy"));
-	fAudioCodecs.push_back(CodecOption("aac","AAC (Advanced Audio Coding"));
+	fAudioCodecs.push_back(CodecOption("aac","AAC (Advanced Audio Coding)"));
 	fAudioCodecs.push_back(CodecOption("ac3","ATSC A/52A (AC-3)"));
 	fAudioCodecs.push_back(CodecOption("libvorbis","Vorbis"));
 	fAudioCodecs.push_back(CodecOption("flac","FLAC (Free Lossless Audio Codec)"));
-	//fAudioCodecs.push_back(CodecOption("",""));
-
+	fAudioCodecs.push_back(CodecOption("dts","DCA (DTS Coherent Acoustics)"));
+	fAudioCodecs.push_back(CodecOption("mp3","MPEG audio layer 3"));
+	fAudioCodecs.push_back(CodecOption("pcm_s16le","PCM signed 16-bit little endian"));
 }
