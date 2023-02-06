@@ -659,6 +659,7 @@ void ffguiwin::MessageReceived(BMessage *message)
 			else
 				enablevideo->SetEnabled(true);
 
+			toggle_video();
 			BuildLine();
 			break;
 		}
@@ -1373,7 +1374,7 @@ ffguiwin::toggle_video()
 {
 	bool video_options_enabled;
 
-	if (enablevideo->Value() == B_CONTROL_ON)
+	if ((enablevideo->Value() == B_CONTROL_ON) and (enablevideo->IsEnabled()))
 	{
 		outputvideoformat->SetEnabled(true);
 		if (outputvideoformatpopup->FindMarkedIndex() != 0)
