@@ -64,6 +64,28 @@ static const char* kOutputExists = B_TRANSLATE_MARK(
 static const char* kOutputIsSource = B_TRANSLATE_MARK(
 	"Cannot overwrite the source file. Please choose another output file name.");
 
+
+ContainerOption::ContainerOption(	const BString& option, const BString& extension,
+									const BString& description, format_capability capability)
+	:
+	Option(option),
+	Extension(extension),
+	Description(description),
+	Capability(capability)
+{
+
+}
+
+
+CodecOption::CodecOption(const BString& option,const BString& description)
+	:
+	Option(option),
+	Description(description)
+{
+
+}
+
+
 void ffguiwin::BuildLine() // ask all the views what they hold, reset the command string
 {
 	BString source_filename(sourcefile->Text());
@@ -73,25 +95,18 @@ void ffguiwin::BuildLine() // ask all the views what they hold, reset the comman
 	BString commandline("ffmpeg -i ");
 	commandline << "\"" << source_filename << "\"";  //append the input file name
 
-	//this really is a hack to get mkv output working. Should and will be replaced by a proper formats class
-	//that handles format name, commandline option and file extension in a proper way
-	BString fileformat_option(outputfileformat->MenuItem()->Label());
-	if (fileformat_option == "mkv")
-	{
-		fileformat_option = "matroska";
-	}
+	// file format
+	int32 option_index = outputfileformatpopup->FindMarkedIndex();
+	BString fileformat_option = fContainerFormats[option_index].Option;
 	commandline << " -f " << fileformat_option; // grab and set the file format
 
 	// is video enabled, add options
-	if (enablevideo->Value() == B_CONTROL_ON)
+	if ((enablevideo->Value() == B_CONTROL_ON) and (enablevideo->IsEnabled()))
 	{
-		if (outputvideoformatpopup->FindMarkedIndex() == 0)
+		option_index = outputvideoformatpopup->FindMarkedIndex();
+		commandline << " -vcodec " << fVideoCodecs[option_index].Option;
+		if (option_index !=0)
 		{
-			commandline << " -vcodec copy";
-		}
-		else
-		{
-			commandline << " -vcodec " << outputvideoformat->MenuItem()->Label();
 			commandline << " -b:v " << vbitrate->Value() << "k";
 			commandline << " -r " << framerate->Value();
 			if (customres->IsEnabled() && customres->Value())
@@ -116,13 +131,10 @@ void ffguiwin::BuildLine() // ask all the views what they hold, reset the comman
 	// audio encoding enabled, grab the values
 	if (enableaudio->Value() == B_CONTROL_ON)
 	{
-		if (outputaudioformatpopup->FindMarkedIndex() == 0)
+		option_index = outputaudioformatpopup->FindMarkedIndex();
+		commandline << " -acodec " << fAudioCodecs[option_index].Option;
+		if (option_index != 0)
 		{
-			commandline << " -acodec copy";
-		}
-		else
-		{
-			commandline << " -acodec " << outputaudioformat->MenuItem()->Label();
 			commandline << " -b:a " << std::atoi(abpopup->FindMarked()->Label()) << "k";
 			commandline << " -ar " << std::atoi(arpopup->FindMarked()->Label());
 			commandline << " -ac " << ac->Value();
@@ -179,34 +191,44 @@ ffguiwin::ffguiwin(BRect r, const char *name, window_type type, ulong mode)
 	sourceplaybutton->SetEnabled(false);
 	outputplaybutton->SetEnabled(false);
 
+	populate_codec_options();
 	outputfileformatpopup = new BPopUpMenu("");
-	outputfileformatpopup->AddItem(new BMenuItem("avi", new BMessage(M_OUTPUTFILEFORMAT)));
-	outputfileformatpopup->AddItem(new BMenuItem("vcd", new BMessage(M_OUTPUTFILEFORMAT)));
-	outputfileformatpopup->AddItem(new BMenuItem("mp4", new BMessage(M_OUTPUTFILEFORMAT)));
-	outputfileformatpopup->AddItem(new BMenuItem("mpeg", new BMessage(M_OUTPUTFILEFORMAT)));
-	outputfileformatpopup->AddItem(new BMenuItem("mkv", new BMessage(M_OUTPUTFILEFORMAT)));
-	outputfileformatpopup->AddItem(new BMenuItem("webm", new BMessage(M_OUTPUTFILEFORMAT)));
+	std::vector<ContainerOption>::iterator container_iter;
+	for (	container_iter=fContainerFormats.begin();
+			container_iter!=fContainerFormats.end();
+			++container_iter)
+	{
+		outputfileformatpopup->AddItem(	new BMenuItem(	container_iter->Description.String(),
+														new BMessage(M_OUTPUTFILEFORMAT)));
+	}
+
 	outputfileformatpopup->ItemAt(0)->SetMarked(true);
 	outputfileformat = new BMenuField(NULL, outputfileformatpopup);
 
 	outputvideoformatpopup = new BPopUpMenu("");
-	outputvideoformatpopup->AddItem(new BMenuItem(B_TRANSLATE("1:1 copy"), new BMessage(M_OUTPUTVIDEOFORMAT)));
-	outputvideoformatpopup->AddItem(new BMenuItem("mpeg4", new BMessage(M_OUTPUTVIDEOFORMAT)));
-	outputvideoformatpopup->AddItem(new BMenuItem("vp7", new BMessage(M_OUTPUTVIDEOFORMAT)));
-	outputvideoformatpopup->AddItem(new BMenuItem("vp8", new BMessage(M_OUTPUTVIDEOFORMAT)));
-	outputvideoformatpopup->AddItem(new BMenuItem("vp9", new BMessage(M_OUTPUTVIDEOFORMAT)));
-	outputvideoformatpopup->AddItem(new BMenuItem("wmv1", new BMessage(M_OUTPUTVIDEOFORMAT)));
+	std::vector<CodecOption>::iterator codec_iter;
+	for (codec_iter=fVideoCodecs.begin(); codec_iter!=fVideoCodecs.end(); ++codec_iter)
+	{
+		outputvideoformatpopup->AddItem(new BMenuItem(	codec_iter->Description.String(),
+														new BMessage(M_OUTPUTVIDEOFORMAT)));
+	}
 	outputvideoformatpopup->ItemAt(0)->SetMarked(true);
 	outputvideoformat = new BMenuField(B_TRANSLATE("Video codec:"), outputvideoformatpopup);
 
+	float popup_width;
+	outputvideoformatpopup->GetPreferredSize(&popup_width, nullptr);
+	outputvideoformat->CreateMenuBarLayoutItem()->SetExplicitMinSize(BSize(popup_width, B_SIZE_UNSET));
+
 	outputaudioformatpopup = new BPopUpMenu("");
-	outputaudioformatpopup->AddItem(new BMenuItem(B_TRANSLATE("1:1 copy"), new BMessage(M_OUTPUTAUDIOFORMAT)));
-	outputaudioformatpopup->AddItem(new BMenuItem("ac3", new BMessage(M_OUTPUTAUDIOFORMAT)));
-	outputaudioformatpopup->AddItem(new BMenuItem("aac", new BMessage(M_OUTPUTAUDIOFORMAT)));
-	outputaudioformatpopup->AddItem(new BMenuItem("opus", new BMessage(M_OUTPUTAUDIOFORMAT)));
-	outputaudioformatpopup->AddItem(new BMenuItem("vorbis", new BMessage(M_OUTPUTAUDIOFORMAT)));
+	for (codec_iter=fAudioCodecs.begin(); codec_iter!=fAudioCodecs.end(); ++codec_iter)
+	{
+		outputaudioformatpopup->AddItem(new BMenuItem(	codec_iter->Description.String(),
+														new BMessage(M_OUTPUTAUDIOFORMAT)));
+	}
 	outputaudioformatpopup->ItemAt(0)->SetMarked(true);
 	outputaudioformat = new BMenuField(B_TRANSLATE("Audio codec:"), outputaudioformatpopup);
+	outputaudioformatpopup->GetPreferredSize(&popup_width, nullptr);
+	outputaudioformat->CreateMenuBarLayoutItem()->SetExplicitMinSize(BSize(popup_width, B_SIZE_UNSET));
 
 	enablevideo = new BCheckBox("", B_TRANSLATE("Enable video encoding"), new BMessage(M_ENABLEVIDEO));
 	enablevideo->SetValue(B_CONTROL_ON);
@@ -626,6 +648,13 @@ void ffguiwin::MessageReceived(BMessage *message)
 				set_playbuttons_state();
 			}
 
+			int32 option_index = outputfileformatpopup->FindMarkedIndex();
+			if (fContainerFormats[option_index].Capability == CAP_AUDIO_ONLY)
+				enablevideo->SetEnabled(false);
+			else
+				enablevideo->SetEnabled(true);
+
+			toggle_video();
 			BuildLine();
 			break;
 		}
@@ -1298,7 +1327,8 @@ ffguiwin::set_outputfile_extension()
 		output_filename.Append(".");
 	}
 
-	output_filename.Append(outputfileformatpopup->FindMarked()->Label());
+	int32 option_index = outputfileformatpopup->FindMarkedIndex();
+	output_filename.Append(fContainerFormats[option_index].Extension);
 	outputfile->SetText(output_filename);
 }
 
@@ -1339,7 +1369,7 @@ ffguiwin::toggle_video()
 {
 	bool video_options_enabled;
 
-	if (enablevideo->Value() == B_CONTROL_ON)
+	if ((enablevideo->Value() == B_CONTROL_ON) and (enablevideo->IsEnabled()))
 	{
 		outputvideoformat->SetEnabled(true);
 		if (outputvideoformatpopup->FindMarkedIndex() != 0)
@@ -1425,4 +1455,44 @@ ffguiwin::toggle_audio()
 	ab->SetEnabled(audio_options_enabled);
 	ac->SetEnabled(audio_options_enabled);
 	ar->SetEnabled(audio_options_enabled);
+}
+
+
+void
+ffguiwin::populate_codec_options()
+{
+
+	//	container formats
+	fContainerFormats.push_back(ContainerOption("avi","avi","AVI (Audio Video Interleaved)",
+												CAP_AUDIO_VIDEO));
+	fContainerFormats.push_back(ContainerOption("matroska","mkv","Matroska", CAP_AUDIO_VIDEO));
+	fContainerFormats.push_back(ContainerOption("mp4","mp4","MPEG-4 Part 14", CAP_AUDIO_VIDEO));
+	fContainerFormats.push_back(ContainerOption("mpeg","mpg","MPEG-1 Systems/MPEG Program Stream",
+												CAP_AUDIO_VIDEO));
+	fContainerFormats.push_back(ContainerOption("ogg","ogg","Ogg", CAP_AUDIO_VIDEO));
+	fContainerFormats.push_back(ContainerOption("webm","webm","WebM", CAP_AUDIO_VIDEO));
+	fContainerFormats.push_back(ContainerOption("flac","flac","FLAC", CAP_AUDIO_ONLY));
+	fContainerFormats.push_back(ContainerOption("mp3","mp3","MPEG audio layer 3", CAP_AUDIO_ONLY));
+	fContainerFormats.push_back(ContainerOption("oga","oga","Ogg Audio", CAP_AUDIO_ONLY));
+	fContainerFormats.push_back(ContainerOption("wav","wav","WAV/WAVE (Waveform Audio)", CAP_AUDIO_ONLY));
+
+	// video codecs
+	fVideoCodecs.push_back(CodecOption("copy","1:1 copy"));
+	fVideoCodecs.push_back(CodecOption("mpeg4","MPEG-4 part 2"));
+	fVideoCodecs.push_back(CodecOption("theora","Theora"));
+	fVideoCodecs.push_back(CodecOption("vp8","On2 VP8"));
+	fVideoCodecs.push_back(CodecOption("vp9","Google VP9"));
+	fVideoCodecs.push_back(CodecOption("wmv1","Windows Media Video 7"));
+	fVideoCodecs.push_back(CodecOption("wmv2","Windows Media Video 8"));
+	fVideoCodecs.push_back(CodecOption("mjpeg","Motion JPEG"));
+
+	//audio codecs
+	fAudioCodecs.push_back(CodecOption("copy","1:1 copy"));
+	fAudioCodecs.push_back(CodecOption("aac","AAC (Advanced Audio Coding)"));
+	fAudioCodecs.push_back(CodecOption("ac3","ATSC A/52A (AC-3)"));
+	fAudioCodecs.push_back(CodecOption("libvorbis","Vorbis"));
+	fAudioCodecs.push_back(CodecOption("flac","FLAC (Free Lossless Audio Codec)"));
+	fAudioCodecs.push_back(CodecOption("dts","DCA (DTS Coherent Acoustics)"));
+	fAudioCodecs.push_back(CodecOption("mp3","MPEG audio layer 3"));
+	fAudioCodecs.push_back(CodecOption("pcm_s16le","PCM signed 16-bit little endian"));
 }

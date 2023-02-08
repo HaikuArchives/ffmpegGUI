@@ -15,6 +15,7 @@
 
 #include <Invoker.h>
 #include <Window.h>
+#include <vector>
 
 
 class BView;
@@ -36,6 +37,31 @@ class BStringView;
 class CommandLauncher;
 class ffguispinner;
 class ffguidecspinner;
+
+
+enum format_capability {
+	CAP_AUDIO_VIDEO,
+	CAP_AUDIO_ONLY
+};
+
+
+class ContainerOption {
+public:
+	ContainerOption(const BString& option, const BString& extension,
+					const BString& description, format_capability capability);
+	BString Option;
+	BString Extension;
+	BString Description;
+	format_capability Capability;
+};
+
+
+class CodecOption {
+public:
+	CodecOption(const BString& option, const BString& description);
+	BString Option;
+	BString Description;
+};
 
 
 class ffguiwin : public BWindow
@@ -66,7 +92,7 @@ class ffguiwin : public BWindow
 			void toggle_video();
 			void toggle_cropping();
 			void toggle_audio();
-
+			void populate_codec_options();
 
 			//main view
 			BView *topview;
@@ -166,6 +192,12 @@ class ffguiwin : public BWindow
 			// alerts
 			BAlert* fStopAlert;
 			BInvoker fAlertInvoker;
+
+			// menu options for container format, video and audio codecs
+			std::vector<ContainerOption> fContainerFormats;
+			std::vector<CodecOption> fVideoCodecs;
+			std::vector<CodecOption> fAudioCodecs;
+
 
 			CommandLauncher *fCommandLauncher;
 };
