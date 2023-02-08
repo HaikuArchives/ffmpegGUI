@@ -68,100 +68,107 @@ class ffguiwin : public BWindow {
 						ffguiwin(BRect, const char* name, window_type type, ulong mode);
 		virtual bool 	QuitRequested();
 		virtual void 	MessageReceived(BMessage* message);
-				void 	BuildLine();
 
 	private:
-		void 			get_media_info();
-		void 			parse_media_output();
-		void 			adopt_defaults();
-		void			set_defaults();
-		void 			update_media_info();
-		void 			remove_over_precision(BString& float_string);
-		void 			set_playbuttons_state();
-		bool			file_exists(const char* filepath);
-		void 			set_filetype(entry_ref* ref);
-		void 			is_ready_to_encode();
-		void 			set_outputfile_extension();
-		int32 			get_seconds(BString& time_string);
-		void 			set_spinner_minsize(BSpinner* spinner);
-		void 			set_spinner_minsize(BDecimalSpinner* spinner);
-		void 			play_video(const char* filepath);
-		void 			toggle_video();
-		void 			toggle_cropping();
-		void 			toggle_audio();
-		void			populate_codec_options();
+		void 			BuildLine();
+
+		void 			GetMediaInfo();
+		void 			UpdateMediaInfo();
+		void 			ParseMediaOutput();
+
+		void 			AdoptDefaults();
+		void			SetDefaults();
+		void			PopulateCodecOptions();
+
+		bool			FileExists(const char* filepath);
+		void 			SetFileExtension();
+		void 			SetFiletype(entry_ref* ref);
+
+		int32 			GetSeconds(BString& time_string);
+		void 			RemoveOverPrecision(BString& float_string);
+
+		void 			SetSpinnerMinsize(BSpinner* spinner);
+		void 			SetSpinnerMinsize(BDecimalSpinner* spinner);
+
+		void 			ReadyToEncode();
+		void 			PlayVideo(const char* filepath);
+
+		void 			SetPlaybuttonsState();
+		void 			ToggleVideo();
+		void 			ToggleCropping();
+		void 			ToggleAudio();
 
 		// text views
-		BTextView* 		outputtext;
-		BStringView*	mediainfo;
-		BStringView* 	outputcheck;
+		BTextView* 		fLogView;
+		BStringView*	fMediaInfoView;
+		BStringView* 	fOutputCheckView;
 
 		// text controls
-		BTextControl* 	sourcefile;
-		BTextControl* 	outputfile;
-		BTextControl* 	encode;
+		BTextControl* 	fSourceTextControl;
+		BTextControl* 	fOutputTextControl;
+		BTextControl* 	fCommandlineTextControl;
 
 		// buttons
-		BButton* 		sourcefilebutton;
-		BButton* 		outputfilebutton;
-		BButton* 		sourceplaybutton;
-		BButton*		outputplaybutton;
-		BButton* 		encodebutton;
+		BButton* 		fSourceButton;
+		BButton* 		fOutputButton;
+		BButton* 		fSourcePlayButton;
+		BButton*		fOutputPlayButton;
+		BButton* 		fStartAbortButton;
 
 		// spin buttons
-		ffguispinner* 	vbitrate;
-		ffguidecspinner* framerate;
-		ffguispinner* 	xres;
-		ffguispinner* 	yres;
-		ffguispinner* 	topcrop;
-		ffguispinner* 	bottomcrop;
-		ffguispinner* 	leftcrop;
-		ffguispinner* 	rightcrop;
-		ffguispinner* 	ac;
+		ffguispinner* 	fVideoBitrateSpinner;
+		ffguidecspinner* fFramerate;
+		ffguispinner* 	fXres;
+		ffguispinner* 	fYres;
+		ffguispinner* 	fTopCrop;
+		ffguispinner* 	fBottomCrop;
+		ffguispinner* 	fLeftCrop;
+		ffguispinner* 	fRightCrop;
+		ffguispinner* 	fChannelCount;
 
 		// advanced spinbuttons
-		ffguispinner* 	fixedquant;
-		ffguispinner* 	minquant;
-		ffguispinner* 	maxquant;
-		ffguispinner* 	quantdifference;
-		ffguispinner* 	quantblur;
-		ffguispinner* 	quantcompression;
-		ffguispinner* 	bframes;
-		ffguispinner* 	gop;
+		ffguispinner* 	fFixedQuantizer;
+		ffguispinner* 	fMinQuantizer;
+		ffguispinner* 	fMaxQuantizer;
+		ffguispinner* 	fQuantDiff;
+		ffguispinner* 	fQuantBlur;
+		ffguispinner* 	fQuantCompression;
+		ffguispinner* 	fBFrames;
+		ffguispinner* 	fGop;
 
 		// advanced checkboxes
-		BCheckBox* 		highquality;
-		BCheckBox* 		fourmotion;
-		BCheckBox* 		deinterlace;
-		BCheckBox* 		calcpsnr;
+		BCheckBox* 		fHighQualityBox;
+		BCheckBox* 		fFourMotionBox;
+		BCheckBox* 		fDeinterlaceBox;
+		BCheckBox* 		fCalcNpsnrBox;
 
 		// checkboxes
-		BCheckBox* 		enablevideo;
-		BCheckBox* 		enableaudio;
-		BCheckBox* 		enablecropping;
-		BCheckBox* 		customres;
+		BCheckBox* 		fEnabelVideoBox;
+		BCheckBox* 		fEnabelAudioBox;
+		BCheckBox* 		fEnabelCropBox;
+		BCheckBox* 		fCustomResolutionBox;
 
 		// popup menus
-		BPopUpMenu* 	outputfileformatpopup;
-		BMenuField*	 	outputfileformat;
-		BPopUpMenu* 	outputvideoformatpopup;
-		BMenuField* 	outputvideoformat;
-		BPopUpMenu* 	outputaudioformatpopup;
-		BMenuField* 	outputaudioformat;
-		BPopUpMenu* 	abpopup;
-		BMenuField* 	ab;
-		BPopUpMenu* 	arpopup;
-		BMenuField* 	ar;
+		BPopUpMenu* 	fFileFormatPopup;
+		BMenuField*	 	fFileFormat;
+		BPopUpMenu* 	fVideoFormatPopup;
+		BMenuField* 	fVideoFormat;
+		BPopUpMenu* 	fAudioFormatPopup;
+		BMenuField* 	fAudioFormat;
+		BPopUpMenu* 	fAudioBitsPopup;
+		BMenuField* 	fAudioBits;
+		BPopUpMenu* 	fSampleratePopup;
+		BMenuField* 	fSamplerate;
 
 		// tab view
-		BTabView*		tabview;
+		BTabView*		fTabView;
 
 		// progress bar
-		int32 			encode_duration;
-		int32 			encode_time;
-		BCheckBox* 		fPlayCheck;
+		int32 			fEncodeDuration;
+		int32 			fEncodeTime;
+		BCheckBox* 		fPlayFinishedBox;
 		BStatusBar* 	fStatusBar;
-		time_t 			encode_starttime;
+		time_t 			fEncodeStartTime;
 
 		// menu bar
 		BMenuItem* 		fMenuPlaySource;
@@ -171,7 +178,7 @@ class ffguiwin : public BWindow {
 		BMenuItem* 		fMenuDefaults;
 
 		// bstrings
-		BString 		commandline;
+		BString 		fCommand;
 		BString 		fMediainfo;
 
 		// ffprobe stream tags

@@ -36,7 +36,7 @@ class CommandLauncher : public BLooper {
 		static status_t	_ffmpeg_command(void* self);
 		void 			run_command();
 
-		BString 		fCmdline;
+		BString 		fCommandline;
 		BMessage* 		fOutputMessage;
 		BMessage* 		fFinishMessage;
 		BMessenger* 	fTargetMessenger;
