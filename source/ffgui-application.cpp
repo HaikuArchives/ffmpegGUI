@@ -1,16 +1,12 @@
 /*
  * Copyright 2003-2022, Zach Dykstra. All rights reserved.
  * Distributed under the terms of the MIT License.
- */
-
-/*
-	ffgui-application.cpp , 1/06/03
-	Zach Dykstra
-	Humdinger, humdingerb@gmail.com, 2022-2023
-	Andi Machovec (BlueSky), andi.machovec@gmail.com, 2022
+ *
+ * Zach Dykstra,2003
+ * Humdinger, humdingerb@gmail.com, 2022-2023
+ * Andi Machovec (BlueSky), andi.machovec@gmail.com, 2022
 */
 
-// new app object
 
 #include "ffgui-application.h"
 #include "messages.h"
@@ -24,28 +20,30 @@
 #define B_TRANSLATION_CONTEXT "Application"
 
 
-const char *kAppSignature = "application/x-vnd.HaikuArchives-ffmpegGUI";
+const char* kAppSignature = "application/x-vnd.HaikuArchives-ffmpegGUI";
+
 
 ffguiapp::ffguiapp()
-	: BApplication(kAppSignature)
+	:
+	BApplication(kAppSignature)
 {
-
-	fWindow = new ffguiwin(BRect(0,0,0,0),B_TRANSLATE_SYSTEM_NAME("ffmpegGUI"),B_TITLED_WINDOW,B_NOT_V_RESIZABLE);
+	fWindow = new ffguiwin(BRect(0, 0, 0, 0), B_TRANSLATE_SYSTEM_NAME("ffmpegGUI"), B_TITLED_WINDOW,
+		B_NOT_V_RESIZABLE);
 	fWindow->Show();
 }
 
 
-void ffguiapp::RefsReceived(BMessage* message)
+void
+ffguiapp::RefsReceived(BMessage* message)
 {
 	fWindow->PostMessage(message);
 }
 
 
-//message received
-void ffguiapp::MessageReceived(BMessage *message)
+void
+ffguiapp::MessageReceived(BMessage* message)
 {
-	switch(message->what)
-	{
+	switch (message->what) {
 		default:
 			BApplication::MessageReceived(message);
 			break;
@@ -56,10 +54,10 @@ void ffguiapp::MessageReceived(BMessage *message)
 void
 ffguiapp::AboutRequested()
 {
-	BAboutWindow *aboutwindow = new BAboutWindow(B_TRANSLATE_SYSTEM_NAME("ffmpegGUI"), kAppSignature);
+	BAboutWindow* aboutwindow
+		= new BAboutWindow(B_TRANSLATE_SYSTEM_NAME("ffmpegGUI"), kAppSignature);
 
-	const char *authors[] =
-	{
+	const char* authors[] = {
 		"2003 Zach Dykstra",
 		"2015,2018 diversys",
 		"2020 Dominika Liberda (sdomi)",
@@ -71,11 +69,12 @@ ffguiapp::AboutRequested()
 	};
 
 	BString extra_info;
-	extra_info << 	B_TRANSLATE("Thanks to:\n"
-					"mmu_man, Jeremy, DeadYak, Marco, etc.\n"
-					"md@geekport.com\n"
-					"reds <reds@sakamoto.pl> for making it more or less usable.\n"
-					"Have fun!");
+	extra_info << B_TRANSLATE(
+		"Thanks to:\n"
+		"mmu_man, Jeremy, DeadYak, Marco, etc.\n"
+		"md@geekport.com\n"
+		"reds <reds@sakamoto.pl> for making it more or less usable.\n"
+		"Have fun!");
 
 	aboutwindow->AddCopyright(2003, "Zach Dykstra");
 	aboutwindow->AddAuthors(authors);

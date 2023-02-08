@@ -1,18 +1,18 @@
 /*
- * Copyright 2003, Zach Dykstra. All rights reserved.
+ * Copyright 2003-2022, Zach Dykstra. All rights reserved.
  * Distributed under the terms of the MIT License.
- */
-
-/*
-	ffgui-main.cpp , 1/06/03
-	Zach Dykstra
-	Andi Machovec (BlueSky), andi.machovec@gmail.com, 2022
+ *
+ * Zach Dykstra,2003
+ * Andi Machovec (BlueSky), andi.machovec@gmail.com, 2022-2022
 */
+
 
 #include "ffgui-application.h"
 #include "ffgui-window.h"
 
-int main()
+
+int
+main()
 {
 	ffguiapp app;
 	app.Run();

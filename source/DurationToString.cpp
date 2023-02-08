@@ -1,6 +1,8 @@
 /*
  * Copyright 2010, Stephan Aßmus <superstippi@gmx.de>
  * Distributed under the terms of the MIT License.
+ *
+ * Humdinger, humdingerb@gmail.com, 2022
  */
 
 
@@ -21,6 +23,6 @@ duration_to_string(int32 seconds, char* string, size_t stringSize)
 	int32 minutes = seconds / 60;
 	seconds = seconds % 60;
 
-	snprintf(string, stringSize, "%s%" B_PRId32 ":%02" B_PRId32 ":%02"
-			B_PRId32, negative ? "-" : "", hours, minutes, seconds);
+	snprintf(string, stringSize, "%s%" B_PRId32 ":%02" B_PRId32 ":%02" B_PRId32,
+		negative ? "-" : "", hours, minutes, seconds);
 }
