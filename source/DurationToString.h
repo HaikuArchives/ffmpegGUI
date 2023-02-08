@@ -11,5 +11,4 @@
 
 void duration_to_string(int32 seconds, char* string, size_t stringSize);
 
-
 #endif // DURATION_TO_STRING_H

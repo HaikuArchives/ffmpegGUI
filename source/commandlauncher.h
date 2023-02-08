@@ -1,3 +1,12 @@
+/*
+ * Copyright 2022-2023. All rights reserved.
+ * Distributed under the terms of the MIT License.
+ *
+ * Andi Machovec (BlueSky), andi.machovec@gmail.com, 2022
+ * Humdinger, humdingerb@gmail.com, 2022-2023
+*/
+
+
 #ifndef COMMANDLAUNCHER_H
 #define COMMANDLAUNCHER_H
 
@@ -6,6 +15,7 @@
 #include <Messenger.h>
 #include <String.h>
 
+
 enum {
 	ENCODING = 0,
 	INFO
@@ -13,27 +23,27 @@ enum {
 
 enum {
 	SUCCESS = 0,
-	FAILED ,
+	FAILED,
 	ABORTED
 };
 
-class CommandLauncher : public BLooper{
-public:
-	CommandLauncher(BMessenger *target_messenger);
-	void MessageReceived(BMessage *message);
+class CommandLauncher : public BLooper {
+	public:
+						CommandLauncher(BMessenger* target_messenger);
+		void 			MessageReceived(BMessage* message);
 
-private:
-	static status_t		_ffmpeg_command(void* self);
-	void 				run_command();
+	private:
+		static status_t	_ffmpeg_command(void* self);
+		void 			run_command();
 
-	BString 	fCmdline;
-	BMessage	*fOutputMessage;
-	BMessage	*fFinishMessage;
-	BMessenger	*fTargetMessenger;
-	bool 		fBusy;
-	int32		fCommandFlag;
-	thread_id	fThread;
-	status_t	fErrorCode;
+		BString 		fCmdline;
+		BMessage* 		fOutputMessage;
+		BMessage* 		fFinishMessage;
+		BMessenger* 	fTargetMessenger;
+		bool			fBusy;
+		int32			fCommandFlag;
+		thread_id 		fThread;
+		status_t 		fErrorCode;
 };
 
-#endif
+#endif // COMMANDLAUNCHER_H

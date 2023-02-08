@@ -1,52 +1,49 @@
 /*
- * Copyright 2003-2022, Zach Dykstra. All rights reserved.
+ * Copyright 2003-2023, Zach Dykstra. All rights reserved.
  * Distributed under the terms of the MIT License.
- */
-
-/*
-	ffgui-window.cpp , 1/06/03
-	Zach Dykstra
-	Humdinger, humdingerb@gmail.com, 2022-2023
-	Andi Machovec (BlueSky), andi.machovec@gmail.com, 2022
+ *
+ * Zach Dykstra,2003
+ * Humdinger, humdingerb@gmail.com, 2022-2023
+ * Andi Machovec (BlueSky), andi.machovec@gmail.com, 2022-2023
 */
 
+
 #include "ffgui-window.h"
+#include "DurationToString.h"
+#include "commandlauncher.h"
 #include "ffgui-application.h"
 #include "ffgui-spinner.h"
 #include "messages.h"
-#include "commandlauncher.h"
-#include "DurationToString.h"
 
 #include <Alert.h>
 #include <Box.h>
+#include <Button.h>
 #include <Catalog.h>
+#include <CheckBox.h>
 #include <Clipboard.h>
 #include <Entry.h>
 #include <File.h>
+#include <FilePanel.h>
 #include <LayoutBuilder.h>
-#include <MenuItem.h>
-#include <Path.h>
-#include <ScrollView.h>
-#include <SeparatorView.h>
-#include <View.h>
-#include <Roster.h>
-#include <TextView.h>
-#include <TextControl.h>
-#include <Button.h>
-#include <CheckBox.h>
+#include <MenuBar.h>
 #include <MenuField.h>
+#include <MenuItem.h>
 #include <NodeInfo.h>
 #include <Notification.h>
+#include <Path.h>
 #include <PopUpMenu.h>
+#include <Roster.h>
+#include <ScrollView.h>
+#include <SeparatorView.h>
 #include <Spinner.h>
+#include <StatusBar.h>
 #include <String.h>
 #include <StringList.h>
 #include <StringView.h>
-#include <FilePanel.h>
 #include <TabView.h>
-#include <StringList.h>
-#include <StatusBar.h>
-#include <MenuBar.h>
+#include <TextControl.h>
+#include <TextView.h>
+#include <View.h>
 
 #include <cstdlib>
 #include <stdio.h>
@@ -57,43 +54,43 @@
 
 static const char* kIdleText = B_TRANSLATE_MARK("Waiting to start encoding" B_UTF8_ELLIPSIS);
 static const char* kEmptySource = B_TRANSLATE_MARK("Please select a source file.");
-static const char* kSourceDoesntExist = B_TRANSLATE_MARK(
-	"There's no file with that name.");
-static const char* kOutputExists = B_TRANSLATE_MARK(
-	"This file already exists. It will be overwritten!");
-static const char* kOutputIsSource = B_TRANSLATE_MARK(
-	"Cannot overwrite the source file. Please choose another output file name.");
+static const char* kSourceDoesntExist = B_TRANSLATE_MARK("There's no file with that name.");
+static const char* kOutputExists
+	= B_TRANSLATE_MARK("This file already exists. It will be overwritten!");
+static const char* kOutputIsSource
+	= B_TRANSLATE_MARK("Cannot overwrite the source file. Please choose "
+					   "another output file name.");
 
 
-ContainerOption::ContainerOption(	const BString& option, const BString& extension,
-									const BString& description, format_capability capability)
+ContainerOption::ContainerOption(const BString& option, const BString& extension,
+	const BString& description, format_capability capability)
 	:
 	Option(option),
 	Extension(extension),
 	Description(description),
 	Capability(capability)
 {
-
 }
 
 
-CodecOption::CodecOption(const BString& option,const BString& description)
+CodecOption::CodecOption(const BString& option, const BString& description)
 	:
 	Option(option),
 	Description(description)
 {
-
 }
 
 
-void ffguiwin::BuildLine() // ask all the views what they hold, reset the command string
+void
+ffguiwin::BuildLine() // ask all the views what they hold, reset the command string
 {
 	BString source_filename(sourcefile->Text());
 	BString output_filename(outputfile->Text());
 	source_filename.Trim();
 	output_filename.Trim();
 	BString commandline("ffmpeg -i ");
-	commandline << "\"" << source_filename << "\"";  //append the input file name
+	commandline << "\"" << source_filename << "\""; // append the input file
+													// name
 
 	// file format
 	int32 option_index = outputfileformatpopup->FindMarkedIndex();
@@ -101,58 +98,46 @@ void ffguiwin::BuildLine() // ask all the views what they hold, reset the comman
 	commandline << " -f " << fileformat_option; // grab and set the file format
 
 	// is video enabled, add options
-	if ((enablevideo->Value() == B_CONTROL_ON) and (enablevideo->IsEnabled()))
-	{
+	if ((enablevideo->Value() == B_CONTROL_ON) and (enablevideo->IsEnabled())) {
 		option_index = outputvideoformatpopup->FindMarkedIndex();
 		commandline << " -vcodec " << fVideoCodecs[option_index].Option;
-		if (option_index !=0)
-		{
+		if (option_index != 0) {
 			commandline << " -b:v " << vbitrate->Value() << "k";
 			commandline << " -r " << framerate->Value();
 			if (customres->IsEnabled() && customres->Value())
-			{
 				commandline << " -s " << xres->Value() << "x" << yres->Value();
-			}
 
 			// cropping options
-			if (enablecropping->IsEnabled() && enablecropping->Value())
-			{
-				commandline << " -vf crop=iw-" << leftcrop->Value() + rightcrop->Value()
-							<< ":ih-" << topcrop->Value()+bottomcrop->Value() << ":"
-							<< leftcrop->Value() << ":" << topcrop->Value();
+			if (enablecropping->IsEnabled() && enablecropping->Value()) {
+				commandline << " -vf crop=iw-" << leftcrop->Value() + rightcrop->Value() << ":ih-"
+							<< topcrop->Value() + bottomcrop->Value() << ":" << leftcrop->Value()
+							<< ":" << topcrop->Value();
 			}
 		}
-	}
-	else
-	{
+	} else
 		commandline << " -vn";
-	}
 
 	// audio encoding enabled, grab the values
-	if (enableaudio->Value() == B_CONTROL_ON)
-	{
+	if (enableaudio->Value() == B_CONTROL_ON) {
 		option_index = outputaudioformatpopup->FindMarkedIndex();
 		commandline << " -acodec " << fAudioCodecs[option_index].Option;
-		if (option_index != 0)
-		{
+		if (option_index != 0) {
 			commandline << " -b:a " << std::atoi(abpopup->FindMarked()->Label()) << "k";
 			commandline << " -ar " << std::atoi(arpopup->FindMarked()->Label());
 			commandline << " -ac " << ac->Value();
 		}
-	}
-	else
-	{
+	} else
 		commandline << (" -an");
-	}
 
 	commandline << " \"" << output_filename << "\"";
-	commandline	<< " -loglevel error -stats";
+	commandline << " -loglevel error -stats";
 	encode->SetText(commandline.String());
 }
 
 // new window object
-ffguiwin::ffguiwin(BRect r, const char *name, window_type type, ulong mode)
-	: BWindow(r,name,type,mode)
+ffguiwin::ffguiwin(BRect r, const char* name, window_type type, ulong mode)
+	:
+	BWindow(r, name, type, mode)
 {
 	// Invoker for the Alerts to use to send their messages to the timer
 	fAlertInvoker.SetMessage(new BMessage(M_STOP_ALERT_BUTTON));
@@ -160,7 +145,7 @@ ffguiwin::ffguiwin(BRect r, const char *name, window_type type, ulong mode)
 
 	encode_starttime = 0; // 0 means: no encoding in progress
 
-	//initialize GUI elements
+	// initialize GUI elements
 	sourcefilebutton = new BButton(B_TRANSLATE("Source file"), new BMessage(M_SOURCE));
 	sourcefilebutton->SetExplicitMaxSize(BSize(B_SIZE_UNLIMITED, B_SIZE_UNLIMITED));
 	sourcefile = new BTextControl("", "", new BMessage('srcf'));
@@ -194,12 +179,10 @@ ffguiwin::ffguiwin(BRect r, const char *name, window_type type, ulong mode)
 	populate_codec_options();
 	outputfileformatpopup = new BPopUpMenu("");
 	std::vector<ContainerOption>::iterator container_iter;
-	for (	container_iter=fContainerFormats.begin();
-			container_iter!=fContainerFormats.end();
-			++container_iter)
-	{
-		outputfileformatpopup->AddItem(	new BMenuItem(	container_iter->Description.String(),
-														new BMessage(M_OUTPUTFILEFORMAT)));
+	for (container_iter = fContainerFormats.begin(); container_iter != fContainerFormats.end();
+		++container_iter) {
+		outputfileformatpopup->AddItem(
+			new BMenuItem(container_iter->Description.String(), new BMessage(M_OUTPUTFILEFORMAT)));
 	}
 
 	outputfileformatpopup->ItemAt(0)->SetMarked(true);
@@ -207,30 +190,31 @@ ffguiwin::ffguiwin(BRect r, const char *name, window_type type, ulong mode)
 
 	outputvideoformatpopup = new BPopUpMenu("");
 	std::vector<CodecOption>::iterator codec_iter;
-	for (codec_iter=fVideoCodecs.begin(); codec_iter!=fVideoCodecs.end(); ++codec_iter)
-	{
-		outputvideoformatpopup->AddItem(new BMenuItem(	codec_iter->Description.String(),
-														new BMessage(M_OUTPUTVIDEOFORMAT)));
+	for (codec_iter = fVideoCodecs.begin(); codec_iter != fVideoCodecs.end(); ++codec_iter) {
+		outputvideoformatpopup->AddItem(
+			new BMenuItem(codec_iter->Description.String(), new BMessage(M_OUTPUTVIDEOFORMAT)));
 	}
 	outputvideoformatpopup->ItemAt(0)->SetMarked(true);
 	outputvideoformat = new BMenuField(B_TRANSLATE("Video codec:"), outputvideoformatpopup);
 
 	float popup_width;
 	outputvideoformatpopup->GetPreferredSize(&popup_width, nullptr);
-	outputvideoformat->CreateMenuBarLayoutItem()->SetExplicitMinSize(BSize(popup_width, B_SIZE_UNSET));
+	outputvideoformat->CreateMenuBarLayoutItem()->SetExplicitMinSize(
+		BSize(popup_width, B_SIZE_UNSET));
 
 	outputaudioformatpopup = new BPopUpMenu("");
-	for (codec_iter=fAudioCodecs.begin(); codec_iter!=fAudioCodecs.end(); ++codec_iter)
-	{
-		outputaudioformatpopup->AddItem(new BMenuItem(	codec_iter->Description.String(),
-														new BMessage(M_OUTPUTAUDIOFORMAT)));
+	for (codec_iter = fAudioCodecs.begin(); codec_iter != fAudioCodecs.end(); ++codec_iter) {
+		outputaudioformatpopup->AddItem(
+			new BMenuItem(codec_iter->Description.String(), new BMessage(M_OUTPUTAUDIOFORMAT)));
 	}
 	outputaudioformatpopup->ItemAt(0)->SetMarked(true);
 	outputaudioformat = new BMenuField(B_TRANSLATE("Audio codec:"), outputaudioformatpopup);
 	outputaudioformatpopup->GetPreferredSize(&popup_width, nullptr);
-	outputaudioformat->CreateMenuBarLayoutItem()->SetExplicitMinSize(BSize(popup_width, B_SIZE_UNSET));
+	outputaudioformat->CreateMenuBarLayoutItem()->SetExplicitMinSize(
+		BSize(popup_width, B_SIZE_UNSET));
 
-	enablevideo = new BCheckBox("", B_TRANSLATE("Enable video encoding"), new BMessage(M_ENABLEVIDEO));
+	enablevideo
+		= new BCheckBox("", B_TRANSLATE("Enable video encoding"), new BMessage(M_ENABLEVIDEO));
 	enablevideo->SetValue(B_CONTROL_ON);
 	vbitrate = new ffguispinner("", B_TRANSLATE("Bitrate (Kbit/s):"), new BMessage(M_VBITRATE));
 	framerate = new ffguidecspinner("", B_TRANSLATE("Framerate (fps):"), new BMessage(M_FRAMERATE));
@@ -238,14 +222,16 @@ ffguiwin::ffguiwin(BRect r, const char *name, window_type type, ulong mode)
 	xres = new ffguispinner("", B_TRANSLATE("Width:"), new BMessage(M_XRES));
 	yres = new ffguispinner("", B_TRANSLATE("Height:"), new BMessage(M_YRES));
 
-	enablecropping = new BCheckBox("", B_TRANSLATE("Enable video cropping"), new BMessage(M_ENABLECROPPING));
+	enablecropping
+		= new BCheckBox("", B_TRANSLATE("Enable video cropping"), new BMessage(M_ENABLECROPPING));
 	enablecropping->SetValue(B_CONTROL_OFF);
 	topcrop = new ffguispinner("", B_TRANSLATE("Top:"), new BMessage(M_TOPCROP));
 	bottomcrop = new ffguispinner("", B_TRANSLATE("Bottom:"), new BMessage(M_BOTTOMCROP));
-    leftcrop = new ffguispinner("", B_TRANSLATE("Left:"), new BMessage(M_LEFTCROP));
+	leftcrop = new ffguispinner("", B_TRANSLATE("Left:"), new BMessage(M_LEFTCROP));
 	rightcrop = new ffguispinner("", B_TRANSLATE("Right:"), new BMessage(M_RIGHTCROP));
 
-	enableaudio = new BCheckBox("", B_TRANSLATE("Enable audio encoding"), new BMessage(M_ENABLEAUDIO));
+	enableaudio
+		= new BCheckBox("", B_TRANSLATE("Enable audio encoding"), new BMessage(M_ENABLEAUDIO));
 	enableaudio->SetValue(B_CONTROL_ON);
 
 	abpopup = new BPopUpMenu("");
@@ -271,17 +257,23 @@ ffguiwin::ffguiwin(BRect r, const char *name, window_type type, ulong mode)
 
 	bframes = new ffguispinner("", B_TRANSLATE("'B' frames:"), nullptr);
 	gop = new ffguispinner("", B_TRANSLATE("GOP size:"), nullptr);
-	highquality = new BCheckBox("",B_TRANSLATE("Use high quality settings"), new BMessage(M_HIGHQUALITY));
-	fourmotion = new BCheckBox("", B_TRANSLATE("Use four motion vector"), new BMessage(M_FOURMOTION));
-	deinterlace = new BCheckBox("", B_TRANSLATE("Deinterlace pictures"), new BMessage(M_DEINTERLACE));
-	calcpsnr = new BCheckBox("", B_TRANSLATE("Calculate PSNR of compressed frames"), new BMessage(M_CALCPSNR));
+	highquality
+		= new BCheckBox("", B_TRANSLATE("Use high quality settings"), new BMessage(M_HIGHQUALITY));
+	fourmotion
+		= new BCheckBox("", B_TRANSLATE("Use four motion vector"), new BMessage(M_FOURMOTION));
+	deinterlace
+		= new BCheckBox("", B_TRANSLATE("Deinterlace pictures"), new BMessage(M_DEINTERLACE));
+	calcpsnr = new BCheckBox(
+		"", B_TRANSLATE("Calculate PSNR of compressed frames"), new BMessage(M_CALCPSNR));
 
 	fixedquant = new ffguispinner("", B_TRANSLATE("Use fixed video quantizer scale:"), nullptr);
 	minquant = new ffguispinner("", B_TRANSLATE("Min video quantizer scale:"), nullptr);
 	maxquant = new ffguispinner("", B_TRANSLATE("Max video quantizer scale:"), nullptr);
-	quantdifference = new ffguispinner("", B_TRANSLATE("Max difference between quantizer scale:"), nullptr);
+	quantdifference
+		= new ffguispinner("", B_TRANSLATE("Max difference between quantizer scale:"), nullptr);
 	quantblur = new ffguispinner("", B_TRANSLATE("Video quantizer scale blur:"), nullptr);
-	quantcompression = new ffguispinner("", B_TRANSLATE("Video quantizer scale compression:"), nullptr);
+	quantcompression
+		= new ffguispinner("", B_TRANSLATE("Video quantizer scale compression:"), nullptr);
 
 	outputtext = new BTextView("");
 	outputtext->SetViewColor(ui_color(B_PANEL_BACKGROUND_COLOR));
@@ -291,19 +283,11 @@ ffguiwin::ffguiwin(BRect r, const char *name, window_type type, ulong mode)
 	encodebutton->SetEnabled(false);
 	encode = new BTextControl("", "", nullptr);
 
-	fSourceFilePanel = new BFilePanel(B_OPEN_PANEL,
-									new BMessenger(this),
-									NULL,
-									B_FILE_NODE,
-									false,
-									new BMessage(M_SOURCEFILE_REF));
+	fSourceFilePanel = new BFilePanel(B_OPEN_PANEL, new BMessenger(this), NULL, B_FILE_NODE, false,
+		new BMessage(M_SOURCEFILE_REF));
 
-	fOutputFilePanel = new BFilePanel(B_SAVE_PANEL,
-									new BMessenger(this),
-									NULL,
-									B_FILE_NODE,
-									false,
-									new BMessage(M_OUTPUTFILE_REF));
+	fOutputFilePanel = new BFilePanel(B_SAVE_PANEL, new BMessenger(this), NULL, B_FILE_NODE, false,
+		new BMessage(M_OUTPUTFILE_REF));
 
 	fPlayCheck = new BCheckBox("play_finished", B_TRANSLATE("Play when finished"), NULL);
 	fPlayCheck->SetValue(B_CONTROL_OFF);
@@ -347,8 +331,8 @@ ffguiwin::ffguiwin(BRect r, const char *name, window_type type, ulong mode)
 	BuildLine();
 
 	// create tabs and boxes
-	BView *fileoptionsview = new BView("fileoptions", B_SUPPORTS_LAYOUT);
-	BLayoutBuilder::Group<>(fileoptionsview,B_VERTICAL, B_USE_SMALL_SPACING)
+	BView* fileoptionsview = new BView("fileoptions", B_SUPPORTS_LAYOUT);
+	BLayoutBuilder::Group<>(fileoptionsview, B_VERTICAL, B_USE_SMALL_SPACING)
 		.SetInsets(B_USE_DEFAULT_SPACING, B_USE_DEFAULT_SPACING, B_USE_DEFAULT_SPACING, 0)
 		.AddGrid(B_USE_SMALL_SPACING, 0.0)
 			.Add(sourcefilebutton, 0, 0)
@@ -366,7 +350,7 @@ ffguiwin::ffguiwin(BRect r, const char *name, window_type type, ulong mode)
 			.SetColumnWeight(3, 0)
 		.End();
 
-	BView *encodeview = new BView("encodeview", B_SUPPORTS_LAYOUT);
+	BView* encodeview = new BView("encodeview", B_SUPPORTS_LAYOUT);
 	BLayoutBuilder::Group<>(encodeview, B_VERTICAL)
 		.AddGroup(B_HORIZONTAL)
 		.SetInsets(B_USE_DEFAULT_SPACING, B_USE_DEFAULT_SPACING, B_USE_DEFAULT_SPACING, 0)
@@ -375,89 +359,89 @@ ffguiwin::ffguiwin(BRect r, const char *name, window_type type, ulong mode)
 		.End()
 		.Add(new BSeparatorView(B_HORIZONTAL));
 
-	BBox *videobox = new BBox("");
+	BBox* videobox = new BBox("");
 	videobox->SetLabel(B_TRANSLATE("Video"));
-	BGroupLayout *videolayout = BLayoutBuilder::Group<>(B_VERTICAL)
+	BGroupLayout* videolayout = BLayoutBuilder::Group<>(B_VERTICAL)
 		.SetInsets(B_USE_DEFAULT_SPACING, B_USE_DEFAULT_SPACING,
-					B_USE_DEFAULT_SPACING, B_USE_DEFAULT_SPACING)
+			B_USE_DEFAULT_SPACING, B_USE_DEFAULT_SPACING)
 		.Add(enablevideo)
-		.AddGrid(B_USE_SMALL_SPACING,B_USE_SMALL_SPACING)
-			.Add(outputvideoformat->CreateLabelLayoutItem(),0,0)
-			.Add(outputvideoformat->CreateMenuBarLayoutItem(),1,0)
-			.Add(vbitrate->CreateLabelLayoutItem(),0,1)
-			.Add(vbitrate->CreateTextViewLayoutItem(),1,1)
-			.Add(framerate->CreateLabelLayoutItem(),0,2)
-			.Add(framerate->CreateTextViewLayoutItem(),1,2)
+		.AddGrid(B_USE_SMALL_SPACING, B_USE_SMALL_SPACING)
+			.Add(outputvideoformat->CreateLabelLayoutItem(), 0, 0)
+			.Add(outputvideoformat->CreateMenuBarLayoutItem(), 1, 0)
+			.Add(vbitrate->CreateLabelLayoutItem(), 0, 1)
+			.Add(vbitrate->CreateTextViewLayoutItem(), 1, 1)
+			.Add(framerate->CreateLabelLayoutItem(), 0, 2)
+			.Add(framerate->CreateTextViewLayoutItem(), 1, 2)
 		.End()
 		.Add(new BSeparatorView(B_HORIZONTAL))
 		.Add(customres)
-		.AddGrid(B_USE_SMALL_SPACING,B_USE_SMALL_SPACING)
-			.Add(xres->CreateLabelLayoutItem(),0,0)
-			.Add(xres->CreateTextViewLayoutItem(),1,0)
-			.Add(yres->CreateLabelLayoutItem(),0,1)
-			.Add(yres->CreateTextViewLayoutItem(),1,1)
+		.AddGrid(B_USE_SMALL_SPACING, B_USE_SMALL_SPACING)
+			.Add(xres->CreateLabelLayoutItem(), 0, 0)
+			.Add(xres->CreateTextViewLayoutItem(), 1, 0)
+			.Add(yres->CreateLabelLayoutItem(), 0, 1)
+			.Add(yres->CreateTextViewLayoutItem(), 1, 1)
 		.End();
 	videobox->AddChild(videolayout->View());
 
-	BBox *croppingoptionsbox = new BBox("");
+	BBox* croppingoptionsbox = new BBox("");
 	croppingoptionsbox->SetLabel(B_TRANSLATE("Cropping options"));
-	BGroupLayout *croppingoptionslayout = BLayoutBuilder::Group<>(B_VERTICAL)
-		.SetInsets(B_USE_DEFAULT_SPACING, B_USE_DEFAULT_SPACING,
-					B_USE_DEFAULT_SPACING, B_USE_DEFAULT_SPACING)
+	BGroupLayout* croppingoptionslayout = BLayoutBuilder::Group<>(B_VERTICAL)
+		.SetInsets(B_USE_DEFAULT_SPACING, B_USE_DEFAULT_SPACING, B_USE_DEFAULT_SPACING,
+		  B_USE_DEFAULT_SPACING)
 		.Add(enablecropping)
-		.AddGrid(B_USE_SMALL_SPACING,B_USE_SMALL_SPACING)
-			.Add(topcrop->CreateLabelLayoutItem(),0,0)
-			.Add(topcrop->CreateTextViewLayoutItem(),1,0)
-			.Add(bottomcrop->CreateLabelLayoutItem(),0,1)
-			.Add(bottomcrop->CreateTextViewLayoutItem(),1,1)
-			.Add(leftcrop->CreateLabelLayoutItem(),0,2)
-			.Add(leftcrop->CreateTextViewLayoutItem(),1,2)
-			.Add(rightcrop->CreateLabelLayoutItem(),0,3)
-			.Add(rightcrop->CreateTextViewLayoutItem(),1,3)
+		.AddGrid(B_USE_SMALL_SPACING, B_USE_SMALL_SPACING)
+			.Add(topcrop->CreateLabelLayoutItem(), 0, 0)
+			.Add(topcrop->CreateTextViewLayoutItem(), 1, 0)
+			.Add(bottomcrop->CreateLabelLayoutItem(), 0, 1)
+			.Add(bottomcrop->CreateTextViewLayoutItem(), 1, 1)
+			.Add(leftcrop->CreateLabelLayoutItem(), 0, 2)
+			.Add(leftcrop->CreateTextViewLayoutItem(), 1, 2)
+			.Add(rightcrop->CreateLabelLayoutItem(), 0, 3)
+			.Add(rightcrop->CreateTextViewLayoutItem(), 1, 3)
 		.End()
 		.AddGlue();
 	croppingoptionsbox->AddChild(croppingoptionslayout->View());
 
-	BBox *audiobox = new BBox("");
+	BBox* audiobox = new BBox("");
 	audiobox->SetLabel(B_TRANSLATE("Audio"));
-	BGroupLayout *audiolayout = BLayoutBuilder::Group<>(B_VERTICAL)
+	BGroupLayout* audiolayout = BLayoutBuilder::Group<>(B_VERTICAL)
 		.SetInsets(B_USE_DEFAULT_SPACING, B_USE_DEFAULT_SPACING,
-					B_USE_DEFAULT_SPACING, B_USE_DEFAULT_SPACING)
+			B_USE_DEFAULT_SPACING, B_USE_DEFAULT_SPACING)
 		.Add(enableaudio)
-		.AddGrid(B_USE_SMALL_SPACING,B_USE_SMALL_SPACING)
-			.Add(outputaudioformat->CreateLabelLayoutItem(),0,0)
-			.Add(outputaudioformat->CreateMenuBarLayoutItem(),1,0)
-			.Add(ab->CreateLabelLayoutItem(),0,1)
-			.Add(ab->CreateMenuBarLayoutItem(),1,1)
-			.Add(ar->CreateLabelLayoutItem(),0,2)
-			.Add(ar->CreateMenuBarLayoutItem(),1,2)
-			.Add(ac->CreateLabelLayoutItem(),0,3)
-			.Add(ac->CreateTextViewLayoutItem(),1,3)
+		.AddGrid(B_USE_SMALL_SPACING, B_USE_SMALL_SPACING)
+			.Add(outputaudioformat->CreateLabelLayoutItem(), 0, 0)
+			.Add(outputaudioformat->CreateMenuBarLayoutItem(), 1, 0)
+			.Add(ab->CreateLabelLayoutItem(), 0, 1)
+			.Add(ab->CreateMenuBarLayoutItem(), 1, 1)
+			.Add(ar->CreateLabelLayoutItem(), 0, 2)
+			.Add(ar->CreateMenuBarLayoutItem(), 1, 2)
+			.Add(ac->CreateLabelLayoutItem(), 0, 3)
+			.Add(ac->CreateTextViewLayoutItem(), 1, 3)
 		.End()
 		.AddGlue();
 	audiobox->AddChild(audiolayout->View());
 
-	BView *mainoptionsview = new BView("",B_SUPPORTS_LAYOUT);
-	BView *advancedoptionsview = new BView("",B_SUPPORTS_LAYOUT);
-	BView *outputview = new BScrollView("", outputtext, B_SUPPORTS_LAYOUT, true, true);
+	BView* mainoptionsview = new BView("", B_SUPPORTS_LAYOUT);
+	BView* advancedoptionsview = new BView("", B_SUPPORTS_LAYOUT);
+	BView* outputview = new BScrollView("", outputtext, B_SUPPORTS_LAYOUT, true, true);
 
 	BLayoutBuilder::Group<>(mainoptionsview, B_HORIZONTAL)
-		.SetInsets(B_USE_DEFAULT_SPACING, B_USE_DEFAULT_SPACING,
-					B_USE_DEFAULT_SPACING, B_USE_DEFAULT_SPACING)
+		.SetInsets(B_USE_DEFAULT_SPACING, B_USE_DEFAULT_SPACING, B_USE_DEFAULT_SPACING,
+			B_USE_DEFAULT_SPACING)
 		.Add(videobox)
 		.Add(croppingoptionsbox)
 		.Add(audiobox)
 		.Layout();
 
 	BLayoutBuilder::Group<>(advancedoptionsview, B_HORIZONTAL)
-		.SetInsets(B_USE_DEFAULT_SPACING, B_USE_DEFAULT_SPACING,
-					B_USE_DEFAULT_SPACING, B_USE_DEFAULT_SPACING)
+		.SetInsets(B_USE_DEFAULT_SPACING, B_USE_DEFAULT_SPACING, B_USE_DEFAULT_SPACING,
+			B_USE_DEFAULT_SPACING)
 		.AddGroup(B_VERTICAL)
-			.AddGrid(B_USE_SMALL_SPACING,B_USE_SMALL_SPACING)
-				.Add(bframes->CreateLabelLayoutItem(),0,0)
-				.Add(bframes->CreateTextViewLayoutItem(),1,0)
-				.Add(gop->CreateLabelLayoutItem(),0,1)
-				.Add(gop->CreateTextViewLayoutItem(),1,1)
+			.AddGrid(B_USE_SMALL_SPACING, B_USE_SMALL_SPACING)
+				.Add(bframes->CreateLabelLayoutItem(), 0, 0)
+				.Add(bframes->CreateTextViewLayoutItem(), 1, 0)
+				.Add(gop->CreateLabelLayoutItem(), 0, 1)
+				.Add(gop->CreateTextViewLayoutItem(), 1, 1)
 			.End()
 			.Add(new BSeparatorView(B_HORIZONTAL))
 			.Add(highquality)
@@ -467,36 +451,37 @@ ffguiwin::ffguiwin(BRect r, const char *name, window_type type, ulong mode)
 		.End()
 		.Add(new BSeparatorView(B_VERTICAL))
 		.AddGroup(B_VERTICAL)
-		.AddGrid(B_USE_SMALL_SPACING,B_USE_SMALL_SPACING)
-			.Add(fixedquant->CreateLabelLayoutItem(),0,0)
-			.Add(fixedquant->CreateTextViewLayoutItem(),1,0)
-			.Add(minquant->CreateLabelLayoutItem(),0,1)
-			.Add(minquant->CreateTextViewLayoutItem(),1,1)
-			.Add(maxquant->CreateLabelLayoutItem(),0,2)
-			.Add(maxquant->CreateTextViewLayoutItem(),1,2)
-			.Add(quantdifference->CreateLabelLayoutItem(),0,3)
-			.Add(quantdifference->CreateTextViewLayoutItem(),1,3)
-			.Add(quantblur->CreateLabelLayoutItem(),0,4)
-			.Add(quantblur->CreateTextViewLayoutItem(),1,4)
-			.Add(quantcompression->CreateLabelLayoutItem(),0,5)
-			.Add(quantcompression->CreateTextViewLayoutItem(),1,5)
-		.End()
+			.AddGrid(B_USE_SMALL_SPACING, B_USE_SMALL_SPACING)
+				.Add(fixedquant->CreateLabelLayoutItem(), 0, 0)
+				.Add(fixedquant->CreateTextViewLayoutItem(), 1, 0)
+				.Add(minquant->CreateLabelLayoutItem(), 0, 1)
+				.Add(minquant->CreateTextViewLayoutItem(), 1, 1)
+				.Add(maxquant->CreateLabelLayoutItem(), 0, 2)
+				.Add(maxquant->CreateTextViewLayoutItem(), 1, 2)
+				.Add(quantdifference->CreateLabelLayoutItem(), 0, 3)
+				.Add(quantdifference->CreateTextViewLayoutItem(), 1, 3)
+				.Add(quantblur->CreateLabelLayoutItem(), 0, 4)
+				.Add(quantblur->CreateTextViewLayoutItem(), 1, 4)
+				.Add(quantcompression->CreateLabelLayoutItem(), 0, 5)
+				.Add(quantcompression->CreateTextViewLayoutItem(), 1, 5)
+			.End()
 		.AddGlue()
 		.End();
 
 	tabview = new BTabView("");
-	BTab *mainoptionstab = new BTab();
-	BTab *advancedoptionstab = new BTab();
-	BTab *outputtab = new BTab();
+	BTab* mainoptionstab = new BTab();
+	BTab* advancedoptionstab = new BTab();
+	BTab* outputtab = new BTab();
 
 	tabview->AddTab(mainoptionsview, mainoptionstab);
-	//tabview->AddTab(advancedoptionsview, advancedoptionstab); //don´t remove, will be needed later
+	// tabview->AddTab(advancedoptionsview, advancedoptionstab); //don´t remove,
+	// will be needed later
 	tabview->AddTab(outputview, outputtab);
 	mainoptionstab->SetLabel(B_TRANSLATE("Main options"));
 	advancedoptionstab->SetLabel(B_TRANSLATE("Advanced options"));
 	outputtab->SetLabel(B_TRANSLATE("Output"));
 
-	//menu bar
+	// menu bar
 	BMenuBar* menuBar = new BMenuBar("menubar");
 	BMenu* menu;
 	BMenuItem* item;
@@ -509,7 +494,8 @@ ffguiwin::ffguiwin(BRect r, const char *name, window_type type, ulong mode)
 		B_TRANSLATE("Select output file" B_UTF8_ELLIPSIS), new BMessage(M_OUTPUT), 'S');
 	menu->AddItem(item);
 	menu->AddSeparatorItem();
-	fMenuPlaySource = new BMenuItem(B_TRANSLATE("Play source file"), new BMessage(M_PLAY_SOURCE), 'P');
+	fMenuPlaySource
+		= new BMenuItem(B_TRANSLATE("Play source file"), new BMessage(M_PLAY_SOURCE), 'P');
 	fMenuPlaySource->SetEnabled(false);
 	menu->AddItem(fMenuPlaySource);
 	fMenuPlayOutput = new BMenuItem(
@@ -527,7 +513,8 @@ ffguiwin::ffguiwin(BRect r, const char *name, window_type type, ulong mode)
 	fMenuStartEncode = new BMenuItem(B_TRANSLATE("Start encoding"), new BMessage(M_ENCODE), 'E');
 	fMenuStartEncode->SetEnabled(false);
 	menu->AddItem(fMenuStartEncode);
-	fMenuStopEncode = new BMenuItem(B_TRANSLATE("Abort encoding"), new BMessage(M_STOP_ENCODING), 'A');
+	fMenuStopEncode
+		= new BMenuItem(B_TRANSLATE("Abort encoding"), new BMessage(M_STOP_ENCODING), 'A');
 	fMenuStopEncode->SetEnabled(false);
 	menu->AddItem(fMenuStopEncode);
 	menu->AddSeparatorItem();
@@ -540,16 +527,16 @@ ffguiwin::ffguiwin(BRect r, const char *name, window_type type, ulong mode)
 	menu->AddItem(fMenuDefaults);
 	menuBar->AddItem(menu);
 
-	//main layout
+	// main layout
 	BLayoutBuilder::Group<>(this, B_VERTICAL, 0)
-		.SetInsets(-2,0,-2,0)
+		.SetInsets(-2, 0, -2, 0)
 		.Add(menuBar)
 		.Add(fileoptionsview)
 		.Add(tabview)
 		.Add(encodeview)
 		.AddGroup(B_HORIZONTAL)
-			.SetInsets(B_USE_DEFAULT_SPACING, B_USE_DEFAULT_SPACING,
-				B_USE_DEFAULT_SPACING, B_USE_DEFAULT_SPACING)
+			.SetInsets(B_USE_DEFAULT_SPACING, B_USE_DEFAULT_SPACING, B_USE_DEFAULT_SPACING,
+				B_USE_DEFAULT_SPACING)
 			.Add(fStatusBar)
 			.AddGroup(B_VERTICAL)
 				.AddGlue()
@@ -557,7 +544,7 @@ ffguiwin::ffguiwin(BRect r, const char *name, window_type type, ulong mode)
 			.End()
 		.End()
 		.AddGlue()
-	.Layout();
+		.Layout();
 
 	ResizeToPreferred();
 	float min_width, min_height, max_width, max_height;
@@ -568,18 +555,19 @@ ffguiwin::ffguiwin(BRect r, const char *name, window_type type, ulong mode)
 	SetSizeLimits(min_width, max_width, min_height, max_height);
 	MoveOnScreen();
 
-	//initialize command launcher
+	// initialize command launcher
 	fCommandLauncher = new CommandLauncher(new BMessenger(this));
 }
 
-//quitting
-bool ffguiwin::QuitRequested()
+
+bool
+ffguiwin::QuitRequested()
 {
 	// encoding in progress
 	if (encode_starttime > 0) {
 		fAlertInvoker.SetMessage(new BMessage(M_QUIT_ALERT_BUTTON));
-		fStopAlert = new BAlert("abort", B_TRANSLATE(
-			"Are you sure, that you want to abort the encoding?\n"),
+		fStopAlert = new BAlert("abort",
+			B_TRANSLATE("Are you sure, that you want to abort the encoding?\n"),
 			B_TRANSLATE("Cancel"), B_TRANSLATE("Stop encoding"));
 		fStopAlert->SetShortcut(0, B_ESCAPE);
 		fStopAlert->Go(&fAlertInvoker);
@@ -590,12 +578,11 @@ bool ffguiwin::QuitRequested()
 	return true;
 }
 
-//message received
-void ffguiwin::MessageReceived(BMessage *message)
-{
 
-	switch(message->what)
-	{
+void
+ffguiwin::MessageReceived(BMessage* message)
+{
+	switch (message->what) {
 		case B_ABOUT_REQUESTED:
 		{
 			be_app->PostMessage(B_ABOUT_REQUESTED);
@@ -605,7 +592,7 @@ void ffguiwin::MessageReceived(BMessage *message)
 		{
 			BString text(encode->Text());
 			ssize_t textLen = text.Length();
-			BMessage* clip = (BMessage*)NULL;
+			BMessage* clip = (BMessage*) NULL;
 
 			if (be_clipboard->Lock()) {
 				be_clipboard->Clear();
@@ -639,10 +626,9 @@ void ffguiwin::MessageReceived(BMessage *message)
 		case M_OUTPUTFILEFORMAT:
 		{
 			BString outputfilename(outputfile->Text());
-			outputfilename=outputfilename.Trim();
+			outputfilename = outputfilename.Trim();
 
-			if (!outputfilename.IsEmpty())
-			{
+			if (!outputfilename.IsEmpty()) {
 				set_outputfile_extension();
 				is_ready_to_encode();
 				set_playbuttons_state();
@@ -806,11 +792,11 @@ void ffguiwin::MessageReceived(BMessage *message)
 		}
 		case M_STOP_ENCODING:
 		{
-			time_t now = (time_t)real_time_clock();
+			time_t now = (time_t) real_time_clock();
 			// Only show if encoding has been running for more than 30s
 			if (now - encode_starttime > 30) {
-				fStopAlert = new BAlert("abort", B_TRANSLATE(
-					"Are you sure, that you want to abort the encoding?\n"),
+				fStopAlert = new BAlert("abort",
+					B_TRANSLATE("Are you sure, that you want to abort the encoding?\n"),
 					B_TRANSLATE("Cancel"), B_TRANSLATE("Abort encoding"));
 				fStopAlert->SetShortcut(0, B_ESCAPE);
 				fStopAlert->Go(&fAlertInvoker);
@@ -855,34 +841,29 @@ void ffguiwin::MessageReceived(BMessage *message)
 			outputtext->Insert(progress_data.String());
 			outputtext->ScrollTo(0.0, 1000000.0);
 
-			//calculate progress percentage
+			// calculate progress percentage
 			int32 time_startpos = progress_data.FindFirst("time=");
-			if (time_startpos > -1)
-			{
-				time_startpos+=5;
+			if (time_startpos > -1) {
+				time_startpos += 5;
 				int32 time_endpos = progress_data.FindFirst(".", time_startpos);
 				BString time_string;
-				progress_data.CopyInto(time_string, time_startpos, time_endpos-time_startpos);
+				progress_data.CopyInto(time_string, time_startpos, time_endpos - time_startpos);
 				encode_time = get_seconds(time_string);
 
 				int32 encode_percentage;
 				if (encode_duration > 0)
-				{
 					encode_percentage = (encode_time * 100) / encode_duration;
-				}
 				else
-				{
 					encode_percentage = 0;
-				}
 
 				BMessage progress_update_message(B_UPDATE_STATUS_BAR);
-				progress_update_message.AddFloat("delta", encode_percentage - fStatusBar->CurrentValue());
+				progress_update_message.AddFloat(
+					"delta", encode_percentage - fStatusBar->CurrentValue());
 				BString percentage_string;
 				percentage_string << encode_percentage << "%";
 				progress_update_message.AddString("trailing_text", percentage_string.String());
 				PostMessage(&progress_update_message, fStatusBar);
 			}
-
 			break;
 		}
 		case M_ENCODE_FINISHED:
@@ -930,8 +911,7 @@ void ffguiwin::MessageReceived(BMessage *message)
 					}
 				}
 				set_playbuttons_state();
-			}
-			else {
+			} else {
 				encodeFinished.SetContent(B_TRANSLATE("Encoding failed."));
 				tabview->Select(1);
 				outputtext->ScrollTo(0.0, 1000000.0);
@@ -941,11 +921,12 @@ void ffguiwin::MessageReceived(BMessage *message)
 
 			if (fStopAlert != NULL) {
 				fStopAlert->Lock();
-				fStopAlert->TextView()->SetText(B_TRANSLATE(
-					"Too late! Encoding has already finished.\n"));
+				fStopAlert->TextView()->SetText(
+					B_TRANSLATE("Too late! Encoding has already finished.\n"));
 				BButton* button = fStopAlert->ButtonAt(1);
 				button->SetLabel(B_TRANSLATE_COMMENT("Duh!",
-					"Button label of stop-encoding-alert if you're too late..."));
+					"Button label of stop-encoding-alert if you're too "
+					"late..."));
 				fStopAlert->Unlock();
 			}
 			break;
@@ -1009,21 +990,22 @@ void ffguiwin::MessageReceived(BMessage *message)
 }
 
 
-void ffguiwin::get_media_info()
+void
+ffguiwin::get_media_info()
 {
 	// Reset media info and video/audio tags
 	fMediainfo = fVideoCodec = fAudioCodec = fVideoWidth = fVideoHeight = fVideoFramerate
-		= fDuration = fVideoBitrate = fAudioBitrate = fAudioSamplerate = fAudioChannelLayout
-		= "";
+		= fDuration = fVideoBitrate = fAudioBitrate = fAudioSamplerate = fAudioChannelLayout = "";
 	BString command;
 	command << "ffprobe -v error -show_entries format=duration,bit_rate:"
-		"stream=codec_name,width,height,r_frame_rate,sample_rate,channel_layout "
-		"-of default=noprint_wrappers=1 -select_streams v:0 "
-		<< "\"" << sourcefile->Text() << "\" ; ";
+			   "stream=codec_name,width,height,r_frame_rate,sample_rate,"
+			   "channel_layout "
+			   "-of default=noprint_wrappers=1 -select_streams v:0 "
+			<< "\"" << sourcefile->Text() << "\" ; ";
 	command << "ffprobe -v error -show_entries format=duration:"
-		"stream=codec_name,sample_rate,channels,channel_layout,bit_rate "
-		"-of default=noprint_wrappers=1 -select_streams a:0 "
-		<< "\"" << sourcefile->Text() << "\"";
+			   "stream=codec_name,sample_rate,channels,channel_layout,bit_rate "
+			   "-of default=noprint_wrappers=1 -select_streams a:0 "
+			<< "\"" << sourcefile->Text() << "\"";
 
 	BMessage get_info_message(M_INFO_COMMAND);
 	get_info_message.AddString("cmdline", command);
@@ -1031,13 +1013,14 @@ void ffguiwin::get_media_info()
 }
 
 
-void ffguiwin::parse_media_output()
+void
+ffguiwin::parse_media_output()
 {
 	BStringList list;
 	fMediainfo.ReplaceAll("\n", "=");
 	fMediainfo.Split("=", true, list);
 
-	if (list.HasString("width")) {	// video stream is always first
+	if (list.HasString("width")) { // video stream is always first
 		int32 index = list.IndexOf("codec_name");
 		fVideoCodec = list.StringAt(index + 1);
 		// Remove in case of 2nd "codec_name" of audio stream
@@ -1069,7 +1052,8 @@ void ffguiwin::parse_media_output()
 }
 
 
-void ffguiwin::update_media_info()
+void
+ffguiwin::update_media_info()
 {
 	if (fVideoFramerate != "" && fVideoFramerate != "N/A") {
 		// Convert fractional representation (e.g. 50/1) to floating number
@@ -1105,29 +1089,33 @@ void ffguiwin::update_media_info()
 		fDuration = durationText;
 	}
 	BString text;
-	text << "📺: "  ;
+	text << "📺: ";
 	if (fVideoCodec == "")
 		text << B_TRANSLATE("No video track");
 	else {
 		text << fVideoCodec << ", " << fVideoWidth << "x" << fVideoHeight << ", ";
 		text << fVideoFramerate << " " << B_TRANSLATE("fps") << ", ";
-		text << fVideoBitrate << " " << "Kbit/s";
+		text << fVideoBitrate << " "
+			 << "Kbit/s";
 	}
-	text << "    🔈: " ;
+	text << "    🔈: ";
 	if (fAudioCodec == "")
 		text << B_TRANSLATE("No audio track");
 	else {
-		text << fAudioCodec << ", " << fAudioSamplerate << " " << "kHz, ";
-		text << fAudioChannelLayout << ", " << fAudioBitrate << " " <<  "Kbits/s";
+		text << fAudioCodec << ", " << fAudioSamplerate << " "
+			 << "kHz, ";
+		text << fAudioChannelLayout << ", " << fAudioBitrate << " "
+			 << "Kbits/s";
 	}
-	text << "    🕛: "  << fDuration;
+	text << "    🕛: " << fDuration;
 
 	mediainfo->SetText(text.String());
 	is_ready_to_encode();
 }
 
 
-void ffguiwin::set_defaults()
+void
+ffguiwin::set_defaults()
 {
 	// set the initial values
 	vbitrate->SetValue(1000);
@@ -1164,11 +1152,12 @@ void ffguiwin::set_defaults()
 }
 
 
-void ffguiwin::adopt_defaults()
+void
+ffguiwin::adopt_defaults()
 {
-	if (!fVideoBitrate.IsEmpty() && fVideoBitrate != "N/A") {
+	if (!fVideoBitrate.IsEmpty() && fVideoBitrate != "N/A")
 		vbitrate->SetValue(atoi(fVideoBitrate));
-	}
+
 	if (!fVideoFramerate.IsEmpty() && fVideoFramerate != "N/A") {
 		int32 point = fVideoFramerate.FindFirst(".");
 		int32 places = fVideoFramerate.CountChars() - (point + 1);
@@ -1184,12 +1173,14 @@ void ffguiwin::adopt_defaults()
 		if (item != NULL)
 			item->SetMarked(true);
 	}
+
 	if (!fAudioChannels.IsEmpty() && fAudioChannels != "N/A")
 		ac->SetValue(atoi(fAudioChannels));
 }
 
 
-void ffguiwin::remove_over_precision(BString& float_string)
+void
+ffguiwin::remove_over_precision(BString& float_string)
 {
 	// Remove trailing "0" and "."
 	while (true) {
@@ -1199,13 +1190,14 @@ void ffguiwin::remove_over_precision(BString& float_string)
 				float_string.Truncate(float_string.CountChars() - 1);
 				break;
 			}
-		}
-		else break;
+		} else
+			break;
 	}
 }
 
 
-void ffguiwin::set_playbuttons_state()
+void
+ffguiwin::set_playbuttons_state()
 {
 	bool valid = file_exists(sourcefile->Text());
 	sourceplaybutton->SetEnabled(valid);
@@ -1217,7 +1209,8 @@ void ffguiwin::set_playbuttons_state()
 }
 
 
-bool ffguiwin::file_exists(const char* filepath)
+bool
+ffguiwin::file_exists(const char* filepath)
 {
 	BEntry entry(filepath);
 	bool status = entry.Exists();
@@ -1226,7 +1219,8 @@ bool ffguiwin::file_exists(const char* filepath)
 }
 
 
-void ffguiwin::set_filetype(entry_ref* ref)
+void
+ffguiwin::set_filetype(entry_ref* ref)
 {
 	BFile file(ref, B_READ_ONLY);
 	BNodeInfo nodeInfo(&file);
@@ -1242,7 +1236,8 @@ void ffguiwin::set_filetype(entry_ref* ref)
 }
 
 
-void ffguiwin::is_ready_to_encode()
+void
+ffguiwin::is_ready_to_encode()
 {
 	BString source_filename(sourcefile->Text());
 	BString output_filename(outputfile->Text());
@@ -1302,8 +1297,8 @@ ffguiwin::get_seconds(BString& time_string)
 	minutes = std::atoi(time_list.StringAt(1).String());
 	seconds = std::atoi(time_list.StringAt(2).String());
 
-	seconds+=minutes*60;
-	seconds+=hours*3600;
+	seconds += minutes * 60;
+	seconds += hours * 3600;
 
 	return seconds;
 }
@@ -1317,15 +1312,12 @@ ffguiwin::set_outputfile_extension()
 		output_filename = sourcefile->Text();
 
 	int32 begin_ext = output_filename.FindLast(".");
-	if (begin_ext != B_ERROR) //cut away extension if it already exists
-	{
+	// cut away extension if it already exists
+	if (begin_ext != B_ERROR) {
 		++begin_ext;
-		output_filename.RemoveChars(begin_ext, output_filename.Length()-begin_ext);
-	}
-	else
-	{
+		output_filename.RemoveChars(begin_ext, output_filename.Length() - begin_ext);
+	} else
 		output_filename.Append(".");
-	}
 
 	int32 option_index = outputfileformatpopup->FindMarkedIndex();
 	output_filename.Append(fContainerFormats[option_index].Extension);
@@ -1334,21 +1326,21 @@ ffguiwin::set_outputfile_extension()
 
 
 void
-ffguiwin::set_spinner_minsize(BSpinner *spinner)
+ffguiwin::set_spinner_minsize(BSpinner* spinner)
 {
 	BSize textview_prefsize = spinner->TextView()->PreferredSize();
-	textview_prefsize.width+=20;
-	textview_prefsize.height=B_SIZE_UNSET;
+	textview_prefsize.width += 20;
+	textview_prefsize.height = B_SIZE_UNSET;
 	spinner->CreateTextViewLayoutItem()->SetExplicitMinSize(textview_prefsize);
 }
 
 
 void
-ffguiwin::set_spinner_minsize(BDecimalSpinner *spinner)
+ffguiwin::set_spinner_minsize(BDecimalSpinner* spinner)
 {
 	BSize textview_prefsize = spinner->TextView()->PreferredSize();
-	textview_prefsize.width+=20;
-	textview_prefsize.height=B_SIZE_UNSET;
+	textview_prefsize.width += 20;
+	textview_prefsize.height = B_SIZE_UNSET;
 	spinner->CreateTextViewLayoutItem()->SetExplicitMinSize(textview_prefsize);
 }
 
@@ -1360,7 +1352,6 @@ ffguiwin::play_video(const char* filepath)
 	entry_ref video_ref;
 	video_entry.GetRef(&video_ref);
 	be_roster->Launch(&video_ref);
-
 }
 
 
@@ -1369,16 +1360,13 @@ ffguiwin::toggle_video()
 {
 	bool video_options_enabled;
 
-	if ((enablevideo->Value() == B_CONTROL_ON) and (enablevideo->IsEnabled()))
-	{
+	if ((enablevideo->Value() == B_CONTROL_ON) and (enablevideo->IsEnabled())) {
 		outputvideoformat->SetEnabled(true);
 		if (outputvideoformatpopup->FindMarkedIndex() != 0)
 			video_options_enabled = true;
 		else
 			video_options_enabled = false;
-	}
-	else
-	{
+	} else {
 		outputvideoformat->SetEnabled(false);
 		video_options_enabled = false;
 	}
@@ -1402,52 +1390,38 @@ void
 ffguiwin::toggle_cropping()
 {
 
-	//disable cropping if video options are not enabled;
-	if ((enablevideo->IsEnabled()) and (enablevideo->Value() == B_CONTROL_ON) and (outputvideoformatpopup->FindMarkedIndex() != 0))
-	{
-		enablecropping->SetEnabled(true);
-	}
+	// disable cropping if video options are not enabled;
+	if ((enablevideo->IsEnabled()) and (enablevideo->Value() == B_CONTROL_ON)
+		and (outputvideoformatpopup->FindMarkedIndex() != 0))
+			enablecropping->SetEnabled(true);
 	else
-	{
 		enablecropping->SetEnabled(false);
-	}
 
 	bool cropping_options_enabled;
 	if ((enablecropping->IsEnabled()) and (enablecropping->Value() == B_CONTROL_ON))
-	{
 		cropping_options_enabled = true;
-	}
 	else
-	{
 		cropping_options_enabled = false;
-	}
 
 	topcrop->SetEnabled(cropping_options_enabled);
 	bottomcrop->SetEnabled(cropping_options_enabled);
 	leftcrop->SetEnabled(cropping_options_enabled);
 	rightcrop->SetEnabled(cropping_options_enabled);
-
 }
 
 
 void
 ffguiwin::toggle_audio()
 {
-
-
 	bool audio_options_enabled;
-	if (enableaudio->Value() == B_CONTROL_ON)
-	{
+	if (enableaudio->Value() == B_CONTROL_ON) {
 		outputaudioformat->SetEnabled(true);
-
 
 		if (outputaudioformatpopup->FindMarkedIndex() != 0)
 			audio_options_enabled = true;
 		else
 			audio_options_enabled = false;
-	}
-	else
-	{
+	} else {
 		outputaudioformat->SetEnabled(false);
 		audio_options_enabled = false;
 	}
@@ -1461,38 +1435,45 @@ ffguiwin::toggle_audio()
 void
 ffguiwin::populate_codec_options()
 {
-
 	//	container formats
-	fContainerFormats.push_back(ContainerOption("avi","avi","AVI (Audio Video Interleaved)",
-												CAP_AUDIO_VIDEO));
-	fContainerFormats.push_back(ContainerOption("matroska","mkv","Matroska", CAP_AUDIO_VIDEO));
-	fContainerFormats.push_back(ContainerOption("mp4","mp4","MPEG-4 Part 14", CAP_AUDIO_VIDEO));
-	fContainerFormats.push_back(ContainerOption("mpeg","mpg","MPEG-1 Systems/MPEG Program Stream",
-												CAP_AUDIO_VIDEO));
-	fContainerFormats.push_back(ContainerOption("ogg","ogg","Ogg", CAP_AUDIO_VIDEO));
-	fContainerFormats.push_back(ContainerOption("webm","webm","WebM", CAP_AUDIO_VIDEO));
-	fContainerFormats.push_back(ContainerOption("flac","flac","FLAC", CAP_AUDIO_ONLY));
-	fContainerFormats.push_back(ContainerOption("mp3","mp3","MPEG audio layer 3", CAP_AUDIO_ONLY));
-	fContainerFormats.push_back(ContainerOption("oga","oga","Ogg Audio", CAP_AUDIO_ONLY));
-	fContainerFormats.push_back(ContainerOption("wav","wav","WAV/WAVE (Waveform Audio)", CAP_AUDIO_ONLY));
+	fContainerFormats.push_back(
+		ContainerOption("avi", "avi", "AVI (Audio Video Interleaved)", CAP_AUDIO_VIDEO));
+	fContainerFormats.push_back(
+		ContainerOption("matroska", "mkv", "Matroska", CAP_AUDIO_VIDEO));
+	fContainerFormats.push_back(
+		ContainerOption("mp4", "mp4", "MPEG-4 Part 14", CAP_AUDIO_VIDEO));
+	fContainerFormats.push_back(
+		ContainerOption("mpeg", "mpg", "MPEG-1 Systems/MPEG Program Stream", CAP_AUDIO_VIDEO));
+	fContainerFormats.push_back(
+		ContainerOption("ogg", "ogg", "Ogg", CAP_AUDIO_VIDEO));
+	fContainerFormats.push_back(
+		ContainerOption("webm", "webm", "WebM", CAP_AUDIO_VIDEO));
+	fContainerFormats.push_back(
+		ContainerOption("flac", "flac", "FLAC", CAP_AUDIO_ONLY));
+	fContainerFormats.push_back(
+		ContainerOption("mp3", "mp3", "MPEG audio layer 3", CAP_AUDIO_ONLY));
+	fContainerFormats.push_back(
+		ContainerOption("oga", "oga", "Ogg Audio", CAP_AUDIO_ONLY));
+	fContainerFormats.push_back(
+		ContainerOption("wav", "wav", "WAV/WAVE (Waveform Audio)", CAP_AUDIO_ONLY));
 
 	// video codecs
-	fVideoCodecs.push_back(CodecOption("copy","1:1 copy"));
-	fVideoCodecs.push_back(CodecOption("mpeg4","MPEG-4 part 2"));
-	fVideoCodecs.push_back(CodecOption("theora","Theora"));
-	fVideoCodecs.push_back(CodecOption("vp8","On2 VP8"));
-	fVideoCodecs.push_back(CodecOption("vp9","Google VP9"));
-	fVideoCodecs.push_back(CodecOption("wmv1","Windows Media Video 7"));
-	fVideoCodecs.push_back(CodecOption("wmv2","Windows Media Video 8"));
-	fVideoCodecs.push_back(CodecOption("mjpeg","Motion JPEG"));
+	fVideoCodecs.push_back(CodecOption("copy", "1:1 copy"));
+	fVideoCodecs.push_back(CodecOption("mpeg4", "MPEG-4 part 2"));
+	fVideoCodecs.push_back(CodecOption("theora", "Theora"));
+	fVideoCodecs.push_back(CodecOption("vp8", "On2 VP8"));
+	fVideoCodecs.push_back(CodecOption("vp9", "Google VP9"));
+	fVideoCodecs.push_back(CodecOption("wmv1", "Windows Media Video 7"));
+	fVideoCodecs.push_back(CodecOption("wmv2", "Windows Media Video 8"));
+	fVideoCodecs.push_back(CodecOption("mjpeg", "Motion JPEG"));
 
-	//audio codecs
-	fAudioCodecs.push_back(CodecOption("copy","1:1 copy"));
-	fAudioCodecs.push_back(CodecOption("aac","AAC (Advanced Audio Coding)"));
-	fAudioCodecs.push_back(CodecOption("ac3","ATSC A/52A (AC-3)"));
-	fAudioCodecs.push_back(CodecOption("libvorbis","Vorbis"));
-	fAudioCodecs.push_back(CodecOption("flac","FLAC (Free Lossless Audio Codec)"));
-	fAudioCodecs.push_back(CodecOption("dts","DCA (DTS Coherent Acoustics)"));
-	fAudioCodecs.push_back(CodecOption("mp3","MPEG audio layer 3"));
-	fAudioCodecs.push_back(CodecOption("pcm_s16le","PCM signed 16-bit little endian"));
+	// audio codecs
+	fAudioCodecs.push_back(CodecOption("copy", "1:1 copy"));
+	fAudioCodecs.push_back(CodecOption("aac", "AAC (Advanced Audio Coding)"));
+	fAudioCodecs.push_back(CodecOption("ac3", "ATSC A/52A (AC-3)"));
+	fAudioCodecs.push_back(CodecOption("libvorbis", "Vorbis"));
+	fAudioCodecs.push_back(CodecOption("flac", "FLAC (Free Lossless Audio Codec)"));
+	fAudioCodecs.push_back(CodecOption("dts", "DCA (DTS Coherent Acoustics)"));
+	fAudioCodecs.push_back(CodecOption("mp3", "MPEG audio layer 3"));
+	fAudioCodecs.push_back(CodecOption("pcm_s16le", "PCM signed 16-bit little endian"));
 }

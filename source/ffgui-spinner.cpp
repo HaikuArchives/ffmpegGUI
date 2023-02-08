@@ -1,44 +1,45 @@
+/*
+ * Copyright 2022-2023. All rights reserved.
+ * Distributed under the terms of the MIT License.
+ *
+ * Andi Machovec (BlueSky), andi.machovec@gmail.com, 2022
+ * Humdinger, humdingerb@gmail.com, 2022-2023
+*/
+
+
 #include "ffgui-spinner.h"
+
 
 ffguispinner::ffguispinner(const char* name, const char* label, BMessage* message)
 	:
 	BSpinner(name, label, message)
 {
-
 	fStep = 1;
-
 }
 
 
 void
 ffguispinner::Increment()
 {
-
 	SetValue(Value() + fStep);
-
 }
 
 
 void
 ffguispinner::Decrement()
 {
-
 	SetValue(Value() - fStep);
-
 }
 
 
 void
 ffguispinner::SetStep(int32 step)
 {
-
 	fStep = step;
-
 }
 
 
 // Spinner for floating point
-
 ffguidecspinner::ffguidecspinner(const char* name, const char* label, BMessage* message)
 	:
 	BDecimalSpinner(name, label, message)

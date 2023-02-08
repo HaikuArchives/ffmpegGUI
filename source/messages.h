@@ -1,16 +1,16 @@
+/*
+ * Copyright 2003-2023, Zach Dykstra. All rights reserved.
+ * Distributed under the terms of the MIT License.
+ *
+ * Zach Dykstra,2003
+ * Humdinger, humdingerb@gmail.com, 2022-2023
+ * Andi Machovec (BlueSky), andi.machovec@gmail.com, 2022-2023
+*/
+
+
 #ifndef MESSAGES_H
 #define MESSAGES_H
 
-/*
- * Copyright 2003, Zach Dykstra. All rights reserved.
- * Distributed under the terms of the MIT License.
- */
-
-/*
-	ffgui-window.cpp , 1/06/03
-	Zach Dykstra
-	Andi Machovec (BlueSky), andi.machovec@gmail.com, 2022
-*/
 
 // Buttons
 const uint32 M_NOMSG = 0x00000000;
@@ -49,15 +49,15 @@ const uint32 M_OUTPUTFILEFORMAT = 0x1400;
 const uint32 M_OUTPUTVIDEOFORMAT = 0x1401;
 const uint32 M_OUTPUTAUDIOFORMAT = 0x1402;
 
-//Text Controls
+// Text Controls
 const uint32 M_SOURCEFILE = 0x1500;
 const uint32 M_OUTPUTFILE = 0x1501;
 
-//File Panels
+// File Panels
 const uint32 M_SOURCEFILE_REF = 0x1600;
 const uint32 M_OUTPUTFILE_REF = 0x1601;
 
-//Command Launcher
+// Command Launcher
 const uint32 M_ENCODE_COMMAND = 0x1700;
 const uint32 M_ENCODE_PROGRESS = 0x1701;
 const uint32 M_ENCODE_FINISHED = 0x1702;
@@ -66,7 +66,7 @@ const uint32 M_INFO_OUTPUT = 0x1704;
 const uint32 M_INFO_FINISHED = 0x1705;
 const uint32 M_STOP_COMMAND = 0x1706;
 
-//Misc
+// Misc
 const uint32 M_STOP_ALERT_BUTTON = 0x1800;
 const uint32 M_QUIT_ALERT_BUTTON = 0x1801;
 
@@ -74,5 +74,4 @@ const uint32 M_QUIT_ALERT_BUTTON = 0x1801;
 const uint32 M_COPY_COMMAND = 0x1900;
 const uint32 M_DEFAULTS = 0x1901;
 
-
-#endif
+#endif // MESSAGES_H
