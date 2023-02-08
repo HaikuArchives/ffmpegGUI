@@ -47,7 +47,7 @@ CommandLauncher::MessageReceived(BMessage* message)
 			if (!fBusy) {
 				fOutputMessage = new BMessage(M_ENCODE_PROGRESS);
 				fFinishMessage = new BMessage(M_ENCODE_FINISHED);
-				message->FindString("cmdline", &fCmdline);
+				message->FindString("cmdline", &fCommandline);
 				fBusy = true;
 				fErrorCode = 0;
 				fCommandFlag = ENCODING;
@@ -64,7 +64,7 @@ CommandLauncher::MessageReceived(BMessage* message)
 			if (!fBusy) {
 				fOutputMessage = new BMessage(M_INFO_OUTPUT);
 				fFinishMessage = new BMessage(M_INFO_FINISHED);
-				message->FindString("cmdline", &fCmdline);
+				message->FindString("cmdline", &fCommandline);
 				fBusy = true;
 				fErrorCode = 0;
 				fCommandFlag = INFO;
@@ -121,7 +121,7 @@ CommandLauncher::run_command()
 	const char* arguments[4];
 	arguments[0] = "/bin/sh";
 	arguments[1] = "-c";
-	arguments[2] = fCmdline.String();
+	arguments[2] = fCommandline.String();
 	arguments[3] = nullptr;
 
 	fThread = load_image(3, arguments, const_cast<const char**>(environ));
