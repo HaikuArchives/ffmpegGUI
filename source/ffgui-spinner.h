@@ -15,22 +15,22 @@
 
 
 class ffguispinner : public BSpinner {
-	public:
-				ffguispinner(const char* name, const char* label, BMessage* message);
-		void 	Increment();
-		void 	Decrement();
-		void 	SetStep(int32 step);
+public:
+			ffguispinner(const char* name, const char* label, BMessage* message);
+	void 	Increment();
+	void 	Decrement();
+	void 	SetStep(int32 step);
 
-	private:
-		int32 	fStep;
+private:
+	int32 	fStep;
 };
 
 
 class ffguidecspinner : public BDecimalSpinner {
-	public:
-				ffguidecspinner(const char* name, const char* label, BMessage* message);
-		void 	Increment();
-		void 	Decrement();
+public:
+			ffguidecspinner(const char* name, const char* label, BMessage* message);
+	void 	Increment();
+	void 	Decrement();
 };
 
 #endif // FFGUI_SPINNER_H

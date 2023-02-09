@@ -28,22 +28,22 @@ enum {
 };
 
 class CommandLauncher : public BLooper {
-	public:
-						CommandLauncher(BMessenger* target_messenger);
-		void 			MessageReceived(BMessage* message);
+public:
+					CommandLauncher(BMessenger* target_messenger);
+	void 			MessageReceived(BMessage* message);
 
-	private:
-		static status_t	_ffmpeg_command(void* self);
-		void 			run_command();
+private:
+	static status_t	_ffmpeg_command(void* self);
+	void 			run_command();
 
-		BString 		fCommandline;
-		BMessage* 		fOutputMessage;
-		BMessage* 		fFinishMessage;
-		BMessenger* 	fTargetMessenger;
-		bool			fBusy;
-		int32			fCommandFlag;
-		thread_id 		fThread;
-		status_t 		fErrorCode;
+	BString 		fCommandline;
+	BMessage* 		fOutputMessage;
+	BMessage* 		fFinishMessage;
+	BMessenger* 	fTargetMessenger;
+	bool			fBusy;
+	int32			fCommandFlag;
+	thread_id 		fThread;
+	status_t 		fErrorCode;
 };
 
 #endif // COMMANDLAUNCHER_H

@@ -17,8 +17,7 @@
 #include <Application.h>
 
 
-class ffguiapp : public BApplication
-{
+class ffguiapp : public BApplication {
 public:
 					ffguiapp();
 	virtual void 	RefsReceived(BMessage* message);

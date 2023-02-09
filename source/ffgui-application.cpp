@@ -27,8 +27,8 @@ ffguiapp::ffguiapp()
 	:
 	BApplication(kAppSignature)
 {
-	fWindow = new ffguiwin(BRect(0, 0, 0, 0), B_TRANSLATE_SYSTEM_NAME("ffmpegGUI"), B_TITLED_WINDOW,
-		B_NOT_V_RESIZABLE);
+	fWindow = new ffguiwin(BRect(0, 0, 0, 0), B_TRANSLATE_SYSTEM_NAME("ffmpegGUI"),
+		B_TITLED_WINDOW, B_NOT_V_RESIZABLE);
 	fWindow->Show();
 }
 
