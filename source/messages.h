@@ -13,65 +13,74 @@
 
 
 // Buttons
-const uint32 M_NOMSG = 0x00000000;
-const uint32 M_SOURCE = 0x1100;
-const uint32 M_OUTPUT = 0x1101;
-const uint32 M_ENCODE = 0x1102;
-const uint32 M_STOP_ENCODING = 0x1103;
-const uint32 M_PLAY_SOURCE = 0x1104;
-const uint32 M_PLAY_OUTPUT = 0x1105;
-
+enum {
+	M_SOURCE = 1100,
+	M_OUTPUT,
+	M_ENCODE,
+	M_STOP_ENCODING,
+	M_PLAY_SOURCE,
+	M_PLAY_OUTPUT
+};
 // Spinners
-const uint32 M_VBITRATE = 0x1200;
-const uint32 M_FRAMERATE = 0x1201;
-const uint32 M_XRES = 0x1202;
-const uint32 M_YRES = 0x1203;
-const uint32 M_TOPCROP = 0x1204;
-const uint32 M_BOTTOMCROP = 0x1205;
-const uint32 M_LEFTCROP = 0x1206;
-const uint32 M_RIGHTCROP = 0x1207;
-const uint32 M_AB = 0x1208;
-const uint32 M_AR = 0x1209;
-const uint32 M_AC = 0x1210;
-
+enum {
+	M_VBITRATE = 1200,
+	M_FRAMERATE,
+	M_XRES,
+	M_YRES,
+	M_TOPCROP,
+	M_BOTTOMCROP,
+	M_LEFTCROP,
+	M_RIGHTCROP,
+	M_AUDIOBITRATE,
+	M_SAMPLERATE,
+	M_CHANNELS
+};
 // CheckBoxes
-const uint32 M_ENABLEVIDEO = 0x1301;
-const uint32 M_CUSTOMRES = 0x1302;
-const uint32 M_ENABLECROPPING = 0x1303;
-const uint32 M_ENABLEAUDIO = 0x1304;
-const uint32 M_HIGHQUALITY = 0x1305;
-const uint32 M_FOURMOTION = 0x1306;
-const uint32 M_DEINTERLACE = 0x1307;
-const uint32 M_CALCPSNR = 0x1308;
-
+enum {
+	 M_ENABLEVIDEO = 1300,
+	 M_CUSTOMRES,
+	 M_ENABLECROPPING,
+	 M_ENABLEAUDIO,
+	 M_HIGHQUALITY,
+	 M_FOURMOTION,
+	 M_DEINTERLACE,
+	 M_CALCPSNR,
+};
 // Popup Menus
-const uint32 M_OUTPUTFILEFORMAT = 0x1400;
-const uint32 M_OUTPUTVIDEOFORMAT = 0x1401;
-const uint32 M_OUTPUTAUDIOFORMAT = 0x1402;
-
+enum {
+	 M_OUTPUTFILEFORMAT = 1400,
+	 M_OUTPUTVIDEOFORMAT,
+	 M_OUTPUTAUDIOFORMAT
+};
 // Text Controls
-const uint32 M_SOURCEFILE = 0x1500;
-const uint32 M_OUTPUTFILE = 0x1501;
-
+enum {
+	 M_SOURCEFILE = 1500,
+	 M_OUTPUTFILE
+};
 // File Panels
-const uint32 M_SOURCEFILE_REF = 0x1600;
-const uint32 M_OUTPUTFILE_REF = 0x1601;
-
+enum {
+	 M_SOURCEFILE_REF = 1600,
+	 M_OUTPUTFILE_REF
+};
 // Command Launcher
-const uint32 M_ENCODE_COMMAND = 0x1700;
-const uint32 M_ENCODE_PROGRESS = 0x1701;
-const uint32 M_ENCODE_FINISHED = 0x1702;
-const uint32 M_INFO_COMMAND = 0x1703;
-const uint32 M_INFO_OUTPUT = 0x1704;
-const uint32 M_INFO_FINISHED = 0x1705;
-const uint32 M_STOP_COMMAND = 0x1706;
-
+enum {
+	 M_ENCODE_COMMAND = 1700,
+	 M_ENCODE_PROGRESS,
+	 M_ENCODE_FINISHED,
+	 M_INFO_COMMAND,
+	 M_INFO_OUTPUT,
+	 M_INFO_FINISHED,
+	 M_STOP_COMMAND,
+};
 // Misc
-const uint32 M_STOP_ALERT_BUTTON = 0x1800;
-const uint32 M_QUIT_ALERT_BUTTON = 0x1801;
-
+enum {
+	 M_STOP_ALERT_BUTTON = 1800,
+	 M_QUIT_ALERT_BUTTON
+};
 // Menus
-const uint32 M_COPY_COMMAND = 0x1900;
-const uint32 M_DEFAULTS = 0x1901;
+enum {
+	 M_COPY_COMMAND = 0x1900,
+	 M_DEFAULTS
+};
 
 #endif // MESSAGES_H

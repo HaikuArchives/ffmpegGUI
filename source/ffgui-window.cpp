@@ -181,25 +181,25 @@ ffguiwin::ffguiwin(BRect r, const char* name, window_type type, ulong mode)
 	fEnabelAudioBox->SetValue(B_CONTROL_ON);
 
 	fAudioBitsPopup = new BPopUpMenu("");
-	fAudioBitsPopup->AddItem(new BMenuItem("48", new BMessage(M_AB)));
-	fAudioBitsPopup->AddItem(new BMenuItem("96", new BMessage(M_AB)));
-	fAudioBitsPopup->AddItem(new BMenuItem("128", new BMessage(M_AB)));
-	fAudioBitsPopup->AddItem(new BMenuItem("160", new BMessage(M_AB)));
-	fAudioBitsPopup->AddItem(new BMenuItem("196", new BMessage(M_AB)));
-	fAudioBitsPopup->AddItem(new BMenuItem("320", new BMessage(M_AB)));
-	fAudioBitsPopup->AddItem(new BMenuItem("625", new BMessage(M_AB)));
-	fAudioBitsPopup->AddItem(new BMenuItem("1411", new BMessage(M_AB)));
+	fAudioBitsPopup->AddItem(new BMenuItem("48", new BMessage(M_AUDIOBITRATE)));
+	fAudioBitsPopup->AddItem(new BMenuItem("96", new BMessage(M_AUDIOBITRATE)));
+	fAudioBitsPopup->AddItem(new BMenuItem("128", new BMessage(M_AUDIOBITRATE)));
+	fAudioBitsPopup->AddItem(new BMenuItem("160", new BMessage(M_AUDIOBITRATE)));
+	fAudioBitsPopup->AddItem(new BMenuItem("196", new BMessage(M_AUDIOBITRATE)));
+	fAudioBitsPopup->AddItem(new BMenuItem("320", new BMessage(M_AUDIOBITRATE)));
+	fAudioBitsPopup->AddItem(new BMenuItem("625", new BMessage(M_AUDIOBITRATE)));
+	fAudioBitsPopup->AddItem(new BMenuItem("1411", new BMessage(M_AUDIOBITRATE)));
 	fAudioBitsPopup->ItemAt(1)->SetMarked(true);
 	fAudioBits = new BMenuField(B_TRANSLATE("Bitrate (Kbit/s):"), fAudioBitsPopup);
 	fSampleratePopup = new BPopUpMenu("");
-	fSampleratePopup->AddItem(new BMenuItem("22050", new BMessage(M_AR)));
-	fSampleratePopup->AddItem(new BMenuItem("44100", new BMessage(M_AR)));
-	fSampleratePopup->AddItem(new BMenuItem("48000", new BMessage(M_AR)));
-	fSampleratePopup->AddItem(new BMenuItem("96000", new BMessage(M_AR)));
-	fSampleratePopup->AddItem(new BMenuItem("192000", new BMessage(M_AR)));
+	fSampleratePopup->AddItem(new BMenuItem("22050", new BMessage(M_SAMPLERATE)));
+	fSampleratePopup->AddItem(new BMenuItem("44100", new BMessage(M_SAMPLERATE)));
+	fSampleratePopup->AddItem(new BMenuItem("48000", new BMessage(M_SAMPLERATE)));
+	fSampleratePopup->AddItem(new BMenuItem("96000", new BMessage(M_SAMPLERATE)));
+	fSampleratePopup->AddItem(new BMenuItem("192000", new BMessage(M_SAMPLERATE)));
 	fSampleratePopup->ItemAt(1)->SetMarked(true);
 	fSamplerate = new BMenuField(B_TRANSLATE("Sampling rate (Hz):"), fSampleratePopup);
-	fChannelCount = new ffguispinner("", B_TRANSLATE("Audio channels:"), new BMessage(M_AC));
+	fChannelCount = new ffguispinner("", B_TRANSLATE("Audio channels:"), new BMessage(M_CHANNELS));
 
 	fBFrames = new ffguispinner("", B_TRANSLATE("'B' frames:"), nullptr);
 	fGop = new ffguispinner("", B_TRANSLATE("GOP size:"), nullptr);
@@ -611,9 +611,9 @@ ffguiwin::MessageReceived(BMessage* message)
 		case M_BOTTOMCROP:
 		case M_LEFTCROP:
 		case M_RIGHTCROP:
-		case M_AB:
-		case M_AR:
-		case M_AC:
+		case M_AUDIOBITRATE:
+		case M_SAMPLERATE:
+		case M_CHANNELS:
 		{
 			BuildLine();
 			break;
@@ -1436,7 +1436,6 @@ ffguiwin::ToggleVideo()
 void
 ffguiwin::ToggleCropping()
 {
-
 	// disable cropping if video options are not enabled;
 	if ((fEnabelVideoBox->IsEnabled()) and (fEnabelVideoBox->Value() == B_CONTROL_ON)
 		and (fVideoFormatPopup->FindMarkedIndex() != 0))
