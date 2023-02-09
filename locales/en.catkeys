@@ -1,18 +1,19 @@
-1	English	application/x-vnd.HaikuArchives-ffmpegGUI	2830448870
+1	English	application/x-vnd.HaikuArchives-ffmpegGUI	1135208511
 Deinterlace pictures	Window		Deinterlace pictures
 Min video quantizer scale:	Window		Min video quantizer scale:
 Copy commandline	Window		Copy commandline
 Use four motion vector	Window		Use four motion vector
 Start	Window		Start
 No video track	Window		No video track
+Audio codec:	Window		Audio codec:
 There's no file with that name.	Window		There's no file with that name.
 Left:	Window		Left:
-Output	Window		Output
 This file already exists. It will be overwritten!	Window		This file already exists. It will be overwritten!
 ffmpegGUI	System name		ffmpegGUI
 Cannot overwrite the source file. Please choose another output file name.	Window		Cannot overwrite the source file. Please choose another output file name.
 GOP size:	Window		GOP size:
 Bitrate (Kbit/s):	Window		Bitrate (Kbit/s):
+Video codec:	Window		Video codec:
 Audio channels:	Window		Audio channels:
 Stop encoding	Window		Stop encoding
 Please select a source file.	Window		Please select a source file.
@@ -25,7 +26,6 @@ Cancel	Window		Cancel
 Use high quality settings	Window		Use high quality settings
 Are you sure, that you want to abort the encoding?\n	Window		Are you sure, that you want to abort the encoding?\n
 Video quantizer scale compression:	Window		Video quantizer scale compression:
-Encode	Window		Encode
 No audio track	Window		No audio track
 Cropping options	Window		Cropping options
 Audio	Window		Audio
@@ -33,11 +33,9 @@ ffmpeg GUI	System name		ffmpeg GUI
 Select output file…	Window		Select output file…
 Width:	Window		Width:
 Play when finished	Window		Play when finished
-Output video format:	Window		Output video format:
 Main options	Window		Main options
 Video	Window		Video
 Enable audio encoding	Window		Enable audio encoding
-Output file format:	Window		Output file format:
 Output file	Window		Output file
 Calculate PSNR of compressed frames	Window		Calculate PSNR of compressed frames
 A GUI frontend for ffmpeg	Application		A GUI frontend for ffmpeg
@@ -46,7 +44,7 @@ Enable video cropping	Window		Enable video cropping
 'B' frames:	Window		'B' frames:
 File	Window		File
 Enable video encoding	Window		Enable video encoding
-Output audio format:	Window		Output audio format:
+Log	Window		Log
 Start encoding	Window		Start encoding
 Top:	Window		Top:
 Encoding	Window		Encoding
