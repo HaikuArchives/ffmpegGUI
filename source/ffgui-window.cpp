@@ -159,26 +159,29 @@ ffguiwin::ffguiwin(BRect r, const char* name, window_type type, ulong mode)
 	fAudioFormat->CreateMenuBarLayoutItem()->SetExplicitMinSize(
 		BSize(popup_width, B_SIZE_UNSET));
 
-	fEnabelVideoBox
+	fEnableVideoBox
 		= new BCheckBox("", B_TRANSLATE("Enable video encoding"), new BMessage(M_ENABLEVIDEO));
-	fEnabelVideoBox->SetValue(B_CONTROL_ON);
-	fVideoBitrateSpinner = new ffguispinner("", B_TRANSLATE("Bitrate (Kbit/s):"), new BMessage(M_VBITRATE));
-	fFramerate = new ffguidecspinner("", B_TRANSLATE("Framerate (fps):"), new BMessage(M_FRAMERATE));
-	fCustomResolutionBox = new BCheckBox("", B_TRANSLATE("Use custom resolution"), new BMessage(M_CUSTOMRES));
+	fEnableVideoBox->SetValue(B_CONTROL_ON);
+	fVideoBitrateSpinner = new ffguispinner("", B_TRANSLATE("Bitrate (Kbit/s):"),
+		new BMessage(M_VBITRATE));
+	fFramerate = new ffguidecspinner("", B_TRANSLATE("Framerate (fps):"),
+		new BMessage(M_FRAMERATE));
+	fCustomResolutionBox = new BCheckBox("", B_TRANSLATE("Use custom resolution"),
+		new BMessage(M_CUSTOMRES));
 	fXres = new ffguispinner("", B_TRANSLATE("Width:"), new BMessage(M_XRES));
 	fYres = new ffguispinner("", B_TRANSLATE("Height:"), new BMessage(M_YRES));
 
-	fEnabelCropBox
+	fEnableCropBox
 		= new BCheckBox("", B_TRANSLATE("Enable video cropping"), new BMessage(M_ENABLECROPPING));
-	fEnabelCropBox->SetValue(B_CONTROL_OFF);
+	fEnableCropBox->SetValue(B_CONTROL_OFF);
 	fTopCrop = new ffguispinner("", B_TRANSLATE("Top:"), new BMessage(M_TOPCROP));
 	fBottomCrop = new ffguispinner("", B_TRANSLATE("Bottom:"), new BMessage(M_BOTTOMCROP));
 	fLeftCrop = new ffguispinner("", B_TRANSLATE("Left:"), new BMessage(M_LEFTCROP));
 	fRightCrop = new ffguispinner("", B_TRANSLATE("Right:"), new BMessage(M_RIGHTCROP));
 
-	fEnabelAudioBox
+	fEnableAudioBox
 		= new BCheckBox("", B_TRANSLATE("Enable audio encoding"), new BMessage(M_ENABLEAUDIO));
-	fEnabelAudioBox->SetValue(B_CONTROL_ON);
+	fEnableAudioBox->SetValue(B_CONTROL_ON);
 
 	fAudioBitsPopup = new BPopUpMenu("");
 	fAudioBitsPopup->AddItem(new BMenuItem("48", new BMessage(M_AUDIOBITRATE)));
@@ -310,7 +313,7 @@ ffguiwin::ffguiwin(BRect r, const char* name, window_type type, ulong mode)
 	BGroupLayout* videolayout = BLayoutBuilder::Group<>(B_VERTICAL)
 		.SetInsets(B_USE_DEFAULT_SPACING, B_USE_DEFAULT_SPACING,
 			B_USE_DEFAULT_SPACING, B_USE_DEFAULT_SPACING)
-		.Add(fEnabelVideoBox)
+		.Add(fEnableVideoBox)
 		.AddGrid(B_USE_SMALL_SPACING, B_USE_SMALL_SPACING)
 			.Add(fVideoFormat->CreateLabelLayoutItem(), 0, 0)
 			.Add(fVideoFormat->CreateMenuBarLayoutItem(), 1, 0)
@@ -334,7 +337,7 @@ ffguiwin::ffguiwin(BRect r, const char* name, window_type type, ulong mode)
 	BGroupLayout* croppingoptionslayout = BLayoutBuilder::Group<>(B_VERTICAL)
 		.SetInsets(B_USE_DEFAULT_SPACING, B_USE_DEFAULT_SPACING, B_USE_DEFAULT_SPACING,
 		  B_USE_DEFAULT_SPACING)
-		.Add(fEnabelCropBox)
+		.Add(fEnableCropBox)
 		.AddGrid(B_USE_SMALL_SPACING, B_USE_SMALL_SPACING)
 			.Add(fTopCrop->CreateLabelLayoutItem(), 0, 0)
 			.Add(fTopCrop->CreateTextViewLayoutItem(), 1, 0)
@@ -353,7 +356,7 @@ ffguiwin::ffguiwin(BRect r, const char* name, window_type type, ulong mode)
 	BGroupLayout* audiolayout = BLayoutBuilder::Group<>(B_VERTICAL)
 		.SetInsets(B_USE_DEFAULT_SPACING, B_USE_DEFAULT_SPACING,
 			B_USE_DEFAULT_SPACING, B_USE_DEFAULT_SPACING)
-		.Add(fEnabelAudioBox)
+		.Add(fEnableAudioBox)
 		.AddGrid(B_USE_SMALL_SPACING, B_USE_SMALL_SPACING)
 			.Add(fAudioFormat->CreateLabelLayoutItem(), 0, 0)
 			.Add(fAudioFormat->CreateMenuBarLayoutItem(), 1, 0)
@@ -582,9 +585,9 @@ ffguiwin::MessageReceived(BMessage* message)
 
 			int32 option_index = fFileFormatPopup->FindMarkedIndex();
 			if (fContainerFormats[option_index].Capability == CAP_AUDIO_ONLY)
-				fEnabelVideoBox->SetEnabled(false);
+				fEnableVideoBox->SetEnabled(false);
 			else
-				fEnabelVideoBox->SetEnabled(true);
+				fEnableVideoBox->SetEnabled(true);
 
 			ToggleVideo();
 			BuildLine();
@@ -953,7 +956,7 @@ ffguiwin::BuildLine() // ask all the views what they hold, reset the command str
 	fCommand << " -f " << fileformat_option; // grab and set the file format
 
 	// is video enabled, add options
-	if ((fEnabelVideoBox->Value() == B_CONTROL_ON) and (fEnabelVideoBox->IsEnabled())) {
+	if ((fEnableVideoBox->Value() == B_CONTROL_ON) and (fEnableVideoBox->IsEnabled())) {
 		option_index = fVideoFormatPopup->FindMarkedIndex();
 		fCommand << " -vcodec " << fVideoCodecs[option_index].Option;
 		if (option_index != 0) {
@@ -963,7 +966,7 @@ ffguiwin::BuildLine() // ask all the views what they hold, reset the command str
 				fCommand << " -s " << fXres->Value() << "x" << fYres->Value();
 
 			// cropping options
-			if (fEnabelCropBox->IsEnabled() && fEnabelCropBox->Value()) {
+			if (fEnableCropBox->IsEnabled() && fEnableCropBox->Value()) {
 				fCommand << " -vf crop=iw-" << fLeftCrop->Value() + fRightCrop->Value() << ":ih-"
 							<< fTopCrop->Value() + fBottomCrop->Value() << ":" << fLeftCrop->Value()
 							<< ":" << fTopCrop->Value();
@@ -973,7 +976,7 @@ ffguiwin::BuildLine() // ask all the views what they hold, reset the command str
 		fCommand << " -vn";
 
 	// audio encoding enabled, grab the values
-	if (fEnabelAudioBox->Value() == B_CONTROL_ON) {
+	if (fEnableAudioBox->Value() == B_CONTROL_ON) {
 		option_index = fAudioFormatPopup->FindMarkedIndex();
 		fCommand << " -acodec " << fAudioCodecs[option_index].Option;
 		if (option_index != 0) {
@@ -1160,13 +1163,13 @@ ffguiwin::SetDefaults()
 	fChannelCount->SetValue(2);
 
 	// set the default status
-	fEnabelVideoBox->SetValue(true);
-	fEnabelVideoBox->SetEnabled(B_CONTROL_ON);
-	fEnabelAudioBox->SetValue(true);
-	fEnabelAudioBox->SetEnabled(B_CONTROL_ON);
+	fEnableVideoBox->SetValue(true);
+	fEnableVideoBox->SetEnabled(B_CONTROL_ON);
+	fEnableAudioBox->SetValue(true);
+	fEnableAudioBox->SetEnabled(B_CONTROL_ON);
 
-	fEnabelCropBox->SetValue(false);
-	fEnabelCropBox->SetEnabled(B_CONTROL_OFF);
+	fEnableCropBox->SetValue(false);
+	fEnableCropBox->SetEnabled(B_CONTROL_OFF);
 	fCustomResolutionBox->SetValue(false);
 	fCustomResolutionBox->SetEnabled(B_CONTROL_OFF);
 	fXres->SetEnabled(B_CONTROL_OFF);
@@ -1407,7 +1410,7 @@ ffguiwin::ToggleVideo()
 {
 	bool video_options_enabled;
 
-	if ((fEnabelVideoBox->Value() == B_CONTROL_ON) and (fEnabelVideoBox->IsEnabled())) {
+	if ((fEnableVideoBox->Value() == B_CONTROL_ON) and (fEnableVideoBox->IsEnabled())) {
 		fVideoFormat->SetEnabled(true);
 		if (fVideoFormatPopup->FindMarkedIndex() != 0)
 			video_options_enabled = true;
@@ -1437,14 +1440,14 @@ void
 ffguiwin::ToggleCropping()
 {
 	// disable cropping if video options are not enabled;
-	if ((fEnabelVideoBox->IsEnabled()) and (fEnabelVideoBox->Value() == B_CONTROL_ON)
+	if ((fEnableVideoBox->IsEnabled()) and (fEnableVideoBox->Value() == B_CONTROL_ON)
 		and (fVideoFormatPopup->FindMarkedIndex() != 0))
-			fEnabelCropBox->SetEnabled(true);
+			fEnableCropBox->SetEnabled(true);
 	else
-		fEnabelCropBox->SetEnabled(false);
+		fEnableCropBox->SetEnabled(false);
 
 	bool cropping_options_enabled;
-	if ((fEnabelCropBox->IsEnabled()) and (fEnabelCropBox->Value() == B_CONTROL_ON))
+	if ((fEnableCropBox->IsEnabled()) and (fEnableCropBox->Value() == B_CONTROL_ON))
 		cropping_options_enabled = true;
 	else
 		cropping_options_enabled = false;
@@ -1460,7 +1463,7 @@ void
 ffguiwin::ToggleAudio()
 {
 	bool audio_options_enabled;
-	if (fEnabelAudioBox->Value() == B_CONTROL_ON) {
+	if (fEnableAudioBox->Value() == B_CONTROL_ON) {
 		fAudioFormat->SetEnabled(true);
 
 		if (fAudioFormatPopup->FindMarkedIndex() != 0)
