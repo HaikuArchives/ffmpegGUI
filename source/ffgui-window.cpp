@@ -1208,7 +1208,7 @@ ffguiwin::PopulateCodecOptions()
 		ContainerOption("wav", "wav", "WAV/WAVE (Waveform Audio)", CAP_AUDIO_ONLY));
 
 	// video codecs
-	fVideoCodecs.push_back(CodecOption("copy", "1:1 copy"));
+	fVideoCodecs.push_back(CodecOption("copy", B_TRANSLATE("1:1 copy")));
 	fVideoCodecs.push_back(CodecOption("mpeg4", "MPEG-4 part 2"));
 	fVideoCodecs.push_back(CodecOption("theora", "Theora"));
 	fVideoCodecs.push_back(CodecOption("vp8", "On2 VP8"));
@@ -1218,7 +1218,7 @@ ffguiwin::PopulateCodecOptions()
 	fVideoCodecs.push_back(CodecOption("mjpeg", "Motion JPEG"));
 
 	// audio codecs
-	fAudioCodecs.push_back(CodecOption("copy", "1:1 copy"));
+	fAudioCodecs.push_back(CodecOption("copy", B_TRANSLATE("1:1 copy")));
 	fAudioCodecs.push_back(CodecOption("aac", "AAC (Advanced Audio Coding)"));
 	fAudioCodecs.push_back(CodecOption("ac3", "ATSC A/52A (AC-3)"));
 	fAudioCodecs.push_back(CodecOption("libvorbis", "Vorbis"));

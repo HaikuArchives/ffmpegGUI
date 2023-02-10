@@ -1,4 +1,4 @@
-1	English	application/x-vnd.HaikuArchives-ffmpegGUI	1135208511
+1	English	application/x-vnd.HaikuArchives-ffmpegGUI	593543373
 Deinterlace pictures	Window		Deinterlace pictures
 Min video quantizer scale:	Window		Min video quantizer scale:
 Copy commandline	Window		Copy commandline
@@ -6,6 +6,7 @@ Use four motion vector	Window		Use four motion vector
 Start	Window		Start
 No video track	Window		No video track
 Audio codec:	Window		Audio codec:
+1:1 copy	Window		1:1 copy
 There's no file with that name.	Window		There's no file with that name.
 Left:	Window		Left:
 This file already exists. It will be overwritten!	Window		This file already exists. It will be overwritten!
