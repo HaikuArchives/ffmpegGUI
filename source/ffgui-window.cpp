@@ -1221,25 +1221,25 @@ ffguiwin::PopulateCodecOptions()
 {
 	//	container formats (ffmpeg option, extension, description)
 	fContainerFormats.push_back(
-		ContainerOption("avi", "avi", "AVI (Audio Video Interleaved)", CAP_AUDIO_VIDEO));
+		ContainerOption("avi", "avi", "avi - AVI (Audio Video Interleaved)", CAP_AUDIO_VIDEO));
 	fContainerFormats.push_back(
-		ContainerOption("matroska", "mkv", "Matroska", CAP_AUDIO_VIDEO));
+		ContainerOption("matroska", "mkv", "mkv - Matroska", CAP_AUDIO_VIDEO));
 	fContainerFormats.push_back(
-		ContainerOption("mp4", "mp4", "MPEG-4 Part 14", CAP_AUDIO_VIDEO));
+		ContainerOption("mp4", "mp4", "mp4 - MPEG-4 Part 14", CAP_AUDIO_VIDEO));
 	fContainerFormats.push_back(
-		ContainerOption("mpeg", "mpg", "MPEG-1 Systems/MPEG Program Stream", CAP_AUDIO_VIDEO));
+		ContainerOption("mpeg", "mpg", "mpeg - MPEG-1 Systems/MPEG Program Stream", CAP_AUDIO_VIDEO));
 	fContainerFormats.push_back(
-		ContainerOption("ogg", "ogg", "Ogg", CAP_AUDIO_VIDEO));
+		ContainerOption("ogg", "ogg", "ogg", CAP_AUDIO_VIDEO));
 	fContainerFormats.push_back(
-		ContainerOption("webm", "webm", "WebM", CAP_AUDIO_VIDEO));
+		ContainerOption("webm", "webm", "webm", CAP_AUDIO_VIDEO));
 	fContainerFormats.push_back(
-		ContainerOption("flac", "flac", "FLAC", CAP_AUDIO_ONLY));
+		ContainerOption("flac", "flac", "flac", CAP_AUDIO_ONLY));
 	fContainerFormats.push_back(
-		ContainerOption("mp3", "mp3", "MPEG audio layer 3", CAP_AUDIO_ONLY));
+		ContainerOption("mp3", "mp3", "mp3 - MPEG audio layer 3", CAP_AUDIO_ONLY));
 	fContainerFormats.push_back(
-		ContainerOption("oga", "oga", "Ogg Audio", CAP_AUDIO_ONLY));
+		ContainerOption("oga", "oga", "oga - Ogg Audio", CAP_AUDIO_ONLY));
 	fContainerFormats.push_back(
-		ContainerOption("wav", "wav", "WAV/WAVE (Waveform Audio)", CAP_AUDIO_ONLY));
+		ContainerOption("wav", "wav", "wav - WAVE (Waveform Audio)", CAP_AUDIO_ONLY));
 
 	// video codecs (ffmpeg option, short label, description)
 	fVideoCodecs.push_back(CodecOption("copy", B_TRANSLATE("1:1 copy"), B_TRANSLATE("1:1 copy")));
