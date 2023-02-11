@@ -57,8 +57,10 @@ public:
 
 class CodecOption {
 public:
-					CodecOption(const BString& option, const BString& description);
+					CodecOption(const BString& option, const BString& shortlabel,
+						const BString& description);
 	BString 		Option;
+	BString Shortlabel;
 	BString 		Description;
 };
 

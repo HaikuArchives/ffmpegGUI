@@ -73,9 +73,10 @@ ContainerOption::ContainerOption(const BString& option, const BString& extension
 }
 
 
-CodecOption::CodecOption(const BString& option, const BString& description)
+CodecOption::CodecOption(const BString& option,const BString& shortlabel,const BString& description)
 	:
 	Option(option),
+	Shortlabel(shortlabel),
 	Description(description)
 {
 }
@@ -91,7 +92,7 @@ ffguiwin::ffguiwin(BRect r, const char* name, window_type type, ulong mode)
 
 	fEncodeStartTime = 0; // 0 means: no encoding in progress
 
-	// initialize GUI elements
+	// Source file
 	fSourceButton = new BButton(B_TRANSLATE("Source file"), new BMessage(M_SOURCE));
 	fSourceButton->SetExplicitMaxSize(BSize(B_SIZE_UNLIMITED, B_SIZE_UNLIMITED));
 	fSourceTextControl = new BTextControl("", "", new BMessage('srcf'));
@@ -103,6 +104,7 @@ ffguiwin::ffguiwin(BRect r, const char* name, window_type type, ulong mode)
 	font.SetSize(ceilf(font.Size() * 0.9));
 	fMediaInfoView->SetFont(&font, B_FONT_SIZE);
 
+	// Output file
 	fOutputButton = new BButton(B_TRANSLATE("Output file"), new BMessage(M_OUTPUT));
 	fOutputButton->SetExplicitMaxSize(BSize(B_SIZE_UNLIMITED, B_SIZE_UNLIMITED));
 	fOutputTextControl = new BTextControl("", "", new BMessage('outf'));
@@ -112,6 +114,7 @@ ffguiwin::ffguiwin(BRect r, const char* name, window_type type, ulong mode)
 	fOutputCheckView->SetExplicitMaxSize(BSize(B_SIZE_UNLIMITED, B_SIZE_UNSET));
 	fOutputCheckView->SetFont(&font, B_FONT_SIZE);
 
+	// Play buttons
 	fSourcePlayButton = new BButton("⯈", new BMessage(M_PLAY_SOURCE));
 	fOutputPlayButton = new BButton("⯈", new BMessage(M_PLAY_OUTPUT));
 	float height;
@@ -123,19 +126,27 @@ ffguiwin::ffguiwin(BRect r, const char* name, window_type type, ulong mode)
 	fOutputPlayButton->SetEnabled(false);
 
 	PopulateCodecOptions();
-	fFileFormatPopup = new BPopUpMenu("");
+
+	// File format pop-up menu
 	std::vector<ContainerOption>::iterator container_iter;
+	container_iter = fContainerFormats.begin();
+	fFileFormatPopup = new BPopUpMenu(container_iter->Extension.String(), false, false);
+	fFileFormatPopup->SetRadioMode(true);
+
 	for (container_iter = fContainerFormats.begin(); container_iter != fContainerFormats.end();
 		++container_iter) {
 		fFileFormatPopup->AddItem(
 			new BMenuItem(container_iter->Description.String(), new BMessage(M_OUTPUTFILEFORMAT)));
 	}
-
 	fFileFormatPopup->ItemAt(0)->SetMarked(true);
 	fFileFormat = new BMenuField(NULL, fFileFormatPopup);
 
-	fVideoFormatPopup = new BPopUpMenu("");
+	// Video codec pop-up menu
 	std::vector<CodecOption>::iterator codec_iter;
+	codec_iter = fVideoCodecs.begin();
+	fVideoFormatPopup = new BPopUpMenu(codec_iter->Shortlabel.String(), false, false);
+	fVideoFormatPopup->SetRadioMode(true);
+
 	for (codec_iter = fVideoCodecs.begin(); codec_iter != fVideoCodecs.end(); ++codec_iter) {
 		fVideoFormatPopup->AddItem(
 			new BMenuItem(codec_iter->Description.String(), new BMessage(M_OUTPUTVIDEOFORMAT)));
@@ -143,22 +154,18 @@ ffguiwin::ffguiwin(BRect r, const char* name, window_type type, ulong mode)
 	fVideoFormatPopup->ItemAt(0)->SetMarked(true);
 	fVideoFormat = new BMenuField(B_TRANSLATE("Video codec:"), fVideoFormatPopup);
 
-	float popup_width;
-	fVideoFormatPopup->GetPreferredSize(&popup_width, nullptr);
-	fVideoFormat->CreateMenuBarLayoutItem()->SetExplicitMinSize(
-		BSize(popup_width, B_SIZE_UNSET));
-
-	fAudioFormatPopup = new BPopUpMenu("");
+	// Audio codec pop-up menu
+	codec_iter=fAudioCodecs.begin();
+	fAudioFormatPopup = new BPopUpMenu(codec_iter->Shortlabel.String(), false, false);
+	fAudioFormatPopup->SetRadioMode(true);
 	for (codec_iter = fAudioCodecs.begin(); codec_iter != fAudioCodecs.end(); ++codec_iter) {
 		fAudioFormatPopup->AddItem(
 			new BMenuItem(codec_iter->Description.String(), new BMessage(M_OUTPUTAUDIOFORMAT)));
 	}
 	fAudioFormatPopup->ItemAt(0)->SetMarked(true);
 	fAudioFormat = new BMenuField(B_TRANSLATE("Audio codec:"), fAudioFormatPopup);
-	fAudioFormatPopup->GetPreferredSize(&popup_width, nullptr);
-	fAudioFormat->CreateMenuBarLayoutItem()->SetExplicitMinSize(
-		BSize(popup_width, B_SIZE_UNSET));
 
+	// Video options
 	fEnableVideoBox
 		= new BCheckBox("", B_TRANSLATE("Enable video encoding"), new BMessage(M_ENABLEVIDEO));
 	fEnableVideoBox->SetValue(B_CONTROL_ON);
@@ -171,6 +178,7 @@ ffguiwin::ffguiwin(BRect r, const char* name, window_type type, ulong mode)
 	fXres = new ffguispinner("", B_TRANSLATE("Width:"), new BMessage(M_XRES));
 	fYres = new ffguispinner("", B_TRANSLATE("Height:"), new BMessage(M_YRES));
 
+	// Cropping options
 	fEnableCropBox
 		= new BCheckBox("", B_TRANSLATE("Enable video cropping"), new BMessage(M_ENABLECROPPING));
 	fEnableCropBox->SetValue(B_CONTROL_OFF);
@@ -179,6 +187,7 @@ ffguiwin::ffguiwin(BRect r, const char* name, window_type type, ulong mode)
 	fLeftCrop = new ffguispinner("", B_TRANSLATE("Left:"), new BMessage(M_LEFTCROP));
 	fRightCrop = new ffguispinner("", B_TRANSLATE("Right:"), new BMessage(M_RIGHTCROP));
 
+	// Audio options
 	fEnableAudioBox
 		= new BCheckBox("", B_TRANSLATE("Enable audio encoding"), new BMessage(M_ENABLEAUDIO));
 	fEnableAudioBox->SetValue(B_CONTROL_ON);
@@ -194,6 +203,7 @@ ffguiwin::ffguiwin(BRect r, const char* name, window_type type, ulong mode)
 	fAudioBitsPopup->AddItem(new BMenuItem("1411", new BMessage(M_AUDIOBITRATE)));
 	fAudioBitsPopup->ItemAt(1)->SetMarked(true);
 	fAudioBits = new BMenuField(B_TRANSLATE("Bitrate (Kbit/s):"), fAudioBitsPopup);
+
 	fSampleratePopup = new BPopUpMenu("");
 	fSampleratePopup->AddItem(new BMenuItem("22050", new BMessage(M_SAMPLERATE)));
 	fSampleratePopup->AddItem(new BMenuItem("44100", new BMessage(M_SAMPLERATE)));
@@ -204,6 +214,7 @@ ffguiwin::ffguiwin(BRect r, const char* name, window_type type, ulong mode)
 	fSamplerate = new BMenuField(B_TRANSLATE("Sampling rate (Hz):"), fSampleratePopup);
 	fChannelCount = new ffguispinner("", B_TRANSLATE("Audio channels:"), new BMessage(M_CHANNELS));
 
+	// Advanced options (currently ignored / hidden)
 	fBFrames = new ffguispinner("", B_TRANSLATE("'B' frames:"), nullptr);
 	fGop = new ffguispinner("", B_TRANSLATE("GOP size:"), nullptr);
 	fHighQualityBox
@@ -228,6 +239,7 @@ ffguiwin::ffguiwin(BRect r, const char* name, window_type type, ulong mode)
 	fLogView->SetViewColor(ui_color(B_PANEL_BACKGROUND_COLOR));
 	fLogView->MakeEditable(false);
 
+	// Start/Stop, commandline, status bar
 	fStartAbortButton = new BButton(B_TRANSLATE("Start"), new BMessage(M_ENCODE));
 	fStartAbortButton->SetEnabled(false);
 	fCommandlineTextControl = new BTextControl("", "", nullptr);
@@ -574,6 +586,18 @@ ffguiwin::MessageReceived(BMessage* message)
 		}
 		case M_OUTPUTFILEFORMAT:
 		{
+			int32 marked = fFileFormatPopup->FindMarkedIndex();
+			BMenuItem* item = fFileFormatPopup->Superitem();
+			if (item != NULL)
+				item->SetLabel(fContainerFormats[marked].Extension);
+
+			if (fContainerFormats[marked].Capability == CAP_AUDIO_ONLY)
+				fEnableVideoBox->SetEnabled(false);
+			else
+				fEnableVideoBox->SetEnabled(true);
+
+			ToggleVideo();
+
 			BString outputfilename(fOutputTextControl->Text());
 			outputfilename = outputfilename.Trim();
 
@@ -583,18 +607,16 @@ ffguiwin::MessageReceived(BMessage* message)
 				SetPlaybuttonsState();
 			}
 
-			int32 option_index = fFileFormatPopup->FindMarkedIndex();
-			if (fContainerFormats[option_index].Capability == CAP_AUDIO_ONLY)
-				fEnableVideoBox->SetEnabled(false);
-			else
-				fEnableVideoBox->SetEnabled(true);
-
-			ToggleVideo();
 			BuildLine();
 			break;
 		}
 		case M_OUTPUTVIDEOFORMAT:
 		{
+			int32 marked = fVideoFormatPopup->FindMarkedIndex();
+			BMenuItem* item = fVideoFormatPopup->Superitem();
+			if (item != NULL)
+				item->SetLabel(fVideoCodecs[marked].Shortlabel);
+
 			ToggleVideo();
 			ToggleCropping();
 			BuildLine();
@@ -602,6 +624,11 @@ ffguiwin::MessageReceived(BMessage* message)
 		}
 		case M_OUTPUTAUDIOFORMAT:
 		{
+			int32 marked = fAudioFormatPopup->FindMarkedIndex();
+			BMenuItem* item = fAudioFormatPopup->Superitem();
+			if (item != NULL)
+				item->SetLabel(fAudioCodecs[marked].Shortlabel);
+
 			ToggleAudio();
 			BuildLine();
 			break;
@@ -1185,7 +1212,7 @@ ffguiwin::SetDefaults()
 void
 ffguiwin::PopulateCodecOptions()
 {
-	//	container formats
+	//	container formats (ffmpeg option, extension, description)
 	fContainerFormats.push_back(
 		ContainerOption("avi", "avi", "AVI (Audio Video Interleaved)", CAP_AUDIO_VIDEO));
 	fContainerFormats.push_back(
@@ -1207,25 +1234,25 @@ ffguiwin::PopulateCodecOptions()
 	fContainerFormats.push_back(
 		ContainerOption("wav", "wav", "WAV/WAVE (Waveform Audio)", CAP_AUDIO_ONLY));
 
-	// video codecs
-	fVideoCodecs.push_back(CodecOption("copy", B_TRANSLATE("1:1 copy")));
-	fVideoCodecs.push_back(CodecOption("mpeg4", "MPEG-4 part 2"));
-	fVideoCodecs.push_back(CodecOption("theora", "Theora"));
-	fVideoCodecs.push_back(CodecOption("vp8", "On2 VP8"));
-	fVideoCodecs.push_back(CodecOption("vp9", "Google VP9"));
-	fVideoCodecs.push_back(CodecOption("wmv1", "Windows Media Video 7"));
-	fVideoCodecs.push_back(CodecOption("wmv2", "Windows Media Video 8"));
-	fVideoCodecs.push_back(CodecOption("mjpeg", "Motion JPEG"));
+	// video codecs (ffmpeg option, short label, description)
+	fVideoCodecs.push_back(CodecOption("copy", B_TRANSLATE("1:1 copy"), B_TRANSLATE("1:1 copy")));
+	fVideoCodecs.push_back(CodecOption("mjpeg", "mjpeg", "mjpeg - Motion JPEG"));
+	fVideoCodecs.push_back(CodecOption("mpeg4", "mpeg4", "mpeg4 - MPEG-4 part 2"));
+	fVideoCodecs.push_back(CodecOption("theora", "theora", "theora"));
+	fVideoCodecs.push_back(CodecOption("vp8", "vp8", "vp8 - On2 VP8"));
+	fVideoCodecs.push_back(CodecOption("vp9", "vp9", "vp9 - Google VP9"));
+	fVideoCodecs.push_back(CodecOption("wmv1", "wmv1", "wmv1 - Windows Media Video 7"));
+	fVideoCodecs.push_back(CodecOption("wmv2", "wmv2", "wmv2 - Windows Media Video 8"));
 
-	// audio codecs
-	fAudioCodecs.push_back(CodecOption("copy", B_TRANSLATE("1:1 copy")));
-	fAudioCodecs.push_back(CodecOption("aac", "AAC (Advanced Audio Coding)"));
-	fAudioCodecs.push_back(CodecOption("ac3", "ATSC A/52A (AC-3)"));
-	fAudioCodecs.push_back(CodecOption("libvorbis", "Vorbis"));
-	fAudioCodecs.push_back(CodecOption("flac", "FLAC (Free Lossless Audio Codec)"));
-	fAudioCodecs.push_back(CodecOption("dts", "DCA (DTS Coherent Acoustics)"));
-	fAudioCodecs.push_back(CodecOption("mp3", "MPEG audio layer 3"));
-	fAudioCodecs.push_back(CodecOption("pcm_s16le", "PCM signed 16-bit little endian"));
+	//audio codecs (ffmpeg option, short label, description)
+	fAudioCodecs.push_back(CodecOption("copy", B_TRANSLATE("1:1 copy"), B_TRANSLATE("1:1 copy")));
+	fAudioCodecs.push_back(CodecOption("aac", "aac", "aac - AAC (Advanced Audio Coding)"));
+	fAudioCodecs.push_back(CodecOption("ac3", "ac3", "ac3 - ATSC A/52A (AC-3)"));
+	fAudioCodecs.push_back(CodecOption("dts", "dts", "dts - DCA (DTS Coherent Acoustics)"));
+	fAudioCodecs.push_back(CodecOption("flac", "flac", "flac (Free Lossless Audio Codec)"));
+	fAudioCodecs.push_back(CodecOption("mp3", "mp3", "mp3 - MPEG audio layer 3"));
+	fAudioCodecs.push_back(CodecOption("pcm_s16le", "pcm16", "pcm - signed 16-bit"));
+	fAudioCodecs.push_back(CodecOption("libvorbis", "vorbis", "vorbis"));
 }
 
 
