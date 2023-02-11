@@ -128,6 +128,8 @@ ffguiwin::ffguiwin(BRect r, const char* name, window_type type, ulong mode)
 	PopulateCodecOptions();
 
 	// File format pop-up menu
+	fFileFormatPopup = new BPopUpMenu("");
+	bool separator = false;
 	std::vector<ContainerOption>::iterator container_iter;
 	container_iter = fContainerFormats.begin();
 	fFileFormatPopup = new BPopUpMenu(container_iter->Extension.String(), false, false);
@@ -135,8 +137,13 @@ ffguiwin::ffguiwin(BRect r, const char* name, window_type type, ulong mode)
 
 	for (container_iter = fContainerFormats.begin(); container_iter != fContainerFormats.end();
 		++container_iter) {
-		fFileFormatPopup->AddItem(
-			new BMenuItem(container_iter->Description.String(), new BMessage(M_OUTPUTFILEFORMAT)));
+		if ((container_iter->Capability == CAP_AUDIO_ONLY) and separator == false) {
+			fFileFormatPopup->AddSeparatorItem();
+			separator = true;
+		} else {
+			fFileFormatPopup->AddItem(new BMenuItem(container_iter->Description.String(),
+				new BMessage(M_OUTPUTFILEFORMAT)));
+		}
 	}
 	fFileFormatPopup->ItemAt(0)->SetMarked(true);
 	fFileFormat = new BMenuField(NULL, fFileFormatPopup);
