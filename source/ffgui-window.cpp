@@ -301,7 +301,7 @@ ffguiwin::ffguiwin(BRect r, const char* name, window_type type, ulong mode)
 	// create tabs and boxes
 	BView* fileoptionsview = new BView("fileoptions", B_SUPPORTS_LAYOUT);
 	BLayoutBuilder::Group<>(fileoptionsview, B_VERTICAL, B_USE_SMALL_SPACING)
-		.SetInsets(B_USE_DEFAULT_SPACING, B_USE_DEFAULT_SPACING, B_USE_DEFAULT_SPACING, 0)
+		.SetInsets(B_USE_DEFAULT_SPACING, B_USE_DEFAULT_SPACING, B_USE_DEFAULT_SPACING, 4)
 		.AddGrid(B_USE_SMALL_SPACING, 0.0)
 			.Add(fSourceButton, 0, 0)
 			.Add(fSourceTextControl, 1, 0, 2, 1)
