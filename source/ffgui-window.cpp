@@ -137,7 +137,7 @@ ffguiwin::ffguiwin(BRect r, const char* name, window_type type, ulong mode)
 
 	for (container_iter = fContainerFormats.begin(); container_iter != fContainerFormats.end();
 		++container_iter) {
-		if ((container_iter->Capability == CAP_AUDIO_ONLY) and separator == false) {
+		if ((container_iter->Capability == CAP_AUDIO_ONLY) and (separator == false)) {
 			fFileFormatPopup->AddSeparatorItem();
 			separator = true;
 		} else {
@@ -1382,18 +1382,13 @@ ffguiwin::ReadyToEncode()
 
 	if (source_filename.IsEmpty()) {
 		fMediaInfoView->SetText(B_TRANSLATE_NOCOLLECT(kEmptySource));
+		fOutputTextControl->SetText("");
 		fOutputCheckView->SetText("");
-		fSourcePlayButton->SetEnabled(false);
-		fMenuPlaySource->SetEnabled(false);
 		ready = false;
-	}
-
-	if (!FileExists(source_filename)) {
+	} else	if (!FileExists(source_filename)) {
 		fMediaInfoView->SetText(B_TRANSLATE_NOCOLLECT(kSourceDoesntExist));
 		fSourceTextControl->MarkAsInvalid(true);
 		fOutputCheckView->SetText("");
-		fSourcePlayButton->SetEnabled(false);
-		fMenuPlaySource->SetEnabled(false);
 		ready = false;
 	}
 
@@ -1402,7 +1397,7 @@ ffguiwin::ReadyToEncode()
 	else
 		fOutputCheckView->SetText("");
 
-	if (output_filename == source_filename) {
+	if (output_filename == source_filename && !source_filename.IsEmpty()) {
 		fOutputCheckView->SetText(B_TRANSLATE_NOCOLLECT(kOutputIsSource));
 		fOutputTextControl->MarkAsInvalid(true);
 		ready = false;
@@ -1411,6 +1406,7 @@ ffguiwin::ReadyToEncode()
 	if (output_filename.IsEmpty())
 		ready = false;
 
+	SetPlaybuttonsState();
 	fStartAbortButton->SetEnabled(ready);
 	fMenuStartEncode->SetEnabled(ready);
 }
