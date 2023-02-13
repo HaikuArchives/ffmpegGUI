@@ -64,7 +64,8 @@ ffguiapp::AboutRequested()
 		"2020 waddlesplash",
 		"2020 Jacob Secunda (CoderforEvolution)",
 		"2018,2021 Scott McCreary (scottmc)",
-		"2022 Andi Machovec (BlueSky)",
+		"2022-2023 Andi Machovec (BlueSky)",
+		"2022-2023 Humdinger",
 		NULL
 	};
 
