@@ -275,7 +275,7 @@ ffguiwin::ffguiwin(BRect r, const char* name, window_type type, ulong mode)
 
 	// set the initial values
 	fVideoBitrateSpinner->SetValue(1000);
-	fFramerate->SetValue(30);
+	fFramerate->SetValue(int32(30));
 	fXres->SetValue(1280);
 	fYres->SetValue(720);
 	fChannelCount->SetValue(2);
@@ -1183,7 +1183,7 @@ ffguiwin::SetDefaults()
 {
 	// set the initial values
 	fVideoBitrateSpinner->SetValue(1000);
-	fFramerate->SetValue(30);
+	fFramerate->SetValue(int32(30));
 	fXres->SetValue(1280);
 	fYres->SetValue(720);
 
