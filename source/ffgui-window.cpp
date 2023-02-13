@@ -1227,7 +1227,7 @@ ffguiwin::PopulateCodecOptions()
 	fContainerFormats.push_back(
 		ContainerOption("mp4", "mp4", "mp4 - MPEG-4 Part 14", CAP_AUDIO_VIDEO));
 	fContainerFormats.push_back(
-		ContainerOption("mpeg", "mpg", "mpeg - MPEG-1 Systems/MPEG Program Stream", CAP_AUDIO_VIDEO));
+		ContainerOption("mpeg", "mpg", "mpg - MPEG-1 Systems/MPEG Program Stream", CAP_AUDIO_VIDEO));
 	fContainerFormats.push_back(
 		ContainerOption("ogg", "ogg", "ogg", CAP_AUDIO_VIDEO));
 	fContainerFormats.push_back(
