@@ -36,6 +36,7 @@ class BStringView;
 class CommandLauncher;
 class ffguispinner;
 class ffguidecspinner;
+class JobWindow;
 
 
 enum format_capability {
@@ -177,6 +178,7 @@ private:
 	BMenuItem* 		fMenuPlayOutput;
 	BMenuItem* 		fMenuStartEncode;
 	BMenuItem* 		fMenuStopEncode;
+	BMenuItem* 		fMenuAddJob;
 	BMenuItem* 		fMenuDefaults;
 
 	// bstrings
@@ -210,6 +212,7 @@ private:
 	std::vector<CodecOption> fAudioCodecs;
 
 	CommandLauncher* fCommandLauncher;
+	JobWindow*		fJobWindow;
 };
 
 #endif // FFGUI_WINDOW_H

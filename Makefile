@@ -34,6 +34,8 @@ SRCS = \
 	 source/ffgui-application.cpp  \
 	 source/ffgui-window.cpp  \
 	 source/ffgui-spinner.cpp \
+	 source/JobList.cpp \
+	 source/JobWindow.cpp \
 	 source/main.cpp  \
 
 
@@ -64,7 +66,8 @@ RSRCS = \
 #	- 	if your library does not follow the standard library naming scheme,
 #		you need to specify the path to the library and it's name.
 #		(e.g. for mylib.a, specify "mylib.a" or "path/mylib.a")
-LIBS = be tracker localestub $(STDCPPLIBS)
+
+LIBS = be tracker localestub columnlistview $(STDCPPLIBS)
 
 #	Specify additional paths to directories following the standard libXXX.so
 #	or libXXX.a naming scheme. You can specify full paths or paths relative
@@ -111,7 +114,7 @@ SYMBOLS :=
 
 #	Includes debug information, which allows the binary to be debugged easily.
 #	If set to "TRUE", debug info will be created.
-DEBUGGER := 
+DEBUGGER := TRUE
 
 #	Specify any additional compiler flags to be used.
 COMPILER_FLAGS =
