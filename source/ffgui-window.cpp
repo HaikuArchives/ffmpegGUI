@@ -13,6 +13,7 @@
 #include "commandlauncher.h"
 #include "ffgui-application.h"
 #include "ffgui-spinner.h"
+#include "JobWindow.h"
 #include "messages.h"
 
 #include <Alert.h>
@@ -500,6 +501,15 @@ ffguiwin::ffguiwin(BRect r, const char* name, window_type type, ulong mode)
 	menu->AddItem(item);
 	menuBar->AddItem(menu);
 
+	menu = new BMenu(B_TRANSLATE("Jobs"));
+	fMenuAddJob = new BMenuItem(B_TRANSLATE("Add as new job"), new BMessage(M_ADD_JOB), 'J');
+	fMenuAddJob->SetEnabled(false);
+	menu->AddItem(fMenuAddJob);
+	item = new BMenuItem(B_TRANSLATE("Open job manager" B_UTF8_ELLIPSIS),
+		new BMessage(M_JOB_MANAGER), 'M');
+	menu->AddItem(item);
+	menuBar->AddItem(menu);
+
 	menu = new BMenu(B_TRANSLATE("Options"));
 	fMenuDefaults = new BMenuItem(B_TRANSLATE("Default options"), new BMessage(M_DEFAULTS), 'D');
 	menu->AddItem(fMenuDefaults);
@@ -535,6 +545,11 @@ ffguiwin::ffguiwin(BRect r, const char* name, window_type type, ulong mode)
 
 	// initialize command launcher
 	fCommandLauncher = new CommandLauncher(new BMessenger(this));
+
+	// create job window
+	fJobWindow = new JobWindow(Frame(), new BMessenger(this));
+	fJobWindow->Show();
+	fJobWindow->Hide();
 }
 
 
@@ -551,6 +566,9 @@ ffguiwin::QuitRequested()
 		fStopAlert->Go(&fAlertInvoker);
 		return false;
 	}
+
+	fJobWindow->LockLooper();
+	fJobWindow->Quit();
 
 	be_app->PostMessage(B_QUIT_REQUESTED);
 	return true;
@@ -580,6 +598,31 @@ ffguiwin::MessageReceived(BMessage* message)
 				}
 				be_clipboard->Unlock();
 			}
+			break;
+		}
+		case M_ADD_JOB:
+		{
+			BString time("🕛: " );
+			time << fDuration;
+
+			BString filename(fOutputTextControl->Text());
+			filename.Trim();
+			BPath path(filename);
+
+			BString command(fCommandlineTextControl->Text());
+			command << " -y";
+
+			if (fJobWindow->Lock())
+				fJobWindow->AddJob(path.Leaf(), time.String(), command.String());
+			fJobWindow->Unlock();
+			break;
+		}
+		case M_JOB_MANAGER:
+		{
+			if (fJobWindow->IsHidden())
+				fJobWindow->Show();
+			else
+				fJobWindow->Activate(true);
 			break;
 		}
 		case M_DEFAULTS:
@@ -1420,6 +1463,7 @@ ffguiwin::ReadyToEncode()
 	SetPlaybuttonsState();
 	fStartAbortButton->SetEnabled(ready);
 	fMenuStartEncode->SetEnabled(ready);
+	fMenuAddJob->SetEnabled(ready);
 }
 
 

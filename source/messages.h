@@ -79,8 +79,20 @@ enum {
 };
 // Menus
 enum {
-	 M_COPY_COMMAND = 0x1900,
+	 M_COPY_COMMAND = 1900,
+ 	 M_ADD_JOB,
+	 M_JOB_MANAGER,
 	 M_DEFAULTS
+};
+// Job window
+enum {
+	 M_JOB_SELECTED = 2000,
+	 M_JOB_START,
+	 M_JOB_ABORT,
+	 M_JOB_REMOVE,
+	 M_CLEAR_LIST,
+	 M_LIST_UP,
+	 M_LIST_DOWN,
 };
 
 #endif // MESSAGES_H
