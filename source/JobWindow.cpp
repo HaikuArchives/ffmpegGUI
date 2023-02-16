@@ -10,8 +10,12 @@
 #include "messages.h"
 
 #include <Catalog.h>
-#include <LayoutBuilder.h>
 #include <ColumnTypes.h>
+#include <Directory.h>
+#include <File.h>
+#include <FindDirectory.h>
+#include <LayoutBuilder.h>
+#include <Path.h>
 
 #include <stdio.h>
 
@@ -77,13 +81,36 @@ JobWindow::JobWindow(BRect rect, BMessenger* mainwindow)
 
 	// initialize job command launcher
 	fJobCommandLauncher = new CommandLauncher(new BMessenger(this));
+
+	BMessage jobs;
+	LoadJobs(jobs);
+
+	const char* jobname;
+	const char* duration;
+	const char* command;
+	int32 i = 0;
+	while ((jobs.FindString("jobname", i, &jobname) == B_OK)
+			&& (jobs.FindString("duration", i, &duration) == B_OK)
+			&& ((jobs.FindString("command", i, &command) == B_OK))) {
+		AddJob(jobname, duration, command);
+		i++;
+	}
 }
+
+
+JobWindow::~JobWindow()
+{
+	if (fJobList->CountRows() != 0);
+		SaveJobs();
+}
+
 
 bool
 JobWindow::QuitRequested()
 {
 	if (!IsHidden())
 		Hide();
+
 	return false;
 }
 
@@ -186,6 +213,75 @@ JobWindow::MessageReceived(BMessage* message)
 			BWindow::MessageReceived(message);
 			break;
 	}
+}
+
+
+status_t
+JobWindow::LoadJobs(BMessage& jobs)
+{
+	BPath path;
+	status_t status = find_directory(B_USER_SETTINGS_DIRECTORY, &path);
+	if (status != B_OK)
+		return status;
+
+	status = path.Append("ffmpegGUI");
+	if (status != B_OK)
+		return status;
+
+	status = path.Append("jobs");
+	if (status != B_OK)
+		return status;
+
+	BFile file;
+	status = file.SetTo(path.Path(), B_READ_ONLY);
+	if (status != B_OK)
+		return status;
+
+	return jobs.Unflatten(&file);
+}
+
+
+status_t
+JobWindow::SaveJobs()
+{
+	BPath path;
+	status_t status = find_directory(B_USER_SETTINGS_DIRECTORY, &path);
+	if (status != B_OK)
+		return status;
+
+	status = path.Append("ffmpegGUI");
+	if (status != B_OK)
+		return status;
+
+	status = create_directory(path.Path(), 0777);
+	if (status != B_OK)
+		return status;
+
+	status = path.Append("jobs");
+	if (status != B_OK)
+		return status;
+
+	BFile file;
+	status = file.SetTo(path.Path(), B_WRITE_ONLY | B_CREATE_FILE | B_ERASE_FILE);
+	if (status != B_OK)
+		return status;
+
+	BMessage jobs('jobs');
+
+	for (int32 i = 0; i < fJobList->CountRows(); i++) {
+		JobRow* row = dynamic_cast<JobRow*>(fJobList->RowAt(i));
+		int32 state = row->GetStatus();
+		if (state != FINISHED) {
+			jobs.AddString("jobname", row->GetJobName());
+			jobs.AddString("duration", row->GetDuration());
+			jobs.AddString("command", row->GetCommandLine());
+		}
+	}
+
+	if (status == B_OK)
+		status = jobs.Flatten(&file);
+
+	return status;
 }
 
 
