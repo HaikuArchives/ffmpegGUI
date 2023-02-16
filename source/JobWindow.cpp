@@ -163,6 +163,17 @@ JobWindow::MessageReceived(BMessage* message)
 			UpdateButtonStates();
 			break;
 		}
+		case M_CLEAR_LIST:
+		{
+			for (int32 i = fJobList->CountRows() - 1; i >= 0; i--) {
+				JobRow* row = dynamic_cast<JobRow*>(fJobList->RowAt(i));
+				int32 status = row->GetStatus();
+				if (status == FINISHED)
+					fJobList->RemoveRow(row);
+			}
+			UpdateButtonStates();
+			break;
+		}
 		case M_LIST_UP:
 		{
 			BRow* row = fJobList->CurrentSelection();
