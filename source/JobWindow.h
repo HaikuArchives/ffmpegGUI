@@ -24,6 +24,7 @@ public:
 
 			void	AddJob(const char* jobname, const char* duration, const char* commandline,
 						int32 statusID = 0);
+			bool	IsJobRunning();
 
 private:
 	status_t		LoadJobs(BMessage& jobs);
@@ -37,6 +38,8 @@ private:
 	CommandLauncher*	fJobCommandLauncher;
 	JobList*		fJobList;
 	JobRow*			fCurrentJob;
+
+	bool			fJobRunning;
 
 	BButton*		fStartAbortButton;
 	BButton*		fRemoveButton;

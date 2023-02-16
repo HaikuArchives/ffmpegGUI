@@ -9,6 +9,7 @@
 #include "JobWindow.h"
 #include "messages.h"
 
+#include <Alert.h>
 #include <Catalog.h>
 #include <ColumnTypes.h>
 #include <Directory.h>
@@ -26,7 +27,8 @@
 JobWindow::JobWindow(BRect rect, BMessenger* mainwindow)
 	:
 	BWindow(rect, B_TRANSLATE("Job manager"), B_TITLED_WINDOW,
-		B_NOT_ZOOMABLE | B_AUTO_UPDATE_SIZE_LIMITS)
+		B_NOT_ZOOMABLE | B_AUTO_UPDATE_SIZE_LIMITS),
+	fJobRunning(false)
 {
 
 	fJobList = new JobList();
@@ -138,6 +140,7 @@ JobWindow::MessageReceived(BMessage* message)
 
 			fStartAbortButton->SetLabel(B_TRANSLATE("Abort jobs"));
 			fStartAbortButton->SetMessage(new BMessage(M_JOB_ABORT));
+			fJobRunning = true;
 			break;
 		}
 		case M_JOB_ABORT:
@@ -147,6 +150,7 @@ JobWindow::MessageReceived(BMessage* message)
 
 			fStartAbortButton->SetLabel(B_TRANSLATE("Start jobs"));
 			fStartAbortButton->SetMessage(new BMessage(M_JOB_START));
+			fJobRunning = false;
 			break;
 		}
 		case M_JOB_REMOVE:
@@ -201,6 +205,7 @@ JobWindow::MessageReceived(BMessage* message)
 		}
 		case M_ENCODE_FINISHED:
 		{
+			fJobRunning = false;
 			fStartAbortButton->SetLabel(B_TRANSLATE("Start jobs"));
 			fStartAbortButton->SetMessage(new BMessage(M_JOB_START));
 
@@ -306,6 +311,13 @@ JobWindow::AddJob(const char* jobname, const char* duration, const char* command
 	JobRow* row = new JobRow(jobname, duration, commandline, WAITING);
 	fJobList->AddRow(row);
 	UpdateButtonStates();
+}
+
+
+bool
+JobWindow::IsJobRunning()
+{
+	return fJobRunning;
 }
 
 
