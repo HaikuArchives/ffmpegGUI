@@ -194,9 +194,25 @@ void
 JobWindow::AddJob(const char* jobname, const char* duration, const char* commandline,
 				int32 statusID)
 {
+	if (!IsUnique(commandline))
+		return;
+
 	JobRow* row = new JobRow(jobname, duration, commandline, WAITING);
 	fJobList->AddRow(row);
 	UpdateButtonStates();
+}
+
+
+bool
+JobWindow::IsUnique(const char* commandline)
+{
+	for (int32 i = 0; i < fJobList->CountRows(); i++) {
+		JobRow* row = dynamic_cast<JobRow*>(fJobList->RowAt(i));
+		BString command = row->GetCommandLine();
+		if (command == commandline)
+			return false;
+	}
+	return true;
 }
 
 

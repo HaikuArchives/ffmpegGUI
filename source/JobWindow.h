@@ -24,6 +24,7 @@ public:
 						int32 statusID = 0);
 
 private:
+	bool			IsUnique(const char* commandline);
 	JobRow*			GetNextJob();
 	void			UpdateButtonStates();
 
