@@ -35,6 +35,8 @@ public:
 					JobRow(const char* jobname, const char* duration, const char* commandline,
 						int32 statusID);
 
+	const char*		GetJobName() { return fJobName.String(); };
+	const char*		GetDuration() { return fDuration.String(); };
 	const char*		GetCommandLine() { return fCommandLine.String(); };
 	int32			GetStatus() { return fStatusID; };
 	void			SetStatus(int32 statusID);

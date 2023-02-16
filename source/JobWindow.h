@@ -17,6 +17,8 @@
 class JobWindow : public BWindow {
 public:
 					JobWindow(BRect rect, BMessenger* mainwindow);
+					~JobWindow();
+
 	virtual bool 	QuitRequested();
 	virtual void 	MessageReceived(BMessage* message);
 
@@ -24,6 +26,9 @@ public:
 						int32 statusID = 0);
 
 private:
+	status_t		LoadJobs(BMessage& jobs);
+	status_t		SaveJobs();
+
 	bool			IsUnique(const char* commandline);
 	JobRow*			GetNextJob();
 	void			UpdateButtonStates();
