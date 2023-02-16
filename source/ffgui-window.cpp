@@ -583,6 +583,20 @@ ffguiwin::QuitRequested()
 		return false;
 	}
 
+	if (fJobWindow->IsJobRunning()) {
+		BAlert* alert = new BAlert("abort",
+			B_TRANSLATE("Are you sure, that you want to abort the encoding?\n"),
+			B_TRANSLATE("Cancel"), B_TRANSLATE("Stop encoding"));
+		alert->SetShortcut(0, B_ESCAPE);
+
+		int32 choice = alert->Go();
+		switch (choice) {
+			case 0:
+				return false;
+			case 1:
+				fJobWindow->PostMessage(M_JOB_ABORT);
+		}
+	}
 	SaveSettings();
 
 	fJobWindow->LockLooper();
