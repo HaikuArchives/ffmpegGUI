@@ -73,6 +73,9 @@ public:
 	virtual void 	MessageReceived(BMessage* message);
 
 private:
+	status_t		LoadSettings(BMessage& settings);
+	status_t		SaveSettings();
+
 	void 			BuildLine();
 
 	void 			GetMediaInfo();

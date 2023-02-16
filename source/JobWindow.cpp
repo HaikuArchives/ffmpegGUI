@@ -21,9 +21,10 @@
 
 JobWindow::JobWindow(BRect rect, BMessenger* mainwindow)
 	:
-	BWindow(BRect(), B_TRANSLATE("Job manager"), B_TITLED_WINDOW,
+	BWindow(rect, B_TRANSLATE("Job manager"), B_TITLED_WINDOW,
 		B_NOT_ZOOMABLE | B_AUTO_UPDATE_SIZE_LIMITS)
 {
+
 	fJobList = new JobList();
 	fJobList->SetSelectionMode(B_SINGLE_SELECTION_LIST);
 	fJobList->SetSelectionMessage(new BMessage(M_JOB_SELECTED));
@@ -72,13 +73,11 @@ JobWindow::JobWindow(BRect rect, BMessenger* mainwindow)
 			.End()
 		.End();
 
-	CenterIn(rect);
 	UpdateButtonStates();
 
 	// initialize job command launcher
 	fJobCommandLauncher = new CommandLauncher(new BMessenger(this));
 }
-
 
 bool
 JobWindow::QuitRequested()

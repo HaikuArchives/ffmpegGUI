@@ -26,6 +26,7 @@
 #include <Entry.h>
 #include <File.h>
 #include <FilePanel.h>
+#include <FindDirectory.h>
 #include <LayoutBuilder.h>
 #include <MenuBar.h>
 #include <MenuField.h>
@@ -541,15 +542,30 @@ ffguiwin::ffguiwin(BRect r, const char* name, window_type type, ulong mode)
 	min_width = window_size.width;
 	min_height = window_size.height;
 	SetSizeLimits(min_width, max_width, min_height, max_height);
+
+	BMessage settings;
+	LoadSettings(settings);
+
+	BRect frame = Frame();
+	if (settings.FindRect("main_window", &frame) == B_OK) {
+		MoveTo(frame.LeftTop());
+		ResizeTo(frame.Width(), frame.Height());
+	}
 	MoveOnScreen();
+
+	if (settings.FindRect("job_window", &frame) != B_OK) {
+		frame = Frame();
+		frame.InsetBySelf(75, 200);
+	}
+
+	// create job window
+	fJobWindow = new JobWindow(frame, new BMessenger(this));
+	fJobWindow->Show();
+	fJobWindow->Hide();
 
 	// initialize command launcher
 	fCommandLauncher = new CommandLauncher(new BMessenger(this));
 
-	// create job window
-	fJobWindow = new JobWindow(Frame(), new BMessenger(this));
-	fJobWindow->Show();
-	fJobWindow->Hide();
 }
 
 
@@ -566,6 +582,8 @@ ffguiwin::QuitRequested()
 		fStopAlert->Go(&fAlertInvoker);
 		return false;
 	}
+
+	SaveSettings();
 
 	fJobWindow->LockLooper();
 	fJobWindow->Quit();
@@ -1023,6 +1041,67 @@ ffguiwin::MessageReceived(BMessage* message)
 			BWindow::MessageReceived(message);
 			break;
 	}
+}
+
+
+status_t
+ffguiwin::LoadSettings(BMessage& settings)
+{
+	BPath path;
+	status_t status = find_directory(B_USER_SETTINGS_DIRECTORY, &path);
+	if (status != B_OK)
+		return status;
+
+	status = path.Append("ffmpegGUI");
+	if (status != B_OK)
+		return status;
+
+	status = path.Append("settings");
+	if (status != B_OK)
+		return status;
+
+	BFile file;
+	status = file.SetTo(path.Path(), B_READ_ONLY);
+	if (status != B_OK)
+		return status;
+
+	return settings.Unflatten(&file);
+}
+
+
+status_t
+ffguiwin::SaveSettings()
+{
+	BPath path;
+	status_t status = find_directory(B_USER_SETTINGS_DIRECTORY, &path);
+	if (status != B_OK)
+		return status;
+
+	status = path.Append("ffmpegGUI");
+	if (status != B_OK)
+		return status;
+
+	status = create_directory(path.Path(), 0777);
+	if (status != B_OK)
+		return status;
+
+	status = path.Append("settings");
+	if (status != B_OK)
+		return status;
+
+	BFile file;
+	status = file.SetTo(path.Path(), B_WRITE_ONLY | B_CREATE_FILE | B_ERASE_FILE);
+	if (status != B_OK)
+		return status;
+
+	BMessage settings('fmpg');
+	status = settings.AddRect("main_window", Frame());
+	status = settings.AddRect("job_window", fJobWindow->Frame());
+
+	if (status == B_OK)
+		status = settings.Flatten(&file);
+
+	return status;
 }
 
 
