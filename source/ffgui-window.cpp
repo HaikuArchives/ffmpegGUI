@@ -752,7 +752,6 @@ ffguiwin::MessageReceived(BMessage* message)
 			fLogView->SelectAll();
 			fLogView->Clear();
 			fCommand.SetTo(fCommandlineTextControl->Text());
-			fCommand.Append(" -y");
 
 			BString files_string(B_TRANSLATE("Encoding: %source%   →   %output%"));
 			BString name;
@@ -1017,12 +1016,14 @@ ffguiwin::BuildLine() // ask all the views what they hold, reset the command str
 			fCommand << " -b:a " << std::atoi(fAudioBitsPopup->FindMarked()->Label()) << "k";
 			fCommand << " -ar " << std::atoi(fSampleratePopup->FindMarked()->Label());
 			fCommand << " -ac " << fChannelCount->Value();
+			fCommand << " -strict -2 "; // enable 'experimental codecs' needed for dca (DTS)
 		}
 	} else
 		fCommand << (" -an");
 
 	fCommand << " \"" << output_filename << "\"";
 	fCommand << " -loglevel error -stats";
+	fCommand << " -y"; // Overwrite output files without asking
 	fCommandlineTextControl->SetText(fCommand.String());
 }
 
