@@ -486,7 +486,7 @@ ffguiwin::ffguiwin(BRect r, const char* name, window_type type, ulong mode)
 	fMenuStopEncode->SetEnabled(false);
 	menu->AddItem(fMenuStopEncode);
 	menu->AddSeparatorItem();
-	item = new BMenuItem(B_TRANSLATE("Copy commandline"), new BMessage(M_COPY_COMMAND), 'C');
+	item = new BMenuItem(B_TRANSLATE("Copy commandline"), new BMessage(M_COPY_COMMAND), 'L');
 	menu->AddItem(item);
 	menuBar->AddItem(menu);
 
