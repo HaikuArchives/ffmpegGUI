@@ -18,6 +18,7 @@
 #include <Alert.h>
 #include <Box.h>
 #include <Button.h>
+#include <BeBuild.h>
 #include <Catalog.h>
 #include <CheckBox.h>
 #include <Clipboard.h>
@@ -1247,8 +1248,10 @@ ffguiwin::PopulateCodecOptions()
 	fVideoCodecs.push_back(CodecOption("mjpeg", "mjpeg", "mjpeg - Motion JPEG"));
 	fVideoCodecs.push_back(CodecOption("mpeg4", "mpeg4", "mpeg4 - MPEG-4 part 2"));
 	fVideoCodecs.push_back(CodecOption("theora", "theora", "theora"));
+#ifdef B_HAIKU_64_BIT
 	fVideoCodecs.push_back(CodecOption("vp8", "vp8", "vp8 - On2 VP8"));
 	fVideoCodecs.push_back(CodecOption("vp9", "vp9", "vp9 - Google VP9"));
+#endif
 	fVideoCodecs.push_back(CodecOption("wmv1", "wmv1", "wmv1 - Windows Media Video 7"));
 	fVideoCodecs.push_back(CodecOption("wmv2", "wmv2", "wmv2 - Windows Media Video 8"));
 
