@@ -18,6 +18,7 @@
 #include <Alert.h>
 #include <Box.h>
 #include <Button.h>
+#include <BeBuild.h>
 #include <Catalog.h>
 #include <CheckBox.h>
 #include <Clipboard.h>
@@ -61,6 +62,15 @@ static const char* kOutputIsSource
 	= B_TRANSLATE_MARK("Cannot overwrite the source file. Please choose "
 					   "another output file name.");
 
+// Use ffmpeg for 2ndary architecture (gcc11+) on 32bit Haiku
+// because vp8 and vp9 codecs are not available on gcc2 builds of ffmpeg_tools
+#ifdef B_HAIKU_32_BIT
+static const char* kFFMpeg = "ffmpeg-x86";
+static const char* kFFProbe = "ffprobe-x86";
+#else
+static const char* kFFMpeg = "ffmpeg";
+static const char* kFFProbe = "ffprobe";
+#endif
 
 ContainerOption::ContainerOption(const BString& option, const BString& extension,
 	const BString& description, format_capability capability)
@@ -980,8 +990,8 @@ ffguiwin::BuildLine() // ask all the views what they hold, reset the command str
 	BString output_filename(fOutputTextControl->Text());
 	source_filename.Trim();
 	output_filename.Trim();
-	BString fCommand("ffmpeg -i ");
-	fCommand << "\"" << source_filename << "\""; // append the input file
+	BString fCommand(kFFMpeg);
+	fCommand << " -i \"" << source_filename << "\""; // append the input file
 													// name
 
 	// file format
@@ -1035,12 +1045,12 @@ ffguiwin::GetMediaInfo()
 	fMediainfo = fVideoCodec = fAudioCodec = fVideoWidth = fVideoHeight = fVideoFramerate
 		= fDuration = fVideoBitrate = fAudioBitrate = fAudioSamplerate = fAudioChannelLayout = "";
 	BString command;
-	command << "ffprobe -v error -show_entries format=duration,bit_rate:"
+	command << kFFProbe << " -v error -show_entries format=duration,bit_rate:"
 			   "stream=codec_name,width,height,r_frame_rate,sample_rate,"
 			   "channel_layout "
 			   "-of default=noprint_wrappers=1 -select_streams v:0 "
 			<< "\"" << fSourceTextControl->Text() << "\" ; ";
-	command << "ffprobe -v error -show_entries format=duration:"
+	command << kFFProbe << " -v error -show_entries format=duration:"
 			   "stream=codec_name,sample_rate,channels,channel_layout,bit_rate "
 			   "-of default=noprint_wrappers=1 -select_streams a:0 "
 			<< "\"" << fSourceTextControl->Text() << "\"";
