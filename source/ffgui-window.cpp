@@ -752,6 +752,7 @@ ffguiwin::MessageReceived(BMessage* message)
 			fLogView->SelectAll();
 			fLogView->Clear();
 			fCommand.SetTo(fCommandlineTextControl->Text());
+			fCommand.Append(" -y");  // Overwrite output files without asking
 
 			BString files_string(B_TRANSLATE("Encoding: %source%   →   %output%"));
 			BString name;
@@ -1023,7 +1024,6 @@ ffguiwin::BuildLine() // ask all the views what they hold, reset the command str
 
 	fCommand << " \"" << output_filename << "\"";
 	fCommand << " -loglevel error -stats";
-	fCommand << " -y"; // Overwrite output files without asking
 	fCommandlineTextControl->SetText(fCommand.String());
 }
 
