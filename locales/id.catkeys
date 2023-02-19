@@ -1,4 +1,4 @@
-1	Indonesian	application/x-vnd.HaikuArchives-ffmpegGUI	593543373
+1	Indonesian	application/x-vnd.HaikuArchives-ffmpegGUI	3097994486
 'B' frames:	Window		Frame 'B' :
 1:1 copy	Window		Kopi 1:1
 Abort	Window		Batal
@@ -69,6 +69,6 @@ Video quantizer scale compression:	Window		Skala kompresi quantizer video:
 Waiting to start encoding…	Window		Menunggu untuk memulai enkode…
 Width:	Window		Lebar:
 A GUI frontend for ffmpeg	Application		Antar muka GUI untuk ffmpeg
-Thanks to:\nmmu_man, Jeremy, DeadYak, Marco, etc.\nmd@geekport.com\nreds <reds@sakamoto.pl> for making it more or less usable.\nHave fun!	Application		Terima kasih kepada:\nmmu_man, Jeremy, DeadYak, Marco, etc.\nmd@geekport.com\nreds <reds@sakamoto.pl> yang menjadikannya kurang lebih bermanfaat.\nHave fun!
+Thanks to:\nHandMaus (Icon)\nmmu_man, Jeremy, DeadYak, Marco, etc.\nmd@geekport.com\nreds <reds@sakamoto.pl> for making it more or less usable.\nHave fun!	Application		Terima kasih kepada:\nHandMaus (Icon)\nmmu_man, Jeremy, DeadYak, Marco, etc.\nmd@geekport.com\nreds <reds@sakamoto.pl> yang menjadikannya kurang lebih bermanfaat.\nHave fun!
 ffmpeg GUI	System name		ffmpeg GUI
 ffmpegGUI	System name		ffmpegGUI

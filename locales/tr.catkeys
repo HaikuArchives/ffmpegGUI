@@ -1,4 +1,4 @@
-1	Turkish	application/x-vnd.HaikuArchives-ffmpegGUI	593543373
+1	Turkish	application/x-vnd.HaikuArchives-ffmpegGUI	3097994486
 'B' frames:	Window		'B' kareler:
 1:1 copy	Window		1:1 kopya
 Abort	Window		İptal et
@@ -69,6 +69,6 @@ Video quantizer scale compression:	Window		Video nicemleyici ölçeği sıkışt
 Waiting to start encoding…	Window		Kodlamanın başlatılması bekleniyor…
 Width:	Window		En:
 A GUI frontend for ffmpeg	Application		FFmpeg için bir grafik kullanıcı ön yüzü
-Thanks to:\nmmu_man, Jeremy, DeadYak, Marco, etc.\nmd@geekport.com\nreds <reds@sakamoto.pl> for making it more or less usable.\nHave fun!	Application		Teşekkürler:\nmmu_man, Jeremy, DeadYak, Marco, etc.\nmd@geekport.com\nreds <reds@sakamoto.pl>; az çok kullanılabilir duruma getirdiğiniz için.\nKeyfini çıkarın!
+Thanks to:\nHandMaus (Icon)\nmmu_man, Jeremy, DeadYak, Marco, etc.\nmd@geekport.com\nreds <reds@sakamoto.pl> for making it more or less usable.\nHave fun!	Application		Teşekkürler:\nHandMaus (Icon)\nmmu_man, Jeremy, DeadYak, Marco, etc.\nmd@geekport.com\nreds <reds@sakamoto.pl>; az çok kullanılabilir duruma getirdiğiniz için.\nKeyfini çıkarın!
 ffmpeg GUI	System name		FFmpeg Grafik Kullanıcı Arayüzü
 ffmpegGUI	System name		ffmpegGUI

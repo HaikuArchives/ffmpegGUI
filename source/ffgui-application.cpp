@@ -72,6 +72,7 @@ ffguiapp::AboutRequested()
 	BString extra_info;
 	extra_info << B_TRANSLATE(
 		"Thanks to:\n"
+		"HandMaus (Icon)\n"
 		"mmu_man, Jeremy, DeadYak, Marco, etc.\n"
 		"md@geekport.com\n"
 		"reds <reds@sakamoto.pl> for making it more or less usable.\n"

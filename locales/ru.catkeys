@@ -1,4 +1,4 @@
-1	Russian	application/x-vnd.HaikuArchives-ffmpegGUI	593543373
+1	Russian	application/x-vnd.HaikuArchives-ffmpegGUI	3097994486
 'B' frames:	Window		Кадры 'B':
 1:1 copy	Window		Точная копия
 Abort	Window		О приложении
@@ -69,6 +69,6 @@ Video quantizer scale compression:	Window		Масштаб квантизатор
 Waiting to start encoding…	Window		Ожидаю начала кодирования…
 Width:	Window		Ширина:
 A GUI frontend for ffmpeg	Application		Графический фронтенд для ffmpeg
-Thanks to:\nmmu_man, Jeremy, DeadYak, Marco, etc.\nmd@geekport.com\nreds <reds@sakamoto.pl> for making it more or less usable.\nHave fun!	Application		Благодарим \nmmu_man, Jeremy, DeadYak, Marco, etc.\nmd@geekport.com\nreds <reds@sakamoto.pl> за доведение до более-менее рабочего\nсостояния. Приятного использования!
+Thanks to:\nHandMaus (Icon)\nmmu_man, Jeremy, DeadYak, Marco, etc.\nmd@geekport.com\nreds <reds@sakamoto.pl> for making it more or less usable.\nHave fun!	Application		Благодарим \nHandMaus (Icon)\nmmu_man, Jeremy, DeadYak, Marco, etc.\nmd@geekport.com\nreds <reds@sakamoto.pl> за доведение до более-менее рабочего\nсостояния. Приятного использования!
 ffmpeg GUI	System name		ffmpeg GUI
 ffmpegGUI	System name		ffmpegGUI

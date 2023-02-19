@@ -1,4 +1,4 @@
-1	Spanish (Latin American)	application/x-vnd.HaikuArchives-ffmpegGUI	593543373
+1	Spanish (Latin American)	application/x-vnd.HaikuArchives-ffmpegGUI	3097994486
 'B' frames:	Window		Cuadros 'B':
 1:1 copy	Window		Copia 1:1
 Abort	Window		Abortar
@@ -69,6 +69,6 @@ Video quantizer scale compression:	Window		Compresión de la escala de cuantific
 Waiting to start encoding…	Window		Esperando que inicie la codificación...
 Width:	Window		Ancho:
 A GUI frontend for ffmpeg	Application		Una interfaz gráfica para ffmpeg
-Thanks to:\nmmu_man, Jeremy, DeadYak, Marco, etc.\nmd@geekport.com\nreds <reds@sakamoto.pl> for making it more or less usable.\nHave fun!	Application		Gracias a:\nmmu_man, Jeremy, DeadYak, Marco, etc.\nmd@geekport.com\nreds <reds@sakamoto.pl> por hacerlo más o menos utilizable.\n¡Diviértase!
+Thanks to:\nHandMaus (Icon)\nmmu_man, Jeremy, DeadYak, Marco, etc.\nmd@geekport.com\nreds <reds@sakamoto.pl> for making it more or less usable.\nHave fun!	Application		Gracias a:\nHandMaus (Icon)\nmmu_man, Jeremy, DeadYak, Marco, etc.\nmd@geekport.com\nreds <reds@sakamoto.pl> por hacerlo más o menos utilizable.\n¡Diviértase!
 ffmpeg GUI	System name		Interfaz gráfica para ffmpeg
 ffmpegGUI	System name		ffmpegGUI

@@ -1,4 +1,4 @@
-1	English	application/x-vnd.HaikuArchives-ffmpegGUI	593543373
+1	English	application/x-vnd.HaikuArchives-ffmpegGUI	3097994486
 Deinterlace pictures	Window		Deinterlace pictures
 Min video quantizer scale:	Window		Min video quantizer scale:
 Copy commandline	Window		Copy commandline
@@ -8,6 +8,7 @@ No video track	Window		No video track
 Audio codec:	Window		Audio codec:
 1:1 copy	Window		1:1 copy
 There's no file with that name.	Window		There's no file with that name.
+Thanks to:\nHandMaus (Icon)\nmmu_man, Jeremy, DeadYak, Marco, etc.\nmd@geekport.com\nreds <reds@sakamoto.pl> for making it more or less usable.\nHave fun!	Application		Thanks to:\nHandMaus (Icon)\nmmu_man, Jeremy, DeadYak, Marco, etc.\nmd@geekport.com\nreds <reds@sakamoto.pl> for making it more or less usable.\nHave fun!
 Left:	Window		Left:
 This file already exists. It will be overwritten!	Window		This file already exists. It will be overwritten!
 ffmpegGUI	System name		ffmpegGUI
@@ -59,7 +60,6 @@ Advanced options	Window		Advanced options
 Encoding finished successfully!	Window		Encoding finished successfully!
 Height:	Window		Height:
 Too late! Encoding has already finished.\n	Window		Too late! Encoding has already finished.\n
-Thanks to:\nmmu_man, Jeremy, DeadYak, Marco, etc.\nmd@geekport.com\nreds <reds@sakamoto.pl> for making it more or less usable.\nHave fun!	Application		Thanks to:\nmmu_man, Jeremy, DeadYak, Marco, etc.\nmd@geekport.com\nreds <reds@sakamoto.pl> for making it more or less usable.\nHave fun!
 Open source file…	Window		Open source file…
 Abort	Window		Abort
 Encoding: %source%   →   %output%	Window		Encoding: %source%   →   %output%

@@ -1,4 +1,4 @@
-1	Catalan	application/x-vnd.HaikuArchives-ffmpegGUI	593543373
+1	Catalan	application/x-vnd.HaikuArchives-ffmpegGUI	3097994486
 'B' frames:	Window		Marcs B:
 1:1 copy	Window		còpia 1:1
 Abort	Window		Avorta
@@ -69,6 +69,6 @@ Video quantizer scale compression:	Window		Escala de compressió del quantificad
 Waiting to start encoding…	Window		S'espera per començar a codificar...
 Width:	Window		Amplada:
 A GUI frontend for ffmpeg	Application		Una interfície gràfica d'usuari per a ffmpeg
-Thanks to:\nmmu_man, Jeremy, DeadYak, Marco, etc.\nmd@geekport.com\nreds <reds@sakamoto.pl> for making it more or less usable.\nHave fun!	Application		Gràcies a:\nmmu_man, Jeremy, DeadYak, Marco, etc.\nmd@geekport.com\nreds <reds@sakamoto.pl> per fer-lo més o menys útil.\nDivertiu-vos!
+Thanks to:\nHandMaus (Icon)\nmmu_man, Jeremy, DeadYak, Marco, etc.\nmd@geekport.com\nreds <reds@sakamoto.pl> for making it more or less usable.\nHave fun!	Application		Gràcies a:\nHandMaus (Icon)\nmmu_man, Jeremy, DeadYak, Marco, etc.\nmd@geekport.com\nreds <reds@sakamoto.pl> per fer-lo més o menys útil.\nDivertiu-vos!
 ffmpeg GUI	System name		IGU per a ffmpeg
 ffmpegGUI	System name		IGU per a ffmpeg

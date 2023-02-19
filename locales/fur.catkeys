@@ -1,4 +1,4 @@
-1	Friulian	application/x-vnd.HaikuArchives-ffmpegGUI	593543373
+1	Friulian	application/x-vnd.HaikuArchives-ffmpegGUI	3097994486
 'B' frames:	Window		Fotograms 'B':
 1:1 copy	Window		Copie 1:1
 Abort	Window		Interomp
@@ -69,6 +69,6 @@ Video quantizer scale compression:	Window		Video quantizer scale compression:
 Waiting to start encoding…	Window		In spiete di scomençâ la codifiche…
 Width:	Window		Largjece:
 A GUI frontend for ffmpeg	Application		Une interface grafiche par comandâ ffmpeg
-Thanks to:\nmmu_man, Jeremy, DeadYak, Marco, etc.\nmd@geekport.com\nreds <reds@sakamoto.pl> for making it more or less usable.\nHave fun!	Application		Graciis a:\nmmu_man, Jeremy, DeadYak, Marco e v.i.\nmd@geekport.com\nreds <reds@sakamoto.pl> par vêlu rindût plui o mancul doprabil.\nDivertissiti!
+Thanks to:\nHandMaus (Icon)\nmmu_man, Jeremy, DeadYak, Marco, etc.\nmd@geekport.com\nreds <reds@sakamoto.pl> for making it more or less usable.\nHave fun!	Application		Graciis a:\nHandMaus (Icon)\nmmu_man, Jeremy, DeadYak, Marco e v.i.\nmd@geekport.com\nreds <reds@sakamoto.pl> par vêlu rindût plui o mancul doprabil.\nDivertissiti!
 ffmpeg GUI	System name		GUI di ffmpeg
 ffmpegGUI	System name		ffmpegGUI
