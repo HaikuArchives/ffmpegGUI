@@ -1,0 +1,74 @@
+1	Spanish	application/x-vnd.HaikuArchives-ffmpegGUI	593543373
+'B' frames:	Window		Fotogramas «B»:
+1:1 copy	Window		Copiar entrada
+Abort	Window		Cancelar
+Abort encoding	Window		Cancelar codificación
+About ffmpegGUI	Window		Acerca de ffmpegGUI
+Advanced options	Window		Opciones avanzadas
+Are you sure, that you want to abort the encoding?\n	Window		¿Cancelar la codificación?\n
+Audio	Window		Audio
+Audio channels:	Window		Canales de audio:
+Audio codec:	Window		Códec de audio:
+Bitrate (Kbit/s):	Window		Tasa de bits (Kbit/s):
+Bottom:	Window		Abajo:
+Calculate PSNR of compressed frames	Window		Calcular PSNR de fotogramas comprimidos
+Cancel	Window		Cancelar
+Cannot overwrite the source file. Please choose another output file name.	Window		No se pudo sobrescribir el archivo fuente. Escoja otro nombre para guardar la salida.
+Copy commandline	Window		Copiar línea de órdenes
+Cropping options	Window		Opciones de recorte
+Default options	Window		Opciones predeterminadas
+Deinterlace pictures	Window		Desentrelazar imágenes
+Duh!	Window	Button label of stop-encoding-alert if you're too late...	Obvio
+Enable audio encoding	Window		Habilitar codificación de audio
+Enable video cropping	Window		Habilitar recorte de vídeo
+Enable video encoding	Window		Habilitar codificación de vídeo
+Encoding	Window		Codificación
+Encoding failed.	Window		Error en la codificación.
+Encoding finished successfully!	Window		La codificación finalizó con éxito.
+Encoding: %source%   →   %output%	Window		Codificar: %source%   →   %output%
+File	Window		Archivo
+fps	Window		fps
+Framerate (fps):	Window		Tasa de fotogramas (fps):
+GOP size:	Window		Tamaño de GOP:
+Height:	Window		Alto:
+Left:	Window		Izquierda:
+Log	Window		Registro
+Main options	Window		Opciones principales
+Max difference between quantizer scale:	Window		Diferencia máxima entre la escala del cuantificador:
+Max video quantizer scale:	Window		Escala máxima del cuantificador de vídeo:
+Min video quantizer scale:	Window		Escala mínima del cuantificador de vídeo:
+No audio track	Window		Sin pista de audio
+No video track	Window		Sin pista de vídeo
+Open source file…	Window		Abrir archivo de entrada...
+Options	Window		Opciones
+Output file	Window		Archivo de salida
+Play output file	Window		Reproducir archivo de salida
+Play source file	Window		Reproducir archivo de entrada
+Play when finished	Window		Reproducir al finalizar
+Please select a source file.	Window		Escoja un archivo de entrada.
+Quit	Window		Salir
+Right:	Window		Derecha:
+Sampling rate (Hz):	Window		Frecuencia de muestreo (Hz):
+Select output file…	Window		Escoger archivo de salida...
+Source file	Window		Archivo de origen
+Start	Window		Inicio
+Start encoding	Window		Iniciar codificación
+Stop encoding	Window		Parar codificación
+There's no file with that name.	Window		No existe el archivo seleccionado.
+This file already exists. It will be overwritten!	Window		El archivo ya existe. ¡Se sobrescribirá!
+Too late! Encoding has already finished.\n	Window		Demasiado tarde. La codificación ya terminó.\n
+Top:	Window		Arriba:
+Use custom resolution	Window		Usar resolución personalizada
+Use fixed video quantizer scale:	Window		Usar una escala del cuantificador de vídeo fija:
+Use four motion vector	Window		Usar cuatro vectores de movimiento
+Use high quality settings	Window		Usar ajustes de calidad alta
+Video	Window		Vídeo
+Video codec:	Window		Códec de vídeo:
+Video quantizer scale blur:	Window		Desenfoque de la escala del cuantificador de vídeo:
+Video quantizer scale compression:	Window		Compresión de la escala del cuantificador de vídeo:
+Waiting to start encoding…	Window		Esperando a que inicie la codificación…
+Width:	Window		Ancho:
+A GUI frontend for ffmpeg	Application		Una interfaz gráfica para ffmpeg
+Thanks to:\nmmu_man, Jeremy, DeadYak, Marco, etc.\nmd@geekport.com\nreds <reds@sakamoto.pl> for making it more or less usable.\nHave fun!	Application		Gracias a:\nmmu_man, Jeremy, DeadYak, Marco, etc.\nmd@geekport.com\nreds <reds@sakamoto.pl> por hacer este software más o menos utilizable.\n¡Diviértase!
+ffmpeg GUI	System name		ffmpeg GUI
+ffmpegGUI	System name		ffmpegGUI

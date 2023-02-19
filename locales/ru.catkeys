@@ -1,0 +1,74 @@
+1	Russian	application/x-vnd.HaikuArchives-ffmpegGUI	593543373
+'B' frames:	Window		Кадры 'B':
+1:1 copy	Window		Точная копия
+Abort	Window		О приложении
+Abort encoding	Window		Прервать кодирование
+About ffmpegGUI	Window		О ffmpegGUI
+Advanced options	Window		Расширенные параметры
+Are you sure, that you want to abort the encoding?\n	Window		Вы уверены, что хотите прервать кодирование?\n
+Audio	Window		Звук
+Audio channels:	Window		Звуковые каналы:
+Audio codec:	Window		Аудио кодек:
+Bitrate (Kbit/s):	Window		Битрейт (Кб/с):
+Bottom:	Window		Снизу:
+Calculate PSNR of compressed frames	Window		Вычислить PSNR сжатых кадров
+Cancel	Window		Прервать
+Cannot overwrite the source file. Please choose another output file name.	Window		Невозможно перезаписать исходный файл. Пожалуйста, выберите другое имя файла результата.
+Copy commandline	Window		Скопировать командную строку
+Cropping options	Window		Параметры обрезания
+Default options	Window		Параметры по умолчанию
+Deinterlace pictures	Window		Устранить черезстрочность картинки
+Duh!	Window	Button label of stop-encoding-alert if you're too late...	Ох!
+Enable audio encoding	Window		Включить кодирование аудио
+Enable video cropping	Window		Включить обрезание видео
+Enable video encoding	Window		Включить кодирование видео
+Encoding	Window		Кодирование
+Encoding failed.	Window		Кодирование не удалось.
+Encoding finished successfully!	Window		Кодирование успешно завершено!
+Encoding: %source%   →   %output%	Window		Кодирование: %source%   →   %output%
+File	Window		Файл
+fps	Window		Кадров в секунду
+Framerate (fps):	Window		Частота кадров:
+GOP size:	Window		Размер GOP:
+Height:	Window		Высота:
+Left:	Window		Слева:
+Log	Window		Лог
+Main options	Window		Основные параметры
+Max difference between quantizer scale:	Window		Максимальная разница между масштабами квантизатора:
+Max video quantizer scale:	Window		Максимальный масштаб квантизатора видео:
+Min video quantizer scale:	Window		Минимальный масштаб квантизатора видео:
+No audio track	Window		Без звуковой дорожки
+No video track	Window		Без видео дорожки
+Open source file…	Window		Открыть исходный файл…
+Options	Window		Параметры
+Output file	Window		Файл результата
+Play output file	Window		Проиграть конечный файл
+Play source file	Window		Проиграть исходный файл
+Play when finished	Window		Проиграть после завершения
+Please select a source file.	Window		Пожалуйста, выберите исходный файл.
+Quit	Window		Заверщить
+Right:	Window		Справа:
+Sampling rate (Hz):	Window		Дискретизация (Гц):
+Select output file…	Window		Выбрать файл результата…
+Source file	Window		Исходный файл
+Start	Window		Начать
+Start encoding	Window		Начать кодирование
+Stop encoding	Window		Завершить кодирование
+There's no file with that name.	Window		Нет файла с таким именем.
+This file already exists. It will be overwritten!	Window		Файл уже существует. Он будет перезаписан!
+Too late! Encoding has already finished.\n	Window		Слишком поздно! Кодирования уже завершилось.\n
+Top:	Window		Сверху:
+Use custom resolution	Window		Своё разрешение
+Use fixed video quantizer scale:	Window		Использовать фиксированный масштаб квантизатора видео:
+Use four motion vector	Window		Четырёхмерный вектор движения
+Use high quality settings	Window		Использовать настройки высокого качества
+Video	Window		Видео
+Video codec:	Window		Видео кодек:
+Video quantizer scale blur:	Window		Масштаб квантизатора видео размытие:
+Video quantizer scale compression:	Window		Масштаб квантизатора видео сжатие:
+Waiting to start encoding…	Window		Ожидаю начала кодирования…
+Width:	Window		Ширина:
+A GUI frontend for ffmpeg	Application		Графический фронтенд для ffmpeg
+Thanks to:\nmmu_man, Jeremy, DeadYak, Marco, etc.\nmd@geekport.com\nreds <reds@sakamoto.pl> for making it more or less usable.\nHave fun!	Application		Благодарим \nmmu_man, Jeremy, DeadYak, Marco, etc.\nmd@geekport.com\nreds <reds@sakamoto.pl> за доведение до более-менее рабочего\nсостояния. Приятного использования!
+ffmpeg GUI	System name		ffmpeg GUI
+ffmpegGUI	System name		ffmpegGUI

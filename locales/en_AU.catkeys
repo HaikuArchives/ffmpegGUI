@@ -1,4 +1,4 @@
-1	English (British)	application/x-vnd.HaikuArchives-ffmpegGUI	593543373
+1	English (Australian)	application/x-vnd.HaikuArchives-ffmpegGUI	593543373
 'B' frames:	Window		'B' frames:
 1:1 copy	Window		1:1 copy
 Abort	Window		Abort
@@ -34,9 +34,9 @@ Height:	Window		Height:
 Left:	Window		Left:
 Log	Window		Log
 Main options	Window		Main options
-Max difference between quantizer scale:	Window		Max difference between quantiser scale:
-Max video quantizer scale:	Window		Max video quantiser scale:
-Min video quantizer scale:	Window		Min video quantiser scale:
+Max difference between quantizer scale:	Window		Max difference between quantizer scale:
+Max video quantizer scale:	Window		Max video quantizer scale:
+Min video quantizer scale:	Window		Min video quantizer scale:
 No audio track	Window		No audio track
 No video track	Window		No video track
 Open source file…	Window		Open source file…
@@ -59,13 +59,13 @@ This file already exists. It will be overwritten!	Window		This file already exis
 Too late! Encoding has already finished.\n	Window		Too late! Encoding has already finished.\n
 Top:	Window		Top:
 Use custom resolution	Window		Use custom resolution
-Use fixed video quantizer scale:	Window		Use fixed video quantiser scale:
+Use fixed video quantizer scale:	Window		Use fixed video quantizer scale:
 Use four motion vector	Window		Use four motion vector
 Use high quality settings	Window		Use high quality settings
 Video	Window		Video
 Video codec:	Window		Video codec:
-Video quantizer scale blur:	Window		Video quantiser scale blur:
-Video quantizer scale compression:	Window		Video quantiser scale compression:
+Video quantizer scale blur:	Window		Video quantizer scale blur:
+Video quantizer scale compression:	Window		Video quantizer scale compression:
 Waiting to start encoding…	Window		Waiting to start encoding…
 Width:	Window		Width:
 A GUI frontend for ffmpeg	Application		A GUI frontend for ffmpeg

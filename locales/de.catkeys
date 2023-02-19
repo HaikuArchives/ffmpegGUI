@@ -1,63 +1,71 @@
-1	German	application/x-vnd.HaikuArchives-ffmpegGUI	2513581661
+1	German	application/x-vnd.HaikuArchives-ffmpegGUI	593543373
 'B' frames:	Window		'B' Frames:
-About	Window		Über
+1:1 copy	Window		1:1 Kopie
+Abort	Window		Stopp
+Abort encoding	Window		Stoppen
+About ffmpegGUI	Window		Über ffmpegGUI
 Advanced options	Window		Erweiterte Optionen
-App	Window		App
 Are you sure, that you want to abort the encoding?\n	Window		Soll die Konvertierung wirklich abgebrochen werden??\n
 Audio	Window		Audio
 Audio channels:	Window		Audiokanäle:
+Audio codec:	Window		Audio codec:
 Bitrate (Kbit/s):	Window		Bitrate (Kbit/s):
 Bottom:	Window		Unten:
 Calculate PSNR of compressed frames	Window		PSNR der komprimierten Frames berechnen
 Cancel	Window		Abbrechen
 Cannot overwrite the source file. Please choose another output file name.	Window		Die Quelldatei kann nicht überschrieben werden. Bitte eine andere Ausgabedatei wählen.
+Copy commandline	Window		Befehlszeile kopieren
 Cropping options	Window		Zuschneide-Optionen
+Default options	Window		Optionen zurücksetzen
 Deinterlace pictures	Window		Bilder deinterlacen
 Duh!	Window	Button label of stop-encoding-alert if you're too late...	Achso!
 Enable audio encoding	Window		Audio kodieren
 Enable video cropping	Window		Video zuschneiden
 Enable video encoding	Window		Video kodieren
-Encode	Window		Konvertierung
 Encoding	Window		Konvertierung
 Encoding failed.	Window		Konvertierung fehlgeschlagen.
 Encoding finished successfully!	Window		Konvertierung erfolgreich!
 Encoding: %source%   →   %output%	Window		Konvertiere: %source%   →   %output%
+File	Window		Datei
 fps	Window		Bilder/s
 Framerate (fps):	Window		Framerate (Bilder/s):
 GOP size:	Window		GOP Größe:
 Height:	Window		Höhe:
 Left:	Window		Links:
+Log	Window		Log
 Main options	Window		Optionen
-Max difference between quantiser scale:	Window		Max. Unterschied in Quantiser Scale:
-Max video quantiser scale:	Window		Max. Video Quantiser Scale:
-Min video quantiser scale:	Window		Min. Video Quantiser Scale:
+Max difference between quantizer scale:	Window		Max. Unterschied in Quantiser Scale:
+Max video quantizer scale:	Window		Max. Video Quantiser Scale:
+Min video quantizer scale:	Window		Min. Video Quantiser Scale:
 No audio track	Window		Keine Audiospur
 No video track	Window		Keine Videospur
-Output	Window		Ausgabe
-Output audio format:	Window		Ausgabe-Audioformat:
+Open source file…	Window		Quelldatei öffnen
+Options	Window		Optionen
 Output file	Window		Ausgabedatei
-Output file format:	Window		Ausgabe-Dateiformat:
-Output video format:	Window		Ausgabe-Videoformat:
+Play output file	Window		Ausgabedatei abspielen
+Play source file	Window		Quelldatei abspielen
 Play when finished	Window		Abspielen wenn fertig
 Please select a source file.	Window		Bitte Quelldatei wählen.
 Quit	Window		Beenden
 Right:	Window		Rechts:
 Sampling rate (Hz):	Window		Samplingrate (Hz):
+Select output file…	Window		Ausgabedatei wählen…
 Source file	Window		Quelldatei
 Start	Window		Start
-Stop	Window		Stopp
+Start encoding	Window		Starten
 Stop encoding	Window		Konvertierung stoppen
 There's no file with that name.	Window		Diese Datei existiert nicht.
 This file already exists. It will be overwritten!	Window		Diese Datei existiert bereits. Sie wird überschrieben!
 Too late! Encoding has already finished.\n	Window		Zu spät. Die Konvertierung ist bereits fertig.\n
 Top:	Window		Oben:
 Use custom resolution	Window		Auflösung ändern
-Use fixed video quantiser scale:	Window		Fester Video Quantiser Scale:
+Use fixed video quantizer scale:	Window		Fester Video Quantiser Scale:
 Use four motion vector	Window		Vier Bewegungsvektoren
 Use high quality settings	Window		Einstellungen für hohe Qualität
 Video	Window		Video
-Video quantiser scale blur:	Window		Video Quantiser Scale Blur:
-Video quantiser scale compression:	Window		Video Quantiser Scale Kompression:
+Video codec:	Window		Video codec:
+Video quantizer scale blur:	Window		Video Quantiser Scale Blur
+Video quantizer scale compression:	Window		Video Quantiser Scale Kompression:
 Waiting to start encoding…	Window		Warte auf Start der Konvertierung…
 Width:	Window		Breite:
 A GUI frontend for ffmpeg	Application		Eine grafische Oberfläche für ffmpeg

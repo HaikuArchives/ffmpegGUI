@@ -1,51 +1,74 @@
-1	Swedish	application/x-vnd.HaikuArchives-ffmpegGUI	132315271
+1	Swedish	application/x-vnd.HaikuArchives-ffmpegGUI	593543373
 'B' frames:	Window		'B'-ramar:
-About	Window		Om
+1:1 copy	Window		1:1 kopia
+Abort	Window		Avbryta
+Abort encoding	Window		Avbryt kodning
+About ffmpegGUI	Window		Om ffmpegGUI
 Advanced options	Window		Avancerade alternativ
-App	Window		App
+Are you sure, that you want to abort the encoding?\n	Window		Är du säker på att du vill avbryta kodningen?\n
 Audio	Window		Ljud
 Audio channels:	Window		Ljudkanaler:
+Audio codec:	Window		Ljudcodec:
 Bitrate (Kbit/s):	Window		Bithastighet (Kbit/s):
 Bottom:	Window		Botten:
 Calculate PSNR of compressed frames	Window		Beräkna PSNR för komprimerade ramar
+Cancel	Window		Avbryt
+Cannot overwrite the source file. Please choose another output file name.	Window		Kan inte skriva över källfilen. Välj ett annat utdatafilnamn.
+Copy commandline	Window		Kopiera kommandoraden
 Cropping options	Window		Beskärningsalternativ
+Default options	Window		Standardalternativ
 Deinterlace pictures	Window		Deinterlace bilder
+Duh!	Window	Button label of stop-encoding-alert if you're too late...	Duh!
 Enable audio encoding	Window		Aktivera ljudkodning
 Enable video cropping	Window		Aktivera videobeskärning
 Enable video encoding	Window		Aktivera videokodning
-Encode	Window		Koda
+Encoding	Window		Kodning
 Encoding failed.	Window		Kodningen misslyckades.
-Encoding finished successfully.	Window		Kodningen slutfördes.
-File options	Window		Filalternativ
+Encoding finished successfully!	Window		Kodningen slutfördes framgångsrikt!
+Encoding: %source%   →   %output%	Window		Kodning: %source% → %output%
+File	Window		Fil
+fps	Window		bps
 Framerate (fps):	Window		Bildhastighet (fps):
 GOP size:	Window		GOP storlek:
 Height:	Window		Höjd:
 Left:	Window		Vänster:
+Log	Window		Logg
 Main options	Window		Huvudalternativ
-Max difference between quantiser scale:	Window		Max skillnad mellan kvantiseringsskala:
-Max video quantiser scale:	Window		Max videokvantiseringsskala:
-Min video quantiser scale:	Window		Min video quantiser scale:
-OK	Window		OK
-Output	Window		Produktion
-Output audio format:	Window		Utmatningsljudformat:
+Max difference between quantizer scale:	Window		Max skillnad mellan kvantiseringsskala:
+Max video quantizer scale:	Window		Max videokvantiserare skala:
+Min video quantizer scale:	Window		Min videokvantiserare skala:
+No audio track	Window		Inget ljudspår
+No video track	Window		Inget videospår
+Open source file…	Window		Öppna källfilen...
+Options	Window		Alternativ
 Output file	Window		Utdatafil
-Output file format:	Window		Utgående filformat:
-Output video format:	Window		Utgående videoformat:
+Play output file	Window		Spela utdatafil
+Play source file	Window		Spela upp källfilen
+Play when finished	Window		Spela när du är klar
+Please select a source file.	Window		Välj en källfil.
 Quit	Window		Avsluta
 Right:	Window		Höger:
 Sampling rate (Hz):	Window		Samplingshastighet (Hz):
+Select output file…	Window		Välj utdatafil...
 Source file	Window		Källfil
 Start	Window		Start
+Start encoding	Window		Börja koda
+Stop encoding	Window		Sluta koda
+There's no file with that name.	Window		Det finns ingen fil med det namnet.
+This file already exists. It will be overwritten!	Window		Den här filen finns redan. Det kommer att skrivas över!
+Too late! Encoding has already finished.\n	Window		För sent! Kodningen har redan avslutats.\n
 Top:	Window		Topp:
 Use custom resolution	Window		Använd anpassad upplösning
-Use fixed video quantiser scale:	Window		Använd fast videokvantiseringsskala:
+Use fixed video quantizer scale:	Window		Använd fast videokvantiseringsskala:
 Use four motion vector	Window		Använd vektor med fyra rörelser
 Use high quality settings	Window		Använd inställningar av hög kvalitet
 Video	Window		Video
-Video quantiser scale blur:	Window		Videokvantiserarens skaloskärpa:
-Video quantiser scale compression:	Window		Video kvantiseringsskala komprimering
+Video codec:	Window		Video codec:
+Video quantizer scale blur:	Window		Videokvantiserarens skaloskärpa:
+Video quantizer scale compression:	Window		Videokvantiserare skala komprimering:
 Waiting to start encoding…	Window		Väntar på att börja koda...
 Width:	Window		Bredd:
 A GUI frontend for ffmpeg	Application		En GUI-gränssnitt för ffmpeg
 Thanks to:\nmmu_man, Jeremy, DeadYak, Marco, etc.\nmd@geekport.com\nreds <reds@sakamoto.pl> for making it more or less usable.\nHave fun!	Application		Tack till:\nmmu_man, Jeremy, DeadYak, Marco, etc.\nmd@geekport.com\nreds <reds@sakamoto.pl> för att du gjorde den mer eller mindre användbar.\nHa kul!
 ffmpeg GUI	System name		ffmpeg GUI
+ffmpegGUI	System name		ffmpegGUI

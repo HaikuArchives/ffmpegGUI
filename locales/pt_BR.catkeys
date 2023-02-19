@@ -1,0 +1,74 @@
+1	Portuguese (Brazil)	application/x-vnd.HaikuArchives-ffmpegGUI	593543373
+'B' frames:	Window		'B' frames:
+1:1 copy	Window		1:1 copy
+Abort	Window		Abortar
+Abort encoding	Window		Anular codificação
+About ffmpegGUI	Window		Sobre ffmpegGUI
+Advanced options	Window		Opções avançadas
+Are you sure, that you want to abort the encoding?\n	Window		Tem certeza de que deseja anular a codificação?\n
+Audio	Window		Áudio
+Audio channels:	Window		Canais de áudio:
+Audio codec:	Window		Codec de áudio:
+Bitrate (Kbit/s):	Window		Bitrate (Kbit/s):
+Bottom:	Window		Fundo:
+Calculate PSNR of compressed frames	Window		Calcular PSNR de quadros compactados
+Cancel	Window		Cancelar
+Cannot overwrite the source file. Please choose another output file name.	Window		Não é possível substituir o arquivo de origem. Escolha outro nome de arquivo de saída.
+Copy commandline	Window		Copiar linha de comando
+Cropping options	Window		Opções de recorte
+Default options	Window		Opções padrão
+Deinterlace pictures	Window		Desentrelaçar fotos
+Duh!	Window	Button label of stop-encoding-alert if you're too late...	Duh!
+Enable audio encoding	Window		Ativar codificação de áudio
+Enable video cropping	Window		Habilitar o recorte de vídeo
+Enable video encoding	Window		Habilitar codificação de vídeo
+Encoding	Window		Codificação
+Encoding failed.	Window		Falha na codificação.
+Encoding finished successfully!	Window		A codificação foi concluída com sucesso!
+Encoding: %source%   →   %output%	Window		Encoding: %source%   →   %output%
+File	Window		File
+fps	Window		fps
+Framerate (fps):	Window		Framerate (fps):
+GOP size:	Window		GOP size:
+Height:	Window		Height:
+Left:	Window		Left:
+Log	Window		Log
+Main options	Window		Main options
+Max difference between quantizer scale:	Window		Diferença máxima entre a escala do quantizador:
+Max video quantizer scale:	Window		Escala máxima do quantizador de vídeo:!
+Min video quantizer scale:	Window		Escala mínima do quantizador de vídeo:
+No audio track	Window		Sem faixa de áudio
+No video track	Window		Sem faixa de vídeo
+Open source file…	Window		Open source file…
+Options	Window		Options
+Output file	Window		Output file
+Play output file	Window		Play output file
+Play source file	Window		Play source file
+Play when finished	Window		Play when finished
+Please select a source file.	Window		Please select a source file.
+Quit	Window		Quit
+Right:	Window		Right:
+Sampling rate (Hz):	Window		Sampling rate (Hz):
+Select output file…	Window		Select output file…
+Source file	Window		Source file
+Start	Window		Start
+Start encoding	Window		Start encoding
+Stop encoding	Window		Parar de codificar
+There's no file with that name.	Window		Não há nenhum arquivo com esse nome.
+This file already exists. It will be overwritten!	Window		Este arquivo já existe. Ele será substituído!
+Too late! Encoding has already finished.\n	Window		Tarde demais! A codificação já foi concluída\n
+Top:	Window		Início:
+Use custom resolution	Window		Usar resolução personalizada
+Use fixed video quantizer scale:	Window		Use a escala fixa do quantizador de vídeo:
+Use four motion vector	Window		Usar quatro vetores de movimento
+Use high quality settings	Window		Usar configurações de alta qualidade
+Video	Window		Vídeo
+Video codec:	Window		Codec de vídeo:
+Video quantizer scale blur:	Window		Desfoque de escala do quantizador de vídeo:
+Video quantizer scale compression:	Window		Compactação de escala do quantizador de vídeo:
+Waiting to start encoding…	Window		Aguardando para iniciar a codificação...
+Width:	Window		Largura:
+A GUI frontend for ffmpeg	Application		Um frontend GUI para ffmpeg
+Thanks to:\nmmu_man, Jeremy, DeadYak, Marco, etc.\nmd@geekport.com\nreds <reds@sakamoto.pl> for making it more or less usable.\nHave fun!	Application		Graças a:\nmmu_man, Jeremy, DeadYak, Marco, etc\nmd@geekport.com\nreds <reds@sakamoto.pl> para torná-lo mais ou menos utilizável.\nDivirta-se!
+ffmpeg GUI	System name		ffmpeg GUI
+ffmpegGUI	System name		ffmpegGUI

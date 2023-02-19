@@ -1,0 +1,74 @@
+1	French	application/x-vnd.HaikuArchives-ffmpegGUI	593543373
+'B' frames:	Window		Images 'B' :
+1:1 copy	Window		Copie 1:1
+Abort	Window		Abandon
+Abort encoding	Window		Abandon de l’encodage
+About ffmpegGUI	Window		À propos de ffmpegGUI
+Advanced options	Window		Options avancées
+Are you sure, that you want to abort the encoding?\n	Window		Êtes-vous certain de vouloir abandonner l’encodage ?\n
+Audio	Window		Audio
+Audio channels:	Window		Canaux audio :
+Audio codec:	Window		Codec audio :
+Bitrate (Kbit/s):	Window		Débit audio (Kbit/s) :
+Bottom:	Window		Bas :
+Calculate PSNR of compressed frames	Window		Calculer le rapport signal sur bruit en crête (PSNR) des images compressées
+Cancel	Window		Annuler
+Cannot overwrite the source file. Please choose another output file name.	Window		Impossible d’écraser le fichier source. Veuillez choisir un nom de fichier différent.
+Copy commandline	Window		Copier la ligne de commande
+Cropping options	Window		Options de recadrage
+Default options	Window		Options par défaut
+Deinterlace pictures	Window		Désentrelacer les images
+Duh!	Window	Button label of stop-encoding-alert if you're too late...	Loupé !
+Enable audio encoding	Window		Activer l’encodage audio
+Enable video cropping	Window		Activer le recadrage vidéo
+Enable video encoding	Window		Activer l’encodage vidéo
+Encoding	Window		Encodage
+Encoding failed.	Window		L’encodage a échoué.
+Encoding finished successfully!	Window		L’encodage est réussi !
+Encoding: %source%   →   %output%	Window		Encode : %source%   →   %output%
+File	Window		Fichier
+fps	Window		fps
+Framerate (fps):	Window		Cadence d'images (fps) :
+GOP size:	Window		Dimension du groupe d'images (GOP) :
+Height:	Window		Hauteur :
+Left:	Window		Gauche :
+Log	Window		Journal
+Main options	Window		Options principales
+Max difference between quantizer scale:	Window		Écart maximum de quantificateur scalaire :
+Max video quantizer scale:	Window		Quantificateur scalaire vidéo maximum :
+Min video quantizer scale:	Window		Quantificateur scalaire vidéo minimum :
+No audio track	Window		Aucune piste audio
+No video track	Window		Aucune piste vidéo
+Open source file…	Window		Ouvrir un fichier source…
+Options	Window		Options
+Output file	Window		Fichier de sortie
+Play output file	Window		Jouer le fichier de sortie
+Play source file	Window		Jouer le fichier source
+Play when finished	Window		Jouer quand fini
+Please select a source file.	Window		Veuillez sélectionner un fichier source.
+Quit	Window		Quitter
+Right:	Window		Droite :
+Sampling rate (Hz):	Window		Fréquence d’échantillonnage (Hz) :
+Select output file…	Window		Sélectionner un fichier de sortie...
+Source file	Window		Fichier source
+Start	Window		Démarrer
+Start encoding	Window		Démarrer l’encodage
+Stop encoding	Window		Arrêter l’encodage
+There's no file with that name.	Window		Il n’y a aucun fichier de ce nom.
+This file already exists. It will be overwritten!	Window		Ce fichier existe déjà. Il sera écrasé !
+Too late! Encoding has already finished.\n	Window		Trop tard ! L’encodage est déjà terminé.\n
+Top:	Window		Haut :
+Use custom resolution	Window		Utiliser une résolution personnalisée
+Use fixed video quantizer scale:	Window		Utiliser un quantificateur scalaire vidéo fixe :
+Use four motion vector	Window		Utiliser quatre vecteurs de mouvement
+Use high quality settings	Window		Utiliser des réglages pour haute qualité
+Video	Window		Vidéo
+Video codec:	Window		Codec vidéo :
+Video quantizer scale blur:	Window		Quantificateur scalaire du flou vidéo :
+Video quantizer scale compression:	Window		Quantificateur scalaire de compression vidéo :
+Waiting to start encoding…	Window		En attente de lancer l'encodage…
+Width:	Window		Largeur :
+A GUI frontend for ffmpeg	Application		Une interface graphique pour ffmpeg
+Thanks to:\nmmu_man, Jeremy, DeadYak, Marco, etc.\nmd@geekport.com\nreds <reds@sakamoto.pl> for making it more or less usable.\nHave fun!	Application		Merci à :\nmmu_man, Jeremy, DeadYak, Marco, etc.\nmd@geekport.com\nreds <reds@sakamoto.pl> pour l'avoir rendue plus ou moins utilisable.\nAmusez vous !
+ffmpeg GUI	System name		ffmpeg GUI
+ffmpegGUI	System name		ffmpegGUI

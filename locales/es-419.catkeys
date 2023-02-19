@@ -1,51 +1,74 @@
-1	Spanish (Latin American)	application/x-vnd.HaikuArchives-ffmpegGUI	132315271
-'B' frames:	Window		'B' frames:
-About	Window		Acerca de
+1	Spanish (Latin American)	application/x-vnd.HaikuArchives-ffmpegGUI	593543373
+'B' frames:	Window		Cuadros 'B':
+1:1 copy	Window		Copia 1:1
+Abort	Window		Abortar
+Abort encoding	Window		Abortar codificación
+About ffmpegGUI	Window		Acerca de ffmpegGUI
 Advanced options	Window		Opciones avanzadas
-App	Window		Aplicación
+Are you sure, that you want to abort the encoding?\n	Window		¿Seguro que desea detener la codificación?\n
 Audio	Window		Audio
 Audio channels:	Window		Canales de audio:
+Audio codec:	Window		Códec de audio:
 Bitrate (Kbit/s):	Window		Bitrate (Kbit/s):
 Bottom:	Window		Abajo:
 Calculate PSNR of compressed frames	Window		Calcular PSNR de cuadros comprimidos
+Cancel	Window		Cancelar
+Cannot overwrite the source file. Please choose another output file name.	Window		No se puede sobrescribir el archivo origen. Elija otro nombre de archivo de salida.
+Copy commandline	Window		Copiar línea de comandos
 Cropping options	Window		Opciones de recorte
+Default options	Window		Opciones por defecto
 Deinterlace pictures	Window		Desentrelazar imágenes
+Duh!	Window	Button label of stop-encoding-alert if you're too late...	D'oh!
 Enable audio encoding	Window		Habilitar codificación de audio
 Enable video cropping	Window		Habilitar recorte de video
 Enable video encoding	Window		Habilitar codificación de video
-Encode	Window		Codificar
+Encoding	Window		Codificación
 Encoding failed.	Window		Fallo en la codificación.
-Encoding finished successfully.	Window		Codificación finalizada con éxito.
-File options	Window		Opciones de archivo
+Encoding finished successfully!	Window		La codificación finalizó con éxito.
+Encoding: %source%   →   %output%	Window		Codificando: %source%   →   %output%
+File	Window		Archivo
+fps	Window		fps
 Framerate (fps):	Window		Framerate (fps):
 GOP size:	Window		Tamaño GOP:
 Height:	Window		Altura:
 Left:	Window		Izquierda:
+Log	Window		Registro
 Main options	Window		Opciones principales
-Max difference between quantiser scale:	Window		Diferencia máxima entre escala de cuantización:
-Max video quantiser scale:	Window		Escala máxima de cuantización de video:
-Min video quantiser scale:	Window		Escala mínima de cuantización de video:
-OK	Window		Aceptar
-Output	Window		Salida
-Output audio format:	Window		Formato de salida audio:
+Max difference between quantizer scale:	Window		Diferencia máxima entre escala de cuantificador:
+Max video quantizer scale:	Window		Escala máxima de cuantificador de vídeo:
+Min video quantizer scale:	Window		Escala mínima de cuantificador de vídeo:
+No audio track	Window		Sin pista de audio
+No video track	Window		Sin pista de video
+Open source file…	Window		Abrir archivo origen...
+Options	Window		Opciones
 Output file	Window		Archivo de salida
-Output file format:	Window		Formato archivo de salida:
-Output video format:	Window		Formato video de salida
+Play output file	Window		Reproducir archivo de salida
+Play source file	Window		Reproducir archivo de origen
+Play when finished	Window		Reproducir al finalizar
+Please select a source file.	Window		Por favor seleccione un archivo de origen.
 Quit	Window		Salir
 Right:	Window		Derecha:
 Sampling rate (Hz):	Window		Frecuencia de muestreo (Hz):
+Select output file…	Window		Seleccionar archivo de salida...
 Source file	Window		Archivo origen
-Start	Window		Comienzo
+Start	Window		Comenzar
+Start encoding	Window		Comenzar codificación
+Stop encoding	Window		Detener codificación
+There's no file with that name.	Window		No existe archivo con este nombre.
+This file already exists. It will be overwritten!	Window		Este archivo ya existe. ¡Será sobreescrito!
+Too late! Encoding has already finished.\n	Window		¡Demasiado tarde! La codificación ya terminó.\n
 Top:	Window		Arriba:
 Use custom resolution	Window		Usar resolución personalizada
-Use fixed video quantiser scale:	Window		Usar escala fija de cuantificación de vídeo:
+Use fixed video quantizer scale:	Window		Usar escala fija de cuantificador de vídeo:
 Use four motion vector	Window		Usar cuatro vectores de movimiento
 Use high quality settings	Window		Usar ajustes de alta calidad
 Video	Window		Video
-Video quantiser scale blur:	Window		Escala de desenfoque de cuantificación de vídeo:
-Video quantiser scale compression:	Window		Escala de compresión de cuantificación de vídeo:
+Video codec:	Window		Códec de video:
+Video quantizer scale blur:	Window		Difuminado de la escala de cuantificador de vídeo:
+Video quantizer scale compression:	Window		Compresión de la escala de cuantificador de video:
 Waiting to start encoding…	Window		Esperando que inicie la codificación...
 Width:	Window		Ancho:
 A GUI frontend for ffmpeg	Application		Una interfaz gráfica para ffmpeg
 Thanks to:\nmmu_man, Jeremy, DeadYak, Marco, etc.\nmd@geekport.com\nreds <reds@sakamoto.pl> for making it more or less usable.\nHave fun!	Application		Gracias a:\nmmu_man, Jeremy, DeadYak, Marco, etc.\nmd@geekport.com\nreds <reds@sakamoto.pl> por hacerlo más o menos utilizable.\n¡Diviértase!
 ffmpeg GUI	System name		Interfaz gráfica para ffmpeg
+ffmpegGUI	System name		ffmpegGUI

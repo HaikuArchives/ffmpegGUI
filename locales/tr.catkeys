@@ -1,0 +1,74 @@
+1	Turkish	application/x-vnd.HaikuArchives-ffmpegGUI	593543373
+'B' frames:	Window		'B' kareler:
+1:1 copy	Window		1:1 kopya
+Abort	Window		İptal et
+Abort encoding	Window		Kodlamayı iptal et
+About ffmpegGUI	Window		ffmpegGUI hakkında
+Advanced options	Window		Gelişmiş seçenekler
+Are you sure, that you want to abort the encoding?\n	Window		Kodlamayı iptal etmek istediğinize emin misiniz?\n
+Audio	Window		Ses
+Audio channels:	Window		Ses kanalları:
+Audio codec:	Window		Ses kodlayıcı:
+Bitrate (Kbit/s):	Window		Bit hızı (Kbit/sn):
+Bottom:	Window		Alt:
+Calculate PSNR of compressed frames	Window		Sıkıştırılmış karelerin PSNR'sini hesapla
+Cancel	Window		Vazgeç
+Cannot overwrite the source file. Please choose another output file name.	Window		Kaynak dosyanın üzerine yazılamaz. Lütfen başka bir çıktı dosyası adı seçin.
+Copy commandline	Window		Komut satırını kopyala
+Cropping options	Window		Kırpma seçenekleri
+Default options	Window		Öntanımlı seçenekler
+Deinterlace pictures	Window		Resim görüntülerini ayrıştır
+Duh!	Window	Button label of stop-encoding-alert if you're too late...	Uuf!
+Enable audio encoding	Window		Ses kodlamayı etkinleştir
+Enable video cropping	Window		Video kırpmayı etkinleştir
+Enable video encoding	Window		Video kodlamayı etkinleştir
+Encoding	Window		Kodlanıyor
+Encoding failed.	Window		Kodlama başarısız.
+Encoding finished successfully!	Window		Kodlama başarıyla tamamlandı!
+Encoding: %source%   →   %output%	Window		Kodlanıyor: %source%   →   %output%
+File	Window		Dosya
+fps	Window		fps
+Framerate (fps):	Window		Kare hızı (fps):
+GOP size:	Window		GOP boyutu:
+Height:	Window		Boy:
+Left:	Window		Sol:
+Log	Window		Günlük
+Main options	Window		Ana seçenekler
+Max difference between quantizer scale:	Window		Nicemleyici ölçeği arasındaki en büyük fark:
+Max video quantizer scale:	Window		En büyük video nicemleyici ölçeği:
+Min video quantizer scale:	Window		En küçük video nicemleyici ölçeği:
+No audio track	Window		Ses izi yok
+No video track	Window		Video izi yok
+Open source file…	Window		Kaynak dosyayı aç…
+Options	Window		Seçenekler
+Output file	Window		Çıktı dosyası
+Play output file	Window		Çıktı dosyasını çal/oynat
+Play source file	Window		Kaynak dosyasını çal/oynat
+Play when finished	Window		Bittiğinde oynat
+Please select a source file.	Window		Lütfen bir kaynak dosyası seçin.
+Quit	Window		Çık
+Right:	Window		Sağ:
+Sampling rate (Hz):	Window		Örnekleme hızı (Hz):
+Select output file…	Window		Çıktı dosyası seç…
+Source file	Window		Kaynak dosyası
+Start	Window		Başlangıç
+Start encoding	Window		Kodlamayı başlat
+Stop encoding	Window		Kodlamayı durdur
+There's no file with that name.	Window		Bu adla bir dosya yok.
+This file already exists. It will be overwritten!	Window		Bu dosya halihazırda var. Üzerine yazılacak!
+Too late! Encoding has already finished.\n	Window		Çok geç! Kodlama bitti bile.\n
+Top:	Window		Üst:
+Use custom resolution	Window		Özel çözünürlük kullan
+Use fixed video quantizer scale:	Window		Sabit video nicemleyici ölçeği kullan:
+Use four motion vector	Window		Dört hareket vektörü kullan
+Use high quality settings	Window		Yüksek kalite ayarları kullan
+Video	Window		Video
+Video codec:	Window		Video kodlayıcı:
+Video quantizer scale blur:	Window		Video nicemleyici ölçeği bulanıklığı:
+Video quantizer scale compression:	Window		Video nicemleyici ölçeği sıkıştırması:
+Waiting to start encoding…	Window		Kodlamanın başlatılması bekleniyor…
+Width:	Window		En:
+A GUI frontend for ffmpeg	Application		FFmpeg için bir grafik kullanıcı ön yüzü
+Thanks to:\nmmu_man, Jeremy, DeadYak, Marco, etc.\nmd@geekport.com\nreds <reds@sakamoto.pl> for making it more or less usable.\nHave fun!	Application		Teşekkürler:\nmmu_man, Jeremy, DeadYak, Marco, etc.\nmd@geekport.com\nreds <reds@sakamoto.pl>; az çok kullanılabilir duruma getirdiğiniz için.\nKeyfini çıkarın!
+ffmpeg GUI	System name		FFmpeg Grafik Kullanıcı Arayüzü
+ffmpegGUI	System name		ffmpegGUI

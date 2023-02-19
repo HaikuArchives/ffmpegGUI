@@ -1,0 +1,74 @@
+1	Indonesian	application/x-vnd.HaikuArchives-ffmpegGUI	593543373
+'B' frames:	Window		Frame 'B' :
+1:1 copy	Window		Kopi 1:1
+Abort	Window		Batal
+Abort encoding	Window		Batal melakukan pengkodean
+About ffmpegGUI	Window		Tentang ffmpegGUI
+Advanced options	Window		Opsi lanjut
+Are you sure, that you want to abort the encoding?\n	Window		Apakah Anda yakin ingin membatalkan penyandian?\n
+Audio	Window		Suara
+Audio channels:	Window		Kanal suara:
+Audio codec:	Window		Kodek audio:
+Bitrate (Kbit/s):	Window		Bitrate (Kbit/s):
+Bottom:	Window		Bawah:
+Calculate PSNR of compressed frames	Window		Hitung PSNR dari frame terkompresi
+Cancel	Window		Batal
+Cannot overwrite the source file. Please choose another output file name.	Window		Tidak dapat menimpa file sumber. Silakan pilih nama file keluaran lainnya.
+Copy commandline	Window		Salin baris perintah
+Cropping options	Window		Opsi pemotongan
+Default options	Window		Opsi default
+Deinterlace pictures	Window		Gambar deinterlace
+Duh!	Window	Button label of stop-encoding-alert if you're too late...	Waduh!
+Enable audio encoding	Window		Aktifkan enkode audio
+Enable video cropping	Window		Aktifkan pemangkasan video
+Enable video encoding	Window		Aktifkan enkode video
+Encoding	Window		Enkoding
+Encoding failed.	Window		Pengodean gagal.
+Encoding finished successfully!	Window		Pengodean selesai dengan sukses!
+Encoding: %source%   →   %output%	Window		Pengkodean: %source%   →   %output%
+File	Window		Berkas
+fps	Window		fps
+Framerate (fps):	Window		Kecepatan binkai (fps):
+GOP size:	Window		Ukuran GOP:
+Height:	Window		Tinggi:
+Left:	Window		Kiri:
+Log	Window		Catatan
+Main options	Window		Opsi utama
+Max difference between quantizer scale:	Window		Perbedaan maksimum antara skala quantizer:
+Max video quantizer scale:	Window		Skala quantizer video maks:
+Min video quantizer scale:	Window		Skala quantizer video minimum:
+No audio track	Window		Tiada trek audio
+No video track	Window		Tiada trek audio
+Open source file…	Window		Buka berkas sumber…
+Options	Window		Opsi
+Output file	Window		Berkas keluaran
+Play output file	Window		Mainkan berkas hasil
+Play source file	Window		Mainkan berkas sumber
+Play when finished	Window		Mainkan ketika selesai
+Please select a source file.	Window		Silahkan pilih berkas sumber.
+Quit	Window		Keluar
+Right:	Window		Kanan:
+Sampling rate (Hz):	Window		Rasio sampel (Hz):
+Select output file…	Window		Pilih berkas hasil
+Source file	Window		Berkas sumber
+Start	Window		Mulai
+Start encoding	Window		Mulai pengodean
+Stop encoding	Window		Hentikan pengodean
+There's no file with that name.	Window		Tidak ada file dengan nama itu.
+This file already exists. It will be overwritten!	Window		File ini sudah ada. Itu akan ditimpa!
+Too late! Encoding has already finished.\n	Window		Sudah terlambat! Enkode telah selesai..\n
+Top:	Window		Puncak:
+Use custom resolution	Window		Gunakan resolusi khusus
+Use fixed video quantizer scale:	Window		Gunakan skala quantizer video tetap:
+Use four motion vector	Window		Gunakan empat vektor gerak
+Use high quality settings	Window		Gunakan pengaturan kualitas tinggi
+Video	Window		Video
+Video codec:	Window		Kodek video:
+Video quantizer scale blur:	Window		Pemburaman skala quantizer video:
+Video quantizer scale compression:	Window		Skala kompresi quantizer video:
+Waiting to start encoding…	Window		Menunggu untuk memulai enkode…
+Width:	Window		Lebar:
+A GUI frontend for ffmpeg	Application		Antar muka GUI untuk ffmpeg
+Thanks to:\nmmu_man, Jeremy, DeadYak, Marco, etc.\nmd@geekport.com\nreds <reds@sakamoto.pl> for making it more or less usable.\nHave fun!	Application		Terima kasih kepada:\nmmu_man, Jeremy, DeadYak, Marco, etc.\nmd@geekport.com\nreds <reds@sakamoto.pl> yang menjadikannya kurang lebih bermanfaat.\nHave fun!
+ffmpeg GUI	System name		ffmpeg GUI
+ffmpegGUI	System name		ffmpegGUI
