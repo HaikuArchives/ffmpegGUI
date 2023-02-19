@@ -5,10 +5,10 @@ resource app_version {
 	middle = 1,
 	minor  = 0,
 
-	variety = B_APPV_DEVELOPMENT,
+	variety = B_APPV_FINAL,
 	internal = 0,
 
-	short_info = "ffmpeg GUI",
+	short_info = "A GUI frontend for ffmpeg",
 	long_info = "A GUI frontend for ffmpeg"
 };
 
