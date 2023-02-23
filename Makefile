@@ -30,13 +30,13 @@ APP_MIME_SIG = application/x-vnd.HaikuArchives-ffmpegGUI
 #	Also note that spaces in folder names do not work well with this Makefile.
 SRCS = \
 	 source/commandlauncher.cpp  \
-	 source/DurationToString.cpp  \
 	 source/ffgui-application.cpp  \
 	 source/ffgui-window.cpp  \
 	 source/ffgui-spinner.cpp \
 	 source/JobList.cpp \
 	 source/JobWindow.cpp \
 	 source/main.cpp  \
+	 source/Utilities.cpp  \
 
 
 #	Specify the resource definition files to use. Full or relative paths can be

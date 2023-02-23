@@ -8,8 +8,8 @@
 */
 
 
+#include "Utilities.h"
 #include "ffgui-window.h"
-#include "DurationToString.h"
 #include "commandlauncher.h"
 #include "ffgui-application.h"
 #include "ffgui-spinner.h"
@@ -916,8 +916,7 @@ ffguiwin::MessageReceived(BMessage* message)
 				int32 time_endpos = progress_data.FindFirst(".", time_startpos);
 				BString time_string;
 				progress_data.CopyInto(time_string, time_startpos, time_endpos - time_startpos);
-				fEncodeTime = GetSeconds(time_string);
-
+				fEncodeTime = string_to_seconds(time_string);
 				int32 encode_percentage;
 				if (fEncodeDuration > 0)
 					encode_percentage = (fEncodeTime * 100) / fEncodeDuration;
@@ -1207,7 +1206,7 @@ ffguiwin::UpdateMediaInfo()
 		if (calclist.StringAt(1) != "0") {
 			float rate = atof(calclist.StringAt(0)) / atof(calclist.StringAt(1));
 			fVideoFramerate.SetToFormat("%.3f", rate);
-			RemoveOverPrecision(fVideoFramerate);
+			remove_over_precision(fVideoFramerate);
 		}
 	}
 	if (fVideoBitrate != "" && fVideoFramerate != "N/A") {
@@ -1219,7 +1218,7 @@ ffguiwin::UpdateMediaInfo()
 		// Convert Hz to kHz
 		float samplerate = atof(fAudioSamplerate) / 1000;
 		fAudioSamplerate.SetToFormat("%.2f", samplerate);
-		RemoveOverPrecision(fAudioSamplerate);
+		remove_over_precision(fAudioSamplerate);
 	}
 	if (fAudioBitrate != "" && fAudioBitrate != "N/A") {
 		// Convert bits/s to kBit/s
@@ -1230,7 +1229,7 @@ ffguiwin::UpdateMediaInfo()
 		fEncodeDuration = atoi(fDuration); // Also used to calculate progress bar
 		// Convert seconds to HH:MM:SS
 		char durationText[64];
-		duration_to_string(fEncodeDuration, durationText, sizeof(durationText));
+		seconds_to_string(fEncodeDuration, durationText, sizeof(durationText));
 		fDuration = durationText;
 	}
 	BString text;
@@ -1454,43 +1453,6 @@ ffguiwin::SetFiletype(entry_ref* ref)
 			strlcpy(mimeString, type.Type(), B_MIME_TYPE_LENGTH);
 			nodeInfo.SetType(type.Type());
 		}
-	}
-}
-
-
-int32
-ffguiwin::GetSeconds(BString& time_string)
-{
-	int32 hours = 0;
-	int32 minutes = 0;
-	int32 seconds = 0;
-	BStringList time_list;
-
-	time_string.Trim().Split(":", true, time_list);
-	hours = std::atoi(time_list.StringAt(0).String());
-	minutes = std::atoi(time_list.StringAt(1).String());
-	seconds = std::atoi(time_list.StringAt(2).String());
-
-	seconds += minutes * 60;
-	seconds += hours * 3600;
-
-	return seconds;
-}
-
-
-void
-ffguiwin::RemoveOverPrecision(BString& float_string)
-{
-	// Remove trailing "0" and "."
-	while (true) {
-		if (float_string.EndsWith("0")) {
-			float_string.Truncate(float_string.CountChars() - 1);
-			if (float_string.EndsWith(".")) {
-				float_string.Truncate(float_string.CountChars() - 1);
-				break;
-			}
-		} else
-			break;
 	}
 }
 
