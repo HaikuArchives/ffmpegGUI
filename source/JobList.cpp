@@ -11,6 +11,7 @@
 
 #include <Catalog.h>
 
+
 #undef B_TRANSLATION_CONTEXT
 #define B_TRANSLATION_CONTEXT "JobList"
 

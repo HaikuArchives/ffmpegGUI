@@ -37,30 +37,42 @@ JobWindow::JobWindow(BRect rect, BMessenger* mainwindow)
 	fJobList->SetSelectionMode(B_SINGLE_SELECTION_LIST);
 	fJobList->SetSelectionMessage(new BMessage(M_JOB_SELECTED));
 
-	float colWidth = be_plain_font->StringWidth("/some/reasonably/long/path/to/the/file");
+	float colWidth = be_plain_font->StringWidth("somereasonablyquitelongoutputfilename.avi");
 	BStringColumn* nameCol = new BStringColumn(B_TRANSLATE("Job name"), colWidth,
 		colWidth / 4, colWidth * 4, B_TRUNCATE_MIDDLE);
 	fJobList->AddColumn(nameCol, kJobNameIndex);
 
-	colWidth = be_plain_font->StringWidth("🕛: 00:00:00") + 10;
+	colWidth = be_plain_font->StringWidth("🕛: 00:00:00") + 20;
 	BStringColumn* timeCol = new BStringColumn(B_TRANSLATE("Duration"), colWidth,
 		colWidth / 4, colWidth, B_TRUNCATE_BEGINNING);
 	fJobList->AddColumn(timeCol, kDurationIndex);
 
-	colWidth = be_plain_font->StringWidth(B_TRANSLATE("Finished")) + 10;
+	colWidth = be_plain_font->StringWidth(B_TRANSLATE("Running: 100%")) + 40;
 	BStringColumn* statusCol = new BStringColumn(B_TRANSLATE("Status"), colWidth,
 		colWidth / 4, colWidth * 2, B_TRUNCATE_END);
 	fJobList->AddColumn(statusCol, kStatusIndex);
 
 	fStartAbortButton = new BButton(B_TRANSLATE("Start jobs"), new BMessage(M_JOB_START));
+	fStartAbortButton->MakeDefault(true);
 	fRemoveButton = new BButton(B_TRANSLATE("Remove"), new BMessage(M_JOB_REMOVE));
 	fLogButton = new BButton(B_TRANSLATE("Show log"), new BMessage(M_JOB_LOG));
 	fClearButton = new BButton(B_TRANSLATE("Clear finished"), new BMessage(M_CLEAR_LIST));
 	fUpButton = new BButton("⏶", new BMessage(M_LIST_UP));
 	fDownButton = new BButton("⏷", new BMessage(M_LIST_DOWN));
 
+	// Set button sizes
+	BSize size = fStartAbortButton->PreferredSize();
+	size.width = std::max(size.width, fRemoveButton->PreferredSize().width);
+	size.width = std::max(size.width, fLogButton->PreferredSize().width);
+	size.width = std::max(size.width, fClearButton->PreferredSize().width);
+
+	fStartAbortButton->SetExplicitSize(size);
+	fRemoveButton->SetExplicitSize(size);
+	fLogButton->SetExplicitSize(size);
+	fClearButton->SetExplicitSize(size);
+
 	float width = be_plain_font->StringWidth("XXX");
-	BSize size(width, width);
+	size = BSize(width, width);
 	fUpButton->SetExplicitSize(size);
 	fDownButton->SetExplicitSize(size);
 
@@ -99,13 +111,17 @@ JobWindow::JobWindow(BRect rect, BMessenger* mainwindow)
 		AddJob(jobname, duration, command);
 		i++;
 	}
+
+	if (fJobList->CountRows() != 0)
+		fJobList->AddToSelection(fJobList->RowAt(0));
+
 	UpdateButtonStates();
 }
 
 
 JobWindow::~JobWindow()
 {
-	if (fJobList->CountRows() != 0);
+	if (fJobList->CountRows() != 0)
 		SaveJobs();
 }
 
@@ -241,6 +257,7 @@ JobWindow::MessageReceived(BMessage* message)
 			if (seconds > -1) {
 				int32 duration = fCurrentJob->GetDurationSeconds();
 				int32 encode_percentage;
+
 				if (duration > 0)
 					encode_percentage = (seconds * 100) / duration;
 				else

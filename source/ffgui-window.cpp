@@ -556,7 +556,7 @@ ffguiwin::ffguiwin(BRect r, const char* name, window_type type, ulong mode)
 
 	if (settings.FindRect("job_window", &frame) != B_OK) {
 		frame = Frame();
-		frame.InsetBySelf(75, 200);
+		frame.InsetBySelf(30, 200);
 	}
 
 	// create job window
