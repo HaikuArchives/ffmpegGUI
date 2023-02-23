@@ -96,7 +96,8 @@ CodecOption::CodecOption(const BString& option,const BString& shortlabel,const B
 
 ffguiwin::ffguiwin(BRect r, const char* name, window_type type, ulong mode)
 	:
-	BWindow(r, name, type, mode)
+	BWindow(r, name, type, mode),
+	fStopAlert(NULL)
 {
 	// Invoker for the Alerts to use to send their messages to the timer
 	fAlertInvoker.SetMessage(new BMessage(M_STOP_ALERT_BUTTON));
