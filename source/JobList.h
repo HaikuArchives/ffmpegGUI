@@ -37,15 +37,19 @@ public:
 
 	const char*		GetJobName() { return fJobName.String(); };
 	const char*		GetDuration() { return fDuration.String(); };
+	int32			GetDurationSeconds() { return fDurationSecs; };
 	const char*		GetCommandLine() { return fCommandLine.String(); };
 	int32			GetStatus() { return fStatusID; };
 	void			SetStatus(int32 statusID);
+	void			SetStatus(BString status);
+
 
 private:
 	BString			fJobName;
 	BString			fDuration;
 	BString			fCommandLine;
 	BString			fStatus;
+	int32			fDurationSecs;
 	int32			fStatusID;
 };
 
