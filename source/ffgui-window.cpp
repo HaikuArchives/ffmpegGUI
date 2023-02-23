@@ -910,14 +910,11 @@ ffguiwin::MessageReceived(BMessage* message)
 			fLogView->Insert(progress_data.String());
 			fLogView->ScrollTo(0.0, 1000000.0);
 
+			int32 seconds;
+			message->FindInt32("time", &seconds);
 			// calculate progress percentage
-			int32 time_startpos = progress_data.FindFirst("time=");
-			if (time_startpos > -1) {
-				time_startpos += 5;
-				int32 time_endpos = progress_data.FindFirst(".", time_startpos);
-				BString time_string;
-				progress_data.CopyInto(time_string, time_startpos, time_endpos - time_startpos);
-				fEncodeTime = string_to_seconds(time_string);
+			if (seconds > -1) {
+				fEncodeTime = seconds;
 				int32 encode_percentage;
 				if (fEncodeDuration > 0)
 					encode_percentage = (fEncodeTime * 100) / fEncodeDuration;

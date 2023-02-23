@@ -34,7 +34,8 @@ public:
 
 private:
 	static status_t	_ffmpeg_command(void* self);
-	void 			run_command();
+	void 			RunCommand();
+	int32			GetCurrentTime(const char* buffer);
 
 	BString 		fCommandline;
 	BMessage* 		fOutputMessage;

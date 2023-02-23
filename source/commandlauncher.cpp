@@ -9,6 +9,7 @@
 
 #include "commandlauncher.h"
 #include "messages.h"
+#include "Utilities.h"
 
 #include <algorithm>
 #include <array>
@@ -86,13 +87,13 @@ status_t
 CommandLauncher::_ffmpeg_command(void* _self)
 {
 	CommandLauncher* self = (CommandLauncher*) _self;
-	self->run_command();
+	self->RunCommand();
 	return B_OK;
 }
 
 
 void
-CommandLauncher::run_command()
+CommandLauncher::RunCommand()
 {
 	// redirect stderr + stout
 	int stderr_pipe[2];
@@ -151,8 +152,11 @@ CommandLauncher::run_command()
 			// Make sure the buffer is null terminated
 			buffer[amount_read] = 0;
 
+			int32 seconds = GetCurrentTime(buffer);
+			fOutputMessage->AddInt32("time", seconds);
 			fOutputMessage->AddString("data", buffer);
 			fTargetMessenger->SendMessage(fOutputMessage);
+			fOutputMessage->RemoveName("time");
 			fOutputMessage->RemoveName("data");
 
 			// check if output contains error messages
@@ -184,4 +188,21 @@ CommandLauncher::run_command()
 
 	delete fOutputMessage;
 	delete fFinishMessage;
+}
+
+
+int32
+CommandLauncher::GetCurrentTime(const char* buffer)
+{
+	BString output(buffer);
+	int32 time_startpos = output.FindFirst("time=");
+	if (time_startpos == -1)
+		return -1;
+
+	time_startpos += 5;
+	int32 time_endpos = output.FindFirst(".", time_startpos);
+	BString time_string;
+	output.CopyInto(time_string, time_startpos, time_endpos - time_startpos);
+
+	return (string_to_seconds(time_string));
 }
