@@ -130,8 +130,10 @@ JobWindow::MessageReceived(BMessage* message)
 		{
 			UpdateButtonStates();
 			fCurrentJob = GetNextJob();
-			if (fCurrentJob == NULL)
+			if (fCurrentJob == NULL) {
+				fJobRunning = false;
 				break;
+			}
 
 			fCurrentJob->SetStatus(RUNNING);
 			BMessage startMsg(M_ENCODE_COMMAND);
@@ -203,9 +205,36 @@ JobWindow::MessageReceived(BMessage* message)
 			UpdateButtonStates();
 			break;
 		}
+		case M_ENCODE_PROGRESS:
+		{
+			int32 seconds;
+			message->FindInt32("time", &seconds);
+			// calculate progress percentage
+			if (seconds > -1) {
+				int32 duration = fCurrentJob->GetDurationSeconds();
+				int32 encode_percentage;
+				if (duration > 0)
+					encode_percentage = (seconds * 100) / duration;
+				else
+					encode_percentage = 0;
+
+				char percent[4];
+				snprintf(percent, sizeof(percent), "%" B_PRId32, encode_percentage);
+
+				BString title(B_TRANSLATE("Job: %percent%%"));
+				title.ReplaceFirst("%percent%", percent);
+				SetTitle(title);
+
+				title = B_TRANSLATE("Running: %percent%%");
+				title.ReplaceFirst("%percent%", percent);
+				fCurrentJob->SetStatus(title);
+			}
+			break;
+		}
 		case M_ENCODE_FINISHED:
 		{
-			fJobRunning = false;
+			SetTitle(B_TRANSLATE("Job manager"));
+
 			fStartAbortButton->SetLabel(B_TRANSLATE("Start jobs"));
 			fStartAbortButton->SetMessage(new BMessage(M_JOB_START));
 

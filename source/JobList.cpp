@@ -7,6 +7,7 @@
 
 
 #include "JobList.h"
+#include "Utilities.h"
 
 #include <Catalog.h>
 
@@ -34,6 +35,7 @@ JobRow::JobRow(const char* jobname, const char* duration, const char* commandlin
 	SetField(new BStringField(fJobName.String()), kJobNameIndex);
 	SetField(new BStringField(fDuration.String()), kDurationIndex);
 	SetStatus(statusID);
+	fDurationSecs = string_to_seconds(fDuration);
 }
 
 void
@@ -57,4 +59,11 @@ JobRow::SetStatus(int32 statusID)
 	}
 	SetField(new BStringField(fStatus.String()), kStatusIndex);
 	fStatusID = statusID;
+}
+
+
+void
+JobRow::SetStatus(BString status)
+{
+	SetField(new BStringField(status), kStatusIndex);
 }
