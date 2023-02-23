@@ -13,6 +13,12 @@
 #include "commandlauncher.h"
 #include "JobList.h"
 
+// Start/Abort button status
+enum {
+	START = 0,
+	ABORT
+};
+
 
 class JobWindow : public BWindow {
 public:
@@ -33,6 +39,7 @@ private:
 	bool			IsUnique(const char* commandline);
 	JobRow*			GetNextJob();
 	void			UpdateButtonStates();
+	void			SetStartButtonLabel(int32 state);
 
 	BMessenger*		fMainWindow;
 	CommandLauncher*	fJobCommandLauncher;

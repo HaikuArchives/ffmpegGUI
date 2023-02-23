@@ -16,7 +16,9 @@
 #include <File.h>
 #include <FindDirectory.h>
 #include <LayoutBuilder.h>
+#include <Notification.h>
 #include <Path.h>
+#include <StringFormat.h>
 
 #include <stdio.h>
 
@@ -79,8 +81,6 @@ JobWindow::JobWindow(BRect rect, BMessenger* mainwindow)
 			.End()
 		.End();
 
-	UpdateButtonStates();
-
 	// initialize job command launcher
 	fJobCommandLauncher = new CommandLauncher(new BMessenger(this));
 
@@ -97,6 +97,7 @@ JobWindow::JobWindow(BRect rect, BMessenger* mainwindow)
 		AddJob(jobname, duration, command);
 		i++;
 	}
+	UpdateButtonStates();
 }
 
 
@@ -128,21 +129,33 @@ JobWindow::MessageReceived(BMessage* message)
 		}
 		case M_JOB_START:
 		{
-			UpdateButtonStates();
 			fCurrentJob = GetNextJob();
 			if (fCurrentJob == NULL) {
 				fJobRunning = false;
+				UpdateButtonStates();
+
+				int32 count = fJobList->CountRows();
+				BString text;
+				static BStringFormat format(B_TRANSLATE("{0, plural,"
+					"one{Encoding job finished.}"
+					"other{Encoding jobs finished.}}"));
+				format.Format(text, count);
+				BNotification encodeFinished(B_INFORMATION_NOTIFICATION);
+				encodeFinished.SetGroup(B_TRANSLATE_SYSTEM_NAME("ffmpeg GUI"));
+				BString title(B_TRANSLATE("Job manager"));
+				encodeFinished.SetContent(text);
+				encodeFinished.Send();
+
 				break;
 			}
 
+			fJobRunning = true;
 			fCurrentJob->SetStatus(RUNNING);
+			UpdateButtonStates();
+
 			BMessage startMsg(M_ENCODE_COMMAND);
 			startMsg.AddString("cmdline", fCurrentJob->GetCommandLine());
 			fJobCommandLauncher->PostMessage(&startMsg);
-
-			fStartAbortButton->SetLabel(B_TRANSLATE("Abort jobs"));
-			fStartAbortButton->SetMessage(new BMessage(M_JOB_ABORT));
-			fJobRunning = true;
 			break;
 		}
 		case M_JOB_ABORT:
@@ -150,9 +163,8 @@ JobWindow::MessageReceived(BMessage* message)
 			BMessage stop_encode_message(M_STOP_COMMAND);
 			fJobCommandLauncher->PostMessage(&stop_encode_message);
 
-			fStartAbortButton->SetLabel(B_TRANSLATE("Start jobs"));
-			fStartAbortButton->SetMessage(new BMessage(M_JOB_START));
 			fJobRunning = false;
+			UpdateButtonStates();
 			break;
 		}
 		case M_JOB_REMOVE:
@@ -234,9 +246,6 @@ JobWindow::MessageReceived(BMessage* message)
 		case M_ENCODE_FINISHED:
 		{
 			SetTitle(B_TRANSLATE("Job manager"));
-
-			fStartAbortButton->SetLabel(B_TRANSLATE("Start jobs"));
-			fStartAbortButton->SetMessage(new BMessage(M_JOB_START));
 
 			status_t exit_code;
 			message->FindInt32("exitcode", &exit_code);
@@ -380,6 +389,7 @@ void
 JobWindow::UpdateButtonStates()
 {
 	int32 count = fJobList->CountRows();
+	SetStartButtonLabel((fJobRunning == true) ? ABORT : START);
 
 	// Empty list
 	if (count == 0) {
@@ -425,4 +435,27 @@ JobWindow::UpdateButtonStates()
 		fDownButton->SetEnabled(false);
 	else
 		fDownButton->SetEnabled(true);
+}
+
+
+void
+JobWindow::SetStartButtonLabel(int32 state)
+{
+	int32 count = fJobList->CountRows();
+	BString text;
+
+	if (state == START) {
+		static BStringFormat format(B_TRANSLATE("{0, plural,"
+			"one{Start job}"
+			"other{Start jobs}}"));
+		format.Format(text, count);
+		fStartAbortButton->SetMessage(new BMessage(M_JOB_START));
+	} else {
+		static BStringFormat format(B_TRANSLATE("{0, plural,"
+			"one{Abort job}"
+			"other{Abort jobs}}"));
+		format.Format(text, count);
+		fStartAbortButton->SetMessage(new BMessage(M_JOB_ABORT));
+	}
+	fStartAbortButton->SetLabel(text);
 }
