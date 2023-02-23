@@ -40,8 +40,11 @@ public:
 	int32			GetDurationSeconds() { return fDurationSecs; };
 	const char*		GetCommandLine() { return fCommandLine.String(); };
 	int32			GetStatus() { return fStatusID; };
+	const char*		GetLog() { return fLog.String(); };
+
 	void			SetStatus(int32 statusID);
 	void			SetStatus(BString status);
+	void			AddToLog(BString log);
 
 
 private:
@@ -49,6 +52,7 @@ private:
 	BString			fDuration;
 	BString			fCommandLine;
 	BString			fStatus;
+	BString			fLog;
 	int32			fDurationSecs;
 	int32			fStatusID;
 };

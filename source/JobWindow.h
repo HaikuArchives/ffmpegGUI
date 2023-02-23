@@ -50,6 +50,7 @@ private:
 
 	BButton*		fStartAbortButton;
 	BButton*		fRemoveButton;
+	BButton*		fLogButton;
 	BButton*		fClearButton;
 	BButton*		fUpButton;
 	BButton*		fDownButton;

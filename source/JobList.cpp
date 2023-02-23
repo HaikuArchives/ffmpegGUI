@@ -67,3 +67,9 @@ JobRow::SetStatus(BString status)
 {
 	SetField(new BStringField(status), kStatusIndex);
 }
+
+
+void JobRow::AddToLog(BString log)
+{
+	fLog << log;
+}

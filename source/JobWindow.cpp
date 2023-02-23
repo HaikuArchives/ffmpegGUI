@@ -54,6 +54,7 @@ JobWindow::JobWindow(BRect rect, BMessenger* mainwindow)
 
 	fStartAbortButton = new BButton(B_TRANSLATE("Start jobs"), new BMessage(M_JOB_START));
 	fRemoveButton = new BButton(B_TRANSLATE("Remove"), new BMessage(M_JOB_REMOVE));
+	fLogButton = new BButton(B_TRANSLATE("Show log"), new BMessage(M_JOB_LOG));
 	fClearButton = new BButton(B_TRANSLATE("Clear finished"), new BMessage(M_CLEAR_LIST));
 	fUpButton = new BButton("⏶", new BMessage(M_LIST_UP));
 	fDownButton = new BButton("⏷", new BMessage(M_LIST_DOWN));
@@ -69,6 +70,7 @@ JobWindow::JobWindow(BRect rect, BMessenger* mainwindow)
 		.AddGroup(B_VERTICAL)
 			.Add(fStartAbortButton)
 			.Add(fRemoveButton)
+			.Add(fLogButton)
 			.Add(fClearButton)
 			.AddGlue()
 			.AddGroup(B_HORIZONTAL)
@@ -142,7 +144,7 @@ JobWindow::MessageReceived(BMessage* message)
 				format.Format(text, count);
 				BNotification encodeFinished(B_INFORMATION_NOTIFICATION);
 				encodeFinished.SetGroup(B_TRANSLATE_SYSTEM_NAME("ffmpeg GUI"));
-				BString title(B_TRANSLATE("Job manager"));
+				encodeFinished.SetTitle(B_TRANSLATE("Job manager"));
 				encodeFinished.SetContent(text);
 				encodeFinished.Send();
 
@@ -179,6 +181,16 @@ JobWindow::MessageReceived(BMessage* message)
 				fJobList->RowAt((rowIndex > count - 1) ? count - 1 : rowIndex));
 
 			UpdateButtonStates();
+			break;
+		}
+		case M_JOB_LOG:
+		{
+			BString text;
+			JobRow* currentRow = dynamic_cast<JobRow*>(fJobList->CurrentSelection());
+			text << currentRow->GetJobName() << ":\n" << currentRow->GetLog();
+			BAlert* alert = new BAlert("log", text, B_TRANSLATE("OK"));
+			alert->SetShortcut(0, B_ESCAPE);
+			alert->Go();
 			break;
 		}
 		case M_CLEAR_LIST:
@@ -219,6 +231,10 @@ JobWindow::MessageReceived(BMessage* message)
 		}
 		case M_ENCODE_PROGRESS:
 		{
+			BString progress_data;
+			message->FindString("data", &progress_data);
+			fCurrentJob->AddToLog(progress_data);
+
 			int32 seconds;
 			message->FindInt32("time", &seconds);
 			// calculate progress percentage
@@ -395,6 +411,7 @@ JobWindow::UpdateButtonStates()
 	if (count == 0) {
 		fStartAbortButton->SetEnabled(false);
 		fRemoveButton->SetEnabled(false);
+		fLogButton->SetEnabled(false);
 		fClearButton->SetEnabled(false);
 		fUpButton->SetEnabled(false);
 		fDownButton->SetEnabled(false);
@@ -414,15 +431,20 @@ JobWindow::UpdateButtonStates()
 	fClearButton->SetEnabled(finishOrError);
 	fStartAbortButton->SetEnabled(waitOrRun);
 
+	JobRow* currentRow = dynamic_cast<JobRow*>(fJobList->CurrentSelection());
 	// Nothing selected
-	if (fJobList->CurrentSelection() == NULL) {
+	if (currentRow == NULL) {
 		fRemoveButton->SetEnabled(false);
+		fLogButton->SetEnabled(false);
 		fUpButton->SetEnabled(false);
 		fDownButton->SetEnabled(false);
 		return;
-	} else {
+	} else
 		fRemoveButton->SetEnabled(true);
-	}
+
+	int32 status = currentRow->GetStatus();
+	if (status == ERROR)
+		fLogButton->SetEnabled(true);
 
 	// Move up/down button logic
 	int32 rowIndex = fJobList->IndexOf(fJobList->CurrentSelection());
