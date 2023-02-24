@@ -55,7 +55,7 @@ JobWindow::JobWindow(BRect rect, BMessenger* mainwindow)
 	fStartAbortButton = new BButton(B_TRANSLATE("Start jobs"), new BMessage(M_JOB_START));
 	fStartAbortButton->MakeDefault(true);
 	fRemoveButton = new BButton(B_TRANSLATE("Remove"), new BMessage(M_JOB_REMOVE));
-	fLogButton = new BButton(B_TRANSLATE("Show log"), new BMessage(M_JOB_LOG));
+	fLogButton = new BButton(B_TRANSLATE("Error log"), new BMessage(M_JOB_LOG));
 	fClearButton = new BButton(B_TRANSLATE("Clear finished"), new BMessage(M_CLEAR_LIST));
 	fUpButton = new BButton("⏶", new BMessage(M_LIST_UP));
 	fDownButton = new BButton("⏷", new BMessage(M_LIST_DOWN));

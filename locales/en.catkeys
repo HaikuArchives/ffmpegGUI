@@ -1,4 +1,5 @@
-1	English	application/x-vnd.HaikuArchives-ffmpegGUI	3097994486
+1	English	application/x-vnd.HaikuArchives-ffmpegGUI	937581384
+Add as new job	Window		Add as new job
 Deinterlace pictures	Window		Deinterlace pictures
 Min video quantizer scale:	Window		Min video quantizer scale:
 Copy commandline	Window		Copy commandline
@@ -6,6 +7,9 @@ Use four motion vector	Window		Use four motion vector
 Start	Window		Start
 No video track	Window		No video track
 Audio codec:	Window		Audio codec:
+Job name	JobWindow		Job name
+Clear finished	JobWindow		Clear finished
+Jobs	Window		Jobs
 1:1 copy	Window		1:1 copy
 There's no file with that name.	Window		There's no file with that name.
 Thanks to:\nHandMaus (Icon)\nmmu_man, Jeremy, DeadYak, Marco, etc.\nmd@geekport.com\nreds <reds@sakamoto.pl> for making it more or less usable.\nHave fun!	Application		Thanks to:\nHandMaus (Icon)\nmmu_man, Jeremy, DeadYak, Marco, etc.\nmd@geekport.com\nreds <reds@sakamoto.pl> for making it more or less usable.\nHave fun!
@@ -14,7 +18,9 @@ This file already exists. It will be overwritten!	Window		This file already exis
 ffmpegGUI	System name		ffmpegGUI
 Cannot overwrite the source file. Please choose another output file name.	Window		Cannot overwrite the source file. Please choose another output file name.
 GOP size:	Window		GOP size:
+Duration	JobWindow		Duration
 Bitrate (Kbit/s):	Window		Bitrate (Kbit/s):
+Start jobs	JobWindow		Start jobs
 Video codec:	Window		Video codec:
 Audio channels:	Window		Audio channels:
 Stop encoding	Window		Stop encoding
@@ -26,27 +32,36 @@ Framerate (fps):	Window		Framerate (fps):
 Duh!	Window	Button label of stop-encoding-alert if you're too late...	Duh!
 Cancel	Window		Cancel
 Use high quality settings	Window		Use high quality settings
+{0, plural,one{Abort job}other{Abort jobs}}	JobWindow		{0, plural,one{Abort job}other{Abort jobs}}
 Are you sure, that you want to abort the encoding?\n	Window		Are you sure, that you want to abort the encoding?\n
 Video quantizer scale compression:	Window		Video quantizer scale compression:
 No audio track	Window		No audio track
+OK	JobWindow		OK
+Job manager	JobWindow		Job manager
 Cropping options	Window		Cropping options
 Audio	Window		Audio
+Running: 100%	JobWindow		Running: 100%
 ffmpeg GUI	System name		ffmpeg GUI
 Select output file…	Window		Select output file…
 Width:	Window		Width:
 Play when finished	Window		Play when finished
+Running	JobList		Running
 Main options	Window		Main options
 Video	Window		Video
+Job: %percent%%	JobWindow		Job: %percent%%
 Enable audio encoding	Window		Enable audio encoding
 Output file	Window		Output file
 Calculate PSNR of compressed frames	Window		Calculate PSNR of compressed frames
 A GUI frontend for ffmpeg	Application		A GUI frontend for ffmpeg
 Play output file	Window		Play output file
+{0, plural,one{Encoding job finished.}other{Encoding jobs finished.}}	JobWindow		{0, plural,one{Encoding job finished.}other{Encoding jobs finished.}}
 Enable video cropping	Window		Enable video cropping
 'B' frames:	Window		'B' frames:
 File	Window		File
 Enable video encoding	Window		Enable video encoding
+Status	JobWindow		Status
 Log	Window		Log
+Open job manager…	Window		Open job manager…
 Start encoding	Window		Start encoding
 Top:	Window		Top:
 Encoding	Window		Encoding
@@ -60,15 +75,22 @@ Advanced options	Window		Advanced options
 Encoding finished successfully!	Window		Encoding finished successfully!
 Height:	Window		Height:
 Too late! Encoding has already finished.\n	Window		Too late! Encoding has already finished.\n
+Error	JobList		Error
+Running: %percent%%	JobWindow		Running: %percent%%
 Open source file…	Window		Open source file…
 Abort	Window		Abort
 Encoding: %source%   →   %output%	Window		Encoding: %source%   →   %output%
+Waiting	JobList		Waiting
 Bottom:	Window		Bottom:
 Right:	Window		Right:
+Remove	JobWindow		Remove
+Finished	JobList		Finished
 Encoding failed.	Window		Encoding failed.
 Waiting to start encoding…	Window		Waiting to start encoding…
+{0, plural,one{Start job}other{Start jobs}}	JobWindow		{0, plural,one{Start job}other{Start jobs}}
 Sampling rate (Hz):	Window		Sampling rate (Hz):
 fps	Window		fps
 Use fixed video quantizer scale:	Window		Use fixed video quantizer scale:
+Error log	JobWindow		Error log
 Options	Window		Options
 Use custom resolution	Window		Use custom resolution
