@@ -635,18 +635,14 @@ ffguiwin::MessageReceived(BMessage* message)
 		}
 		case M_ADD_JOB:
 		{
-			BString time("🕛: " );
-			time << fDuration;
-
 			BString filename(fOutputTextControl->Text());
 			filename.Trim();
 			BPath path(filename);
 
 			BString command(fCommandlineTextControl->Text());
 			command << " -y";
-
 			if (fJobWindow->Lock())
-				fJobWindow->AddJob(path.Leaf(), time.String(), command.String());
+				fJobWindow->AddJob(path.Leaf(), fDuration.String(), command.String());
 			fJobWindow->Unlock();
 			break;
 		}

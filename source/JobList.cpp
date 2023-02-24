@@ -33,10 +33,11 @@ JobRow::JobRow(const char* jobname, const char* duration, const char* commandlin
 	fCommandLine(commandline),
 	fStatusID(statusID)
 {
+	fDurationSecs = string_to_seconds(fDuration);
+	fDuration.Prepend("🕛: " );
 	SetField(new BStringField(fJobName.String()), kJobNameIndex);
 	SetField(new BStringField(fDuration.String()), kDurationIndex);
 	SetStatus(statusID);
-	fDurationSecs = string_to_seconds(fDuration);
 }
 
 void
