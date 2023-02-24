@@ -44,7 +44,7 @@ JobWindow::JobWindow(BRect rect, BMessenger* mainwindow)
 
 	colWidth = be_plain_font->StringWidth("🕛: 00:00:00") + 20;
 	BStringColumn* timeCol = new BStringColumn(B_TRANSLATE("Duration"), colWidth,
-		colWidth / 4, colWidth, B_TRUNCATE_BEGINNING);
+		colWidth / 4, colWidth * 2, B_TRUNCATE_BEGINNING);
 	fJobList->AddColumn(timeCol, kDurationIndex);
 
 	colWidth = be_plain_font->StringWidth(B_TRANSLATE("Running: 100%")) + 40;
@@ -456,12 +456,11 @@ JobWindow::UpdateButtonStates()
 		fUpButton->SetEnabled(false);
 		fDownButton->SetEnabled(false);
 		return;
-	} else
-		fRemoveButton->SetEnabled(true);
+	}
 
 	int32 status = currentRow->GetStatus();
-	if (status == ERROR)
-		fLogButton->SetEnabled(true);
+	fLogButton->SetEnabled((status == ERROR) ? true :false);
+	fRemoveButton->SetEnabled((status == RUNNING) ? false :true);
 
 	// Move up/down button logic
 	int32 rowIndex = fJobList->IndexOf(fJobList->CurrentSelection());
