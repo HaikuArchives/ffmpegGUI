@@ -22,7 +22,7 @@ enum {
 
 class JobWindow : public BWindow {
 public:
-					JobWindow(BRect rect, BMessenger* mainwindow);
+					JobWindow(BRect frame, BMessage* settings);
 					~JobWindow();
 
 	virtual bool 	QuitRequested();
@@ -31,6 +31,9 @@ public:
 			void	AddJob(const char* jobname, const char* duration, const char* commandline,
 						int32 statusID = 0);
 			bool	IsJobRunning();
+
+	BMessage*		GetColumnState();
+			void	SetColumnState(BMessage* archive);
 
 private:
 	status_t		LoadJobs(BMessage& jobs);

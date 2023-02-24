@@ -554,19 +554,15 @@ ffguiwin::ffguiwin(BRect r, const char* name, window_type type, ulong mode)
 	}
 	MoveOnScreen();
 
-	if (settings.FindRect("job_window", &frame) != B_OK) {
-		frame = Frame();
-		frame.InsetBySelf(30, 200);
-	}
-
 	// create job window
-	fJobWindow = new JobWindow(frame, new BMessenger(this));
+	frame = Frame();
+	frame.InsetBySelf(75, 200);
+	fJobWindow = new JobWindow(frame, &settings);
 	fJobWindow->Show();
 	fJobWindow->Hide();
 
 	// initialize command launcher
 	fCommandLauncher = new CommandLauncher(new BMessenger(this));
-
 }
 
 
@@ -1104,6 +1100,7 @@ ffguiwin::SaveSettings()
 	BMessage settings('fmpg');
 	status = settings.AddRect("main_window", Frame());
 	status = settings.AddRect("job_window", fJobWindow->Frame());
+	status = settings.AddMessage("column settings", fJobWindow->GetColumnState());
 
 	if (status == B_OK)
 		status = settings.Flatten(&file);
