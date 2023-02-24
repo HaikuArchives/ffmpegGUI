@@ -26,13 +26,12 @@
 #define B_TRANSLATION_CONTEXT "JobWindow"
 
 
-JobWindow::JobWindow(BRect rect, BMessenger* mainwindow)
+JobWindow::JobWindow(BRect frame, BMessage* settings)
 	:
-	BWindow(rect, B_TRANSLATE("Job manager"), B_TITLED_WINDOW,
+	BWindow(frame, B_TRANSLATE("Job manager"), B_TITLED_WINDOW,
 		B_NOT_ZOOMABLE | B_AUTO_UPDATE_SIZE_LIMITS),
 	fJobRunning(false)
 {
-
 	fJobList = new JobList();
 	fJobList->SetSelectionMode(B_SINGLE_SELECTION_LIST);
 	fJobList->SetSelectionMessage(new BMessage(M_JOB_SELECTED));
@@ -116,6 +115,18 @@ JobWindow::JobWindow(BRect rect, BMessenger* mainwindow)
 		fJobList->AddToSelection(fJobList->RowAt(0));
 
 	UpdateButtonStates();
+
+	// apply window settings
+	if (settings->FindRect("job_window", &frame) == B_OK) {
+		MoveTo(frame.LeftTop());
+		ResizeTo(frame.Width(), frame.Height());
+	}
+	MoveOnScreen();
+
+	// apply column settings
+	BMessage columnSettings;
+	if (settings->FindMessage("column settings", &columnSettings) == B_OK)
+		fJobList->LoadState(&columnSettings);
 }
 
 
@@ -389,6 +400,25 @@ bool
 JobWindow::IsJobRunning()
 {
 	return fJobRunning;
+}
+
+
+BMessage*
+JobWindow::GetColumnState()
+{
+	BMessage columnSettings;
+	fJobList->SaveState(&columnSettings);
+
+	return (new BMessage(columnSettings));
+}
+
+
+void
+JobWindow::SetColumnState(BMessage* archive)
+{
+	BMessage columnSettings;
+	if (archive->FindMessage("column settings", &columnSettings) == B_OK)
+		fJobList->LoadState(&columnSettings);
 }
 
 
