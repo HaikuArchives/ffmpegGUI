@@ -557,7 +557,7 @@ ffguiwin::ffguiwin(BRect r, const char* name, window_type type, ulong mode)
 
 	// create job window
 	frame = Frame();
-	frame.InsetBySelf(75, 200);
+	frame.InsetBySelf(10, 200);
 	fJobWindow = new JobWindow(frame, &settings, new BMessenger(this));
 	fJobWindow->Show();
 	fJobWindow->Hide();

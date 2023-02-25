@@ -27,7 +27,8 @@ JobList::JobList()
 
 
 // Job list row
-JobRow::JobRow(const char* filename, const char* duration, const char* commandline, int32 statusID)
+JobRow::JobRow(int32 jobnumber, const char* filename, const char* duration,
+	const char* commandline, int32 statusID)
 	:
 	BRow(),
 	fFilename(filename),
@@ -41,6 +42,8 @@ JobRow::JobRow(const char* filename, const char* duration, const char* commandli
 	fDurationSecs = string_to_seconds(fDuration);
 	BString symbolDuration(fDuration);
 	symbolDuration.Prepend("🕛: " );
+
+	SetField(new BIntegerField(jobnumber), kJobNumberIndex);
 	SetField(new BStringField(fJobName.String()), kJobNameIndex);
 	SetField(new BStringField(symbolDuration.String()), kDurationIndex);
 	SetStatus(statusID);
