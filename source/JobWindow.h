@@ -39,13 +39,13 @@ private:
 	status_t		LoadJobs(BMessage& jobs);
 	status_t		SaveJobs();
 
+	int32			CountFinished();
 	bool			IsUniqueJob(const char* commandline);
 	int32			IndexOfSameFilename(const char* filename);
 	JobRow*			GetNextJob();
 	void			UpdateButtonStates();
 	void			SetStartButtonLabel(int32 state);
 
-	BMessenger*		fMainWindow;
 	CommandLauncher*	fJobCommandLauncher;
 	JobList*		fJobList;
 	JobRow*			fCurrentJob;
