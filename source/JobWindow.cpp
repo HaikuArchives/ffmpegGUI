@@ -132,8 +132,15 @@ JobWindow::JobWindow(BRect frame, BMessage* settings)
 
 JobWindow::~JobWindow()
 {
-	if (fJobList->CountRows() != 0)
-		SaveJobs();
+	// clear finished or errored jobs before saving
+	for (int32 i = fJobList->CountRows() - 1; i >= 0; i--) {
+		JobRow* row = dynamic_cast<JobRow*>(fJobList->RowAt(i));
+		int32 status = row->GetStatus();
+		if ((status == ERROR) or (status == FINISHED))
+			fJobList->RemoveRow(row);
+	}
+
+	SaveJobs();
 }
 
 
@@ -358,6 +365,13 @@ JobWindow::SaveJobs()
 	status = path.Append("jobs");
 	if (status != B_OK)
 		return status;
+
+	// remove "jobs" file if there are none.
+	if (fJobList->CountRows() == 0) {
+		BEntry entry(path.Path());
+		status = entry.Remove();
+		return status;
+	}
 
 	BFile file;
 	status = file.SetTo(path.Path(), B_WRITE_ONLY | B_CREATE_FILE | B_ERASE_FILE);
