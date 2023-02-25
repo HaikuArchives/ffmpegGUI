@@ -633,12 +633,11 @@ ffguiwin::MessageReceived(BMessage* message)
 		{
 			BString filename(fOutputTextControl->Text());
 			filename.Trim();
-			BPath path(filename);
 
 			BString command(fCommandlineTextControl->Text());
 			command << " -y";
 			if (fJobWindow->Lock())
-				fJobWindow->AddJob(path.Leaf(), fDuration.String(), command.String());
+				fJobWindow->AddJob(filename.String(), fDuration.String(), command.String());
 			fJobWindow->Unlock();
 			break;
 		}

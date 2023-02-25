@@ -10,7 +10,9 @@
 #include "Utilities.h"
 
 #include <Catalog.h>
+#include <StringList.h>
 
+#include <stdio.h>
 
 #undef B_TRANSLATION_CONTEXT
 #define B_TRANSLATION_CONTEXT "JobList"
@@ -25,20 +27,25 @@ JobList::JobList()
 
 
 // Job list row
-JobRow::JobRow(const char* jobname, const char* duration, const char* commandline, int32 statusID)
+JobRow::JobRow(const char* filename, const char* duration, const char* commandline, int32 statusID)
 	:
 	BRow(),
-	fJobName(jobname),
+	fFilename(filename),
 	fDuration(duration),
 	fCommandLine(commandline),
 	fStatusID(statusID)
 {
+	BStringList name;
+	fFilename.Split("/", true, name);
+	fJobName = name.Last();
 	fDurationSecs = string_to_seconds(fDuration);
-	fDuration.Prepend("🕛: " );
+	BString symbolDuration(fDuration);
+	symbolDuration.Prepend("🕛: " );
 	SetField(new BStringField(fJobName.String()), kJobNameIndex);
-	SetField(new BStringField(fDuration.String()), kDurationIndex);
+	SetField(new BStringField(symbolDuration.String()), kDurationIndex);
 	SetStatus(statusID);
 }
+
 
 void
 JobRow::SetStatus(int32 statusID)

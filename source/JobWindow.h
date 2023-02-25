@@ -28,7 +28,7 @@ public:
 	virtual bool 	QuitRequested();
 	virtual void 	MessageReceived(BMessage* message);
 
-			void	AddJob(const char* jobname, const char* duration, const char* commandline,
+			void	AddJob(const char* filename, const char* duration, const char* commandline,
 						int32 statusID = 0);
 			bool	IsJobRunning();
 
@@ -39,7 +39,8 @@ private:
 	status_t		LoadJobs(BMessage& jobs);
 	status_t		SaveJobs();
 
-	bool			IsUnique(const char* commandline);
+	bool			IsUniqueJob(const char* commandline);
+	int32			IndexOfSameFilename(const char* filename);
 	JobRow*			GetNextJob();
 	void			UpdateButtonStates();
 	void			SetStartButtonLabel(int32 state);
