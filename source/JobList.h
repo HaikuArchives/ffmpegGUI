@@ -12,9 +12,10 @@
 #include <ColumnTypes.h>
 
 // Column indexes
-const int32 kJobNameIndex = 0;
-const int32 kDurationIndex = 1;
-const int32 kStatusIndex = 2;
+const int32 kJobNumberIndex = 0;
+const int32 kJobNameIndex = 1;
+const int32 kDurationIndex = 2;
+const int32 kStatusIndex = 3;
 
 // Job status
 enum {
@@ -32,8 +33,8 @@ public:
 
 class JobRow : public BRow {
 public:
-					JobRow(const char* jobname, const char* duration, const char* commandline,
-						int32 statusID);
+					JobRow(int32 jobnumber, const char* jobname, const char* duration,
+						const char* commandline, int32 statusID);
 
 	const char*		GetFilename() { return fFilename.String(); };
 	const char*		GetJobName() { return fJobName.String(); };

@@ -54,6 +54,7 @@ private:
 	BMessenger*		fMainWindow;
 	JobList*		fJobList;
 	JobRow*			fCurrentJob;
+	int32			fJobNumber;
 
 	bool			fJobRunning;
 

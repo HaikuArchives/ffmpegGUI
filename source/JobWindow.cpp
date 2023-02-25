@@ -32,6 +32,7 @@ JobWindow::JobWindow(BRect frame, BMessage* settings, BMessenger* target)
 	BWindow(frame, B_TRANSLATE("Job manager"), B_TITLED_WINDOW,
 		B_NOT_ZOOMABLE | B_AUTO_UPDATE_SIZE_LIMITS),
 	fJobRunning(false),
+	fJobNumber(1),
 	fMainWindow(target)
 {
 	fJobList = new JobList();
@@ -39,7 +40,12 @@ JobWindow::JobWindow(BRect frame, BMessage* settings, BMessenger* target)
 	fJobList->SetSelectionMessage(new BMessage(M_JOB_SELECTED));
 	fJobList->SetInvocationMessage(new BMessage(M_JOB_INVOKED));
 
-	float colWidth = be_plain_font->StringWidth("somereasonablyquitelongoutputfilename.avi");
+	float colWidth = be_plain_font->StringWidth("XXX") + 15;
+	BIntegerColumn* numberCol = new BIntegerColumn(B_TRANSLATE_COMMENT(
+		"N°", "'Number' abbreviation"), colWidth, colWidth / 1.5, colWidth * 2);
+	fJobList->AddColumn(numberCol, kJobNumberIndex);
+
+	colWidth = be_plain_font->StringWidth("somereasonablyquitelongoutputfilename.avi");
 	BStringColumn* nameCol = new BStringColumn(B_TRANSLATE("Job name"), colWidth,
 		colWidth / 4, colWidth * 4, B_TRUNCATE_MIDDLE);
 	fJobList->AddColumn(nameCol, kJobNameIndex);
@@ -128,8 +134,10 @@ JobWindow::JobWindow(BRect frame, BMessage* settings, BMessenger* target)
 
 	// apply column settings
 	BMessage columnSettings;
-	if (settings->FindMessage("column settings", &columnSettings) == B_OK)
+	if (settings->FindMessage("column settings", &columnSettings) == B_OK) {
+		columnSettings.RemoveName("sortID"); // forget previous sorting column
 		fJobList->LoadState(&columnSettings);
+	}
 }
 
 
@@ -439,7 +447,7 @@ JobWindow::AddJob(const char* filename, const char* duration, const char* comman
 
 	int32 index = IndexOfSameFilename(filename);
 	if (index == -1) {
-		JobRow* row = new JobRow(filename, duration, commandline, WAITING);
+		JobRow* row = new JobRow(fJobNumber++, filename, duration, commandline, WAITING);
 		fJobList->AddRow(row);
 		SendJobCount(fJobList->CountRows());
 		UpdateButtonStates();
