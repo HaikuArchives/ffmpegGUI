@@ -91,6 +91,7 @@ enum {
 	 M_JOB_ABORT,
 	 M_JOB_LOG,
 	 M_JOB_REMOVE,
+	 M_JOB_COUNT,
 	 M_CLEAR_LIST,
 	 M_LIST_UP,
 	 M_LIST_DOWN,

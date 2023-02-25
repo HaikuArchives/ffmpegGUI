@@ -41,6 +41,7 @@
 #include <Spinner.h>
 #include <StatusBar.h>
 #include <String.h>
+#include <StringFormat.h>
 #include <StringList.h>
 #include <StringView.h>
 #include <TabView.h>
@@ -557,7 +558,7 @@ ffguiwin::ffguiwin(BRect r, const char* name, window_type type, ulong mode)
 	// create job window
 	frame = Frame();
 	frame.InsetBySelf(75, 200);
-	fJobWindow = new JobWindow(frame, &settings);
+	fJobWindow = new JobWindow(frame, &settings, new BMessenger(this));
 	fJobWindow->Show();
 	fJobWindow->Hide();
 
@@ -647,6 +648,22 @@ ffguiwin::MessageReceived(BMessage* message)
 				fJobWindow->Show();
 			else
 				fJobWindow->Activate(true);
+			break;
+		}
+		case M_JOB_COUNT:
+		{
+			int32 count;
+			message->FindInt32("jobcount", &count);
+			BString title(B_TRANSLATE_SYSTEM_NAME("ffmpegGUI"));
+			if (count > 0) {
+				BString jobs("  •  ");
+				static BStringFormat format(B_TRANSLATE("{0, plural,"
+					"one{(# Job)}"
+					"other{(# Jobs)}}"));
+				format.Format(jobs, count);
+				title << jobs;
+			}
+			SetTitle(title);
 			break;
 		}
 		case M_DEFAULTS:

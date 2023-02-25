@@ -26,11 +26,12 @@
 #define B_TRANSLATION_CONTEXT "JobWindow"
 
 
-JobWindow::JobWindow(BRect frame, BMessage* settings)
+JobWindow::JobWindow(BRect frame, BMessage* settings, BMessenger* target)
 	:
 	BWindow(frame, B_TRANSLATE("Job manager"), B_TITLED_WINDOW,
 		B_NOT_ZOOMABLE | B_AUTO_UPDATE_SIZE_LIMITS),
-	fJobRunning(false)
+	fJobRunning(false),
+	fMainWindow(target)
 {
 	fJobList = new JobList();
 	fJobList->SetSelectionMode(B_SINGLE_SELECTION_LIST);
@@ -211,6 +212,7 @@ JobWindow::MessageReceived(BMessage* message)
 			fJobList->RemoveRow(row);
 
 			int32 count = fJobList->CountRows();
+			SendJobCount(count);
 			// Did we remove the first or last row?
 			fJobList->AddToSelection(
 				fJobList->RowAt((rowIndex > count - 1) ? count - 1 : rowIndex));
@@ -236,6 +238,7 @@ JobWindow::MessageReceived(BMessage* message)
 				if (status == FINISHED)
 					fJobList->RemoveRow(row);
 			}
+			SendJobCount(fJobList->CountRows());
 			UpdateButtonStates();
 			break;
 		}
@@ -407,6 +410,7 @@ JobWindow::AddJob(const char* filename, const char* duration, const char* comman
 	if (index == -1) {
 		JobRow* row = new JobRow(filename, duration, commandline, WAITING);
 		fJobList->AddRow(row);
+		SendJobCount(fJobList->CountRows());
 		UpdateButtonStates();
 		return;
 	}
@@ -456,6 +460,15 @@ JobWindow::SetColumnState(BMessage* archive)
 	BMessage columnSettings;
 	if (archive->FindMessage("column settings", &columnSettings) == B_OK)
 		fJobList->LoadState(&columnSettings);
+}
+
+
+void
+JobWindow::SendJobCount(int32 count)
+{
+	BMessage message(M_JOB_COUNT);
+	message.AddInt32("jobcount", count);
+	fMainWindow->SendMessage(&message);
 }
 
 
