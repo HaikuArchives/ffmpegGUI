@@ -384,15 +384,39 @@ JobWindow::SaveJobs()
 
 
 void
-JobWindow::AddJob(const char* jobname, const char* duration, const char* commandline,
+JobWindow::AddJob(const char* filename, const char* duration, const char* commandline,
 				int32 statusID)
 {
-	if (!IsUnique(commandline))
+	if (!IsUniqueJob(commandline))
 		return;
 
-	JobRow* row = new JobRow(jobname, duration, commandline, WAITING);
-	fJobList->AddRow(row);
-	UpdateButtonStates();
+	int32 index = IndexOfSameFilename(filename);
+	if (index == -1) {
+		JobRow* row = new JobRow(filename, duration, commandline, WAITING);
+		fJobList->AddRow(row);
+		UpdateButtonStates();
+		return;
+	}
+
+	BString text(B_TRANSLATE("There's already a job with that same output file:\n"
+		"%filename%\n\n"
+		"Better choose another output file, or remove the existing job.\n"));
+	text.ReplaceFirst("%filename%", filename);
+	BAlert* alert = new BAlert("fileexists", text,
+		B_TRANSLATE("Cancel"), B_TRANSLATE("Show job manager"));
+	alert->SetShortcut(0, B_ESCAPE);
+
+	int32 choice = alert->Go();
+	switch (choice) {
+		case 0:
+			return;
+		case 1:
+		{
+			fJobList->AddToSelection(fJobList->RowAt(index));
+			if (IsHidden())
+				Show();
+		}
+	}
 }
 
 
@@ -423,7 +447,7 @@ JobWindow::SetColumnState(BMessage* archive)
 
 
 bool
-JobWindow::IsUnique(const char* commandline)
+JobWindow::IsUniqueJob(const char* commandline)
 {
 	for (int32 i = 0; i < fJobList->CountRows(); i++) {
 		JobRow* row = dynamic_cast<JobRow*>(fJobList->RowAt(i));
@@ -432,6 +456,19 @@ JobWindow::IsUnique(const char* commandline)
 			return false;
 	}
 	return true;
+}
+
+
+int32
+JobWindow::IndexOfSameFilename(const char* filename)
+{
+	for (int32 i = 0; i < fJobList->CountRows(); i++) {
+		JobRow* row = dynamic_cast<JobRow*>(fJobList->RowAt(i));
+		BString name = row->GetFilename();
+		if (name == filename)
+			return i;
+	}
+	return -1;
 }
 
 

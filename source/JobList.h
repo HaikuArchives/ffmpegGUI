@@ -35,6 +35,7 @@ public:
 					JobRow(const char* jobname, const char* duration, const char* commandline,
 						int32 statusID);
 
+	const char*		GetFilename() { return fFilename.String(); };
 	const char*		GetJobName() { return fJobName.String(); };
 	const char*		GetDuration() { return fDuration.String(); };
 	int32			GetDurationSeconds() { return fDurationSecs; };
@@ -48,6 +49,7 @@ public:
 
 
 private:
+	BString			fFilename;
 	BString			fJobName;
 	BString			fDuration;
 	BString			fCommandLine;
