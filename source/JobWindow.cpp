@@ -18,6 +18,7 @@
 #include <LayoutBuilder.h>
 #include <Notification.h>
 #include <Path.h>
+#include <Roster.h>
 #include <StringFormat.h>
 
 #include <stdio.h>
@@ -36,6 +37,7 @@ JobWindow::JobWindow(BRect frame, BMessage* settings, BMessenger* target)
 	fJobList = new JobList();
 	fJobList->SetSelectionMode(B_SINGLE_SELECTION_LIST);
 	fJobList->SetSelectionMessage(new BMessage(M_JOB_SELECTED));
+	fJobList->SetInvocationMessage(new BMessage(M_JOB_INVOKED));
 
 	float colWidth = be_plain_font->StringWidth("somereasonablyquitelongoutputfilename.avi");
 	BStringColumn* nameCol = new BStringColumn(B_TRANSLATE("Job name"), colWidth,
@@ -164,6 +166,18 @@ JobWindow::MessageReceived(BMessage* message)
 			UpdateButtonStates();
 			break;
 		}
+		case M_JOB_INVOKED:
+		{
+			JobRow* currentRow = dynamic_cast<JobRow*>(fJobList->CurrentSelection());
+			if (currentRow != NULL) {
+				int32 status = currentRow->GetStatus();
+				if (status == FINISHED)
+					PlayVideo(currentRow->GetFilename());
+				if (status == ERROR)
+					ShowLog(currentRow);
+			}
+			break;
+		}
 		case M_JOB_START:
 		{
 			fCurrentJob = GetNextJob();
@@ -222,12 +236,8 @@ JobWindow::MessageReceived(BMessage* message)
 		}
 		case M_JOB_LOG:
 		{
-			BString text;
 			JobRow* currentRow = dynamic_cast<JobRow*>(fJobList->CurrentSelection());
-			text << currentRow->GetJobName() << ":\n" << currentRow->GetLog();
-			BAlert* alert = new BAlert("log", text, B_TRANSLATE("OK"));
-			alert->SetShortcut(0, B_ESCAPE);
-			alert->Go();
+			ShowLog(currentRow);
 			break;
 		}
 		case M_CLEAR_LIST:
@@ -396,6 +406,27 @@ JobWindow::SaveJobs()
 		status = jobs.Flatten(&file);
 
 	return status;
+}
+
+
+void
+JobWindow::PlayVideo(const char* filepath)
+{
+	BEntry video_entry(filepath);
+	entry_ref video_ref;
+	video_entry.GetRef(&video_ref);
+	be_roster->Launch(&video_ref);
+}
+
+
+void
+JobWindow::ShowLog(JobRow* row)
+{
+	BString text;
+	text << row->GetJobName() << ":\n" << row->GetLog();
+	BAlert* alert = new BAlert("log", text, B_TRANSLATE("OK"));
+	alert->SetShortcut(0, B_ESCAPE);
+	alert->Go();
 }
 
 
