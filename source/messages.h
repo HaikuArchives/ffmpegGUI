@@ -87,6 +87,7 @@ enum {
 // Job window
 enum {
 	 M_JOB_SELECTED = 2000,
+	 M_JOB_INVOKED,
 	 M_JOB_START,
 	 M_JOB_ABORT,
 	 M_JOB_LOG,

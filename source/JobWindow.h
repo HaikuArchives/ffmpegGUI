@@ -39,6 +39,9 @@ private:
 	status_t		LoadJobs(BMessage& jobs);
 	status_t		SaveJobs();
 
+	void			PlayVideo(const char* filepath);
+	void			ShowLog(JobRow* row);
+
 	void			SendJobCount(int32);
 	int32			CountFinished();
 	bool			IsUniqueJob(const char* commandline);
