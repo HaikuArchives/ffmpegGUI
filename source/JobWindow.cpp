@@ -100,14 +100,14 @@ JobWindow::JobWindow(BRect frame, BMessage* settings)
 	BMessage jobs;
 	LoadJobs(jobs);
 
-	const char* jobname;
+	const char* filename;
 	const char* duration;
 	const char* command;
 	int32 i = 0;
-	while ((jobs.FindString("jobname", i, &jobname) == B_OK)
+	while ((jobs.FindString("filename", i, &filename) == B_OK)
 			&& (jobs.FindString("duration", i, &duration) == B_OK)
 			&& ((jobs.FindString("command", i, &command) == B_OK))) {
-		AddJob(jobname, duration, command);
+		AddJob(filename, duration, command);
 		i++;
 	}
 
@@ -370,7 +370,7 @@ JobWindow::SaveJobs()
 		JobRow* row = dynamic_cast<JobRow*>(fJobList->RowAt(i));
 		int32 state = row->GetStatus();
 		if (state != FINISHED) {
-			jobs.AddString("jobname", row->GetJobName());
+			jobs.AddString("filename", row->GetFilename());
 			jobs.AddString("duration", row->GetDuration());
 			jobs.AddString("command", row->GetCommandLine());
 		}
