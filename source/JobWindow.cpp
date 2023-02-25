@@ -167,6 +167,7 @@ JobWindow::MessageReceived(BMessage* message)
 		{
 			fCurrentJob = GetNextJob();
 			if (fCurrentJob == NULL) {
+				SetTitle(B_TRANSLATE("Job manager"));
 				fJobRunning = false;
 				UpdateButtonStates();
 
@@ -200,6 +201,7 @@ JobWindow::MessageReceived(BMessage* message)
 			fJobCommandLauncher->PostMessage(&stop_encode_message);
 
 			fJobRunning = false;
+			SetTitle(B_TRANSLATE("Job manager"));
 			UpdateButtonStates();
 			break;
 		}
@@ -271,6 +273,7 @@ JobWindow::MessageReceived(BMessage* message)
 
 			int32 seconds;
 			message->FindInt32("time", &seconds);
+
 			// calculate progress percentage
 			if (seconds > -1) {
 				int32 duration = fCurrentJob->GetDurationSeconds();
@@ -281,23 +284,19 @@ JobWindow::MessageReceived(BMessage* message)
 				else
 					encode_percentage = 0;
 
-				char percent[4];
-				snprintf(percent, sizeof(percent), "%" B_PRId32, encode_percentage);
-
-				BString title(B_TRANSLATE("Job: %percent%%"));
-				title.ReplaceFirst("%percent%", percent);
+				BString title(B_TRANSLATE("Job"));
+				title << " (" << CountFinished() << "/" << fJobList->CountRows() << "): ";
+				title << encode_percentage << "%";
 				SetTitle(title);
 
-				title = B_TRANSLATE("Running: %percent%%");
-				title.ReplaceFirst("%percent%", percent);
+				title = B_TRANSLATE("Running:");
+				title << " " << encode_percentage << "%";
 				fCurrentJob->SetStatus(title);
 			}
 			break;
 		}
 		case M_ENCODE_FINISHED:
 		{
-			SetTitle(B_TRANSLATE("Job manager"));
-
 			status_t exit_code;
 			message->FindInt32("exitcode", &exit_code);
 
@@ -459,6 +458,20 @@ JobWindow::SetColumnState(BMessage* archive)
 		fJobList->LoadState(&columnSettings);
 }
 
+
+int32
+JobWindow::CountFinished()
+{
+	int32 count = 1;
+
+	for (int32 i = 0; i < fJobList->CountRows(); i++) {
+		JobRow* row = dynamic_cast<JobRow*>(fJobList->RowAt(i));
+		int32 status = row->GetStatus();
+		if (status == FINISHED)
+			count++;
+	}
+	return count;
+}
 
 bool
 JobWindow::IsUniqueJob(const char* commandline)
