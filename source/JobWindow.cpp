@@ -202,7 +202,6 @@ JobWindow::MessageReceived(BMessage* message)
 
 			fJobRunning = false;
 			SetTitle(B_TRANSLATE("Job manager"));
-			UpdateButtonStates();
 			break;
 		}
 		case M_JOB_REMOVE:
@@ -302,6 +301,7 @@ JobWindow::MessageReceived(BMessage* message)
 
 			if (exit_code == ABORTED) {
 				fCurrentJob->SetStatus(WAITING);
+				UpdateButtonStates();
 				break;
 			}
 			if (exit_code == SUCCESS)
