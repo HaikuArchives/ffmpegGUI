@@ -22,7 +22,7 @@ enum {
 
 class JobWindow : public BWindow {
 public:
-					JobWindow(BRect frame, BMessage* settings);
+					JobWindow(BRect frame, BMessage* settings, BMessenger* target);
 					~JobWindow();
 
 	virtual bool 	QuitRequested();
@@ -39,6 +39,7 @@ private:
 	status_t		LoadJobs(BMessage& jobs);
 	status_t		SaveJobs();
 
+	void			SendJobCount(int32);
 	int32			CountFinished();
 	bool			IsUniqueJob(const char* commandline);
 	int32			IndexOfSameFilename(const char* filename);
@@ -47,6 +48,7 @@ private:
 	void			SetStartButtonLabel(int32 state);
 
 	CommandLauncher*	fJobCommandLauncher;
+	BMessenger*		fMainWindow;
 	JobList*		fJobList;
 	JobRow*			fCurrentJob;
 
