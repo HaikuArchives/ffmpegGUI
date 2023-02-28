@@ -8,24 +8,25 @@
 */
 
 
-#ifndef FFGUI_APPLICATION_H
-#define FFGUI_APPLICATION_H
+#ifndef APPLICATION_H
+#define APPLICATION_H
 
 
-#include "ffgui-window.h"
+#include "MainWindow.h"
 
 #include <Application.h>
 
 
-class ffguiapp : public BApplication {
+class App : public BApplication {
 public:
-					ffguiapp();
+					App();
+
 	virtual void 	RefsReceived(BMessage* message);
 	virtual void 	MessageReceived(BMessage* message);
 			void 	AboutRequested();
 
 private:
-	ffguiwin* 		fWindow;
+	MainWindow* 		fMainWindow;
 };
 
-#endif // FFGUI_APPLICATION_H
+#endif // APPLICATION_H

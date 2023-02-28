@@ -7,16 +7,16 @@
 */
 
 
-#ifndef FFGUI_SPINNER_H
-#define FFGUI_SPINNER_H
+#ifndef SPINNER_H
+#define SPINNER_H
 
 #include "DecimalSpinner.h"
 #include "Spinner.h"
 
 
-class ffguispinner : public BSpinner {
+class Spinner : public BSpinner {
 public:
-			ffguispinner(const char* name, const char* label, BMessage* message);
+			Spinner(const char* name, const char* label, BMessage* message);
 	void 	Increment();
 	void 	Decrement();
 	void 	SetStep(int32 step);
@@ -26,11 +26,11 @@ private:
 };
 
 
-class ffguidecspinner : public BDecimalSpinner {
+class DecSpinner : public BDecimalSpinner {
 public:
-			ffguidecspinner(const char* name, const char* label, BMessage* message);
+			DecSpinner(const char* name, const char* label, BMessage* message);
 	void 	Increment();
 	void 	Decrement();
 };
 
-#endif // FFGUI_SPINNER_H
+#endif // SPINNER_H

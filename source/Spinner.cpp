@@ -7,10 +7,10 @@
 */
 
 
-#include "ffgui-spinner.h"
+#include "Spinner.h"
 
 
-ffguispinner::ffguispinner(const char* name, const char* label, BMessage* message)
+Spinner::Spinner(const char* name, const char* label, BMessage* message)
 	:
 	BSpinner(name, label, message)
 {
@@ -19,28 +19,28 @@ ffguispinner::ffguispinner(const char* name, const char* label, BMessage* messag
 
 
 void
-ffguispinner::Increment()
+Spinner::Increment()
 {
 	SetValue(Value() + fStep);
 }
 
 
 void
-ffguispinner::Decrement()
+Spinner::Decrement()
 {
 	SetValue(Value() - fStep);
 }
 
 
 void
-ffguispinner::SetStep(int32 step)
+Spinner::SetStep(int32 step)
 {
 	fStep = step;
 }
 
 
 // Spinner for floating point
-ffguidecspinner::ffguidecspinner(const char* name, const char* label, BMessage* message)
+DecSpinner::DecSpinner(const char* name, const char* label, BMessage* message)
 	:
 	BDecimalSpinner(name, label, message)
 {
@@ -49,7 +49,7 @@ ffguidecspinner::ffguidecspinner(const char* name, const char* label, BMessage* 
 
 
 void
-ffguidecspinner::Increment()
+DecSpinner::Increment()
 {
 	double value = Value();
 	// show 'special' framerates as 24/1.001, 30/1.001, 60/1.001
@@ -70,7 +70,7 @@ ffguidecspinner::Increment()
 
 
 void
-ffguidecspinner::Decrement()
+DecSpinner::Decrement()
 {
 	double value = Value();
 	// show 'special' framerates as 24/1.001, 30/1.001, 60/1.001

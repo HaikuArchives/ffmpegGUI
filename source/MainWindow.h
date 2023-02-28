@@ -8,8 +8,8 @@
 */
 
 
-#ifndef FFGUI_WINDOW_H
-#define FFGUI_WINDOW_H
+#ifndef MAINWINDOW_H
+#define MAINWINDOW_H
 
 
 #include <Invoker.h>
@@ -34,8 +34,8 @@ class BFilePanel;
 class BString;
 class BStringView;
 class CommandLauncher;
-class ffguispinner;
-class ffguidecspinner;
+class Spinner;
+class DecSpinner;
 class JobWindow;
 
 
@@ -66,9 +66,9 @@ public:
 };
 
 
-class ffguiwin : public BWindow {
+class MainWindow : public BWindow {
 public:
-					ffguiwin(BRect, const char* name, window_type type, ulong mode);
+					MainWindow(BRect, const char* name, window_type type, ulong mode);
 	virtual bool 	QuitRequested();
 	virtual void 	MessageReceived(BMessage* message);
 
@@ -122,25 +122,25 @@ private:
 	BButton* 		fStartAbortButton;
 
 	// spin buttons
-	ffguispinner* 	fVideoBitrateSpinner;
-	ffguidecspinner* fFramerate;
-	ffguispinner* 	fXres;
-	ffguispinner* 	fYres;
-	ffguispinner* 	fTopCrop;
-	ffguispinner* 	fBottomCrop;
-	ffguispinner* 	fLeftCrop;
-	ffguispinner* 	fRightCrop;
-	ffguispinner* 	fChannelCount;
+	Spinner* 	fVideoBitrateSpinner;
+	DecSpinner* fFramerate;
+	Spinner* 	fXres;
+	Spinner* 	fYres;
+	Spinner* 	fTopCrop;
+	Spinner* 	fBottomCrop;
+	Spinner* 	fLeftCrop;
+	Spinner* 	fRightCrop;
+	Spinner* 	fChannelCount;
 
 	// advanced spinbuttons
-	ffguispinner* 	fFixedQuantizer;
-	ffguispinner* 	fMinQuantizer;
-	ffguispinner* 	fMaxQuantizer;
-	ffguispinner* 	fQuantDiff;
-	ffguispinner* 	fQuantBlur;
-	ffguispinner* 	fQuantCompression;
-	ffguispinner* 	fBFrames;
-	ffguispinner* 	fGop;
+	Spinner* 	fFixedQuantizer;
+	Spinner* 	fMinQuantizer;
+	Spinner* 	fMaxQuantizer;
+	Spinner* 	fQuantDiff;
+	Spinner* 	fQuantBlur;
+	Spinner* 	fQuantCompression;
+	Spinner* 	fBFrames;
+	Spinner* 	fGop;
 
 	// advanced checkboxes
 	BCheckBox* 		fHighQualityBox;
@@ -218,4 +218,4 @@ private:
 	JobWindow*		fJobWindow;
 };
 
-#endif // FFGUI_WINDOW_H
+#endif // MAINWINDOW_H

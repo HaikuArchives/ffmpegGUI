@@ -33,7 +33,7 @@ public:
 	void 			MessageReceived(BMessage* message);
 
 private:
-	static status_t	_ffmpeg_command(void* self);
+	static status_t	_Command(void* self);
 	void 			RunCommand();
 	int32			GetCurrentTime(const char* buffer);
 

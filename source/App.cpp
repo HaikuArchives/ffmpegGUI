@@ -8,8 +8,9 @@
 */
 
 
-#include "ffgui-application.h"
-#include "messages.h"
+#include "App.h"
+#include "MainWindow.h"
+#include "Messages.h"
 
 #include <AboutWindow.h>
 #include <AppFileInfo.h>
@@ -23,25 +24,25 @@
 const char* kAppSignature = "application/x-vnd.HaikuArchives-ffmpegGUI";
 
 
-ffguiapp::ffguiapp()
+App::App()
 	:
 	BApplication(kAppSignature)
 {
-	fWindow = new ffguiwin(BRect(0, 0, 0, 0), B_TRANSLATE_SYSTEM_NAME("ffmpegGUI"),
+	fMainWindow = new MainWindow(BRect(0, 0, 0, 0), B_TRANSLATE_SYSTEM_NAME("ffmpegGUI"),
 		B_TITLED_WINDOW, B_NOT_V_RESIZABLE);
-	fWindow->Show();
+	fMainWindow->Show();
 }
 
 
 void
-ffguiapp::RefsReceived(BMessage* message)
+App::RefsReceived(BMessage* message)
 {
-	fWindow->PostMessage(message);
+	fMainWindow->PostMessage(message);
 }
 
 
 void
-ffguiapp::MessageReceived(BMessage* message)
+App::MessageReceived(BMessage* message)
 {
 	switch (message->what) {
 		default:
@@ -52,7 +53,7 @@ ffguiapp::MessageReceived(BMessage* message)
 
 
 void
-ffguiapp::AboutRequested()
+App::AboutRequested()
 {
 	BAboutWindow* aboutwindow
 		= new BAboutWindow(B_TRANSLATE_SYSTEM_NAME("ffmpegGUI"), kAppSignature);
@@ -83,4 +84,13 @@ ffguiapp::AboutRequested()
 	aboutwindow->AddDescription(B_TRANSLATE("A GUI frontend for ffmpeg"));
 	aboutwindow->AddExtraInfo(extra_info.String());
 	aboutwindow->Show();
+}
+
+
+int
+main()
+{
+	App app;
+	app.Run();
+	return 0;
 }
