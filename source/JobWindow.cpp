@@ -107,7 +107,7 @@ JobWindow::JobWindow(BRect frame, BMessage* settings, BMessenger* target)
 	fJobCommandLauncher = new CommandLauncher(new BMessenger(this));
 
 	BMessage jobs;
-	LoadJobs(jobs);
+	_LoadJobs(jobs);
 
 	const char* filename;
 	const char* duration;
@@ -123,7 +123,7 @@ JobWindow::JobWindow(BRect frame, BMessage* settings, BMessenger* target)
 	if (fJobList->CountRows() != 0)
 		fJobList->AddToSelection(fJobList->RowAt(0));
 
-	UpdateButtonStates();
+	_UpdateButtonStates();
 
 	// apply window settings
 	if (settings->FindRect("job_window", &frame) == B_OK) {
@@ -151,7 +151,7 @@ JobWindow::~JobWindow()
 			fJobList->RemoveRow(row);
 	}
 
-	SaveJobs();
+	_SaveJobs();
 }
 
 
@@ -171,7 +171,7 @@ JobWindow::MessageReceived(BMessage* message)
 	switch (message->what) {
 		case M_JOB_SELECTED:
 		{
-			UpdateButtonStates();
+			_UpdateButtonStates();
 			break;
 		}
 		case M_JOB_INVOKED:
@@ -180,19 +180,19 @@ JobWindow::MessageReceived(BMessage* message)
 			if (currentRow != NULL) {
 				int32 status = currentRow->GetStatus();
 				if (status == FINISHED)
-					PlayVideo(currentRow->GetFilename());
+					_PlayVideo(currentRow->GetFilename());
 				if (status == ERROR)
-					ShowLog(currentRow);
+					_ShowLog(currentRow);
 			}
 			break;
 		}
 		case M_JOB_START:
 		{
-			fCurrentJob = GetNextJob();
+			fCurrentJob = _GetNextJob();
 			if (fCurrentJob == NULL) {
 				SetTitle(B_TRANSLATE("Job manager"));
 				fJobRunning = false;
-				UpdateButtonStates();
+				_UpdateButtonStates();
 
 				int32 count = fJobList->CountRows();
 				BString text;
@@ -211,7 +211,7 @@ JobWindow::MessageReceived(BMessage* message)
 
 			fJobRunning = true;
 			fCurrentJob->SetStatus(RUNNING);
-			UpdateButtonStates();
+			_UpdateButtonStates();
 
 			BMessage startMsg(M_ENCODE_COMMAND);
 			startMsg.AddString("cmdline", fCurrentJob->GetCommandLine());
@@ -234,18 +234,18 @@ JobWindow::MessageReceived(BMessage* message)
 			fJobList->RemoveRow(row);
 
 			int32 count = fJobList->CountRows();
-			SendJobCount(count);
+			_SendJobCount(count);
 			// Did we remove the first or last row?
 			fJobList->AddToSelection(
 				fJobList->RowAt((rowIndex > count - 1) ? count - 1 : rowIndex));
 
-			UpdateButtonStates();
+			_UpdateButtonStates();
 			break;
 		}
 		case M_JOB_LOG:
 		{
 			JobRow* currentRow = dynamic_cast<JobRow*>(fJobList->CurrentSelection());
-			ShowLog(currentRow);
+			_ShowLog(currentRow);
 			break;
 		}
 		case M_CLEAR_LIST:
@@ -256,8 +256,8 @@ JobWindow::MessageReceived(BMessage* message)
 				if (status == FINISHED)
 					fJobList->RemoveRow(row);
 			}
-			SendJobCount(fJobList->CountRows());
-			UpdateButtonStates();
+			_SendJobCount(fJobList->CountRows());
+			_UpdateButtonStates();
 			break;
 		}
 		case M_LIST_UP:
@@ -269,7 +269,7 @@ JobWindow::MessageReceived(BMessage* message)
 
 			fJobList->SwapRows(rowIndex, rowIndex - 1);
 			fJobList->AddToSelection(fJobList->RowAt(rowIndex - 1));
-			UpdateButtonStates();
+			_UpdateButtonStates();
 			break;
 		}
 		case M_LIST_DOWN:
@@ -282,7 +282,7 @@ JobWindow::MessageReceived(BMessage* message)
 
 			fJobList->SwapRows(rowIndex, rowIndex + 1);
 			fJobList->AddToSelection(fJobList->RowAt(rowIndex + 1));
-			UpdateButtonStates();
+			_UpdateButtonStates();
 			break;
 		}
 		case M_ENCODE_PROGRESS:
@@ -305,7 +305,7 @@ JobWindow::MessageReceived(BMessage* message)
 					encode_percentage = 0;
 
 				BString title(B_TRANSLATE("Job"));
-				title << " (" << CountFinished() << "/" << fJobList->CountRows() << "): ";
+				title << " (" << _CountFinished() << "/" << fJobList->CountRows() << "): ";
 				title << encode_percentage << "%";
 				SetTitle(title);
 
@@ -322,7 +322,7 @@ JobWindow::MessageReceived(BMessage* message)
 
 			if (exit_code == ABORTED) {
 				fCurrentJob->SetStatus(WAITING);
-				UpdateButtonStates();
+				_UpdateButtonStates();
 				break;
 			}
 			if (exit_code == SUCCESS)
@@ -342,7 +342,7 @@ JobWindow::MessageReceived(BMessage* message)
 
 
 status_t
-JobWindow::LoadJobs(BMessage& jobs)
+JobWindow::_LoadJobs(BMessage& jobs)
 {
 	BPath path;
 	status_t status = find_directory(B_USER_SETTINGS_DIRECTORY, &path);
@@ -367,7 +367,7 @@ JobWindow::LoadJobs(BMessage& jobs)
 
 
 status_t
-JobWindow::SaveJobs()
+JobWindow::_SaveJobs()
 {
 	BPath path;
 	status_t status = find_directory(B_USER_SETTINGS_DIRECTORY, &path);
@@ -418,7 +418,7 @@ JobWindow::SaveJobs()
 
 
 void
-JobWindow::PlayVideo(const char* filepath)
+JobWindow::_PlayVideo(const char* filepath)
 {
 	BEntry video_entry(filepath);
 	entry_ref video_ref;
@@ -428,7 +428,7 @@ JobWindow::PlayVideo(const char* filepath)
 
 
 void
-JobWindow::ShowLog(JobRow* row)
+JobWindow::_ShowLog(JobRow* row)
 {
 	BString text;
 	text << row->GetJobName() << ":\n" << row->GetLog();
@@ -442,15 +442,15 @@ void
 JobWindow::AddJob(const char* filename, const char* duration, const char* commandline,
 				int32 statusID)
 {
-	if (!IsUniqueJob(commandline))
+	if (!_IsUniqueJob(commandline))
 		return;
 
-	int32 index = IndexOfSameFilename(filename);
+	int32 index = _IndexOfSameFilename(filename);
 	if (index == -1) {
 		JobRow* row = new JobRow(fJobNumber++, filename, duration, commandline, WAITING);
 		fJobList->AddRow(row);
-		SendJobCount(fJobList->CountRows());
-		UpdateButtonStates();
+		_SendJobCount(fJobList->CountRows());
+		_UpdateButtonStates();
 		return;
 	}
 
@@ -503,7 +503,7 @@ JobWindow::SetColumnState(BMessage* archive)
 
 
 void
-JobWindow::SendJobCount(int32 count)
+JobWindow::_SendJobCount(int32 count)
 {
 	BMessage message(M_JOB_COUNT);
 	message.AddInt32("jobcount", count);
@@ -512,7 +512,7 @@ JobWindow::SendJobCount(int32 count)
 
 
 int32
-JobWindow::CountFinished()
+JobWindow::_CountFinished()
 {
 	int32 count = 1;
 
@@ -526,7 +526,7 @@ JobWindow::CountFinished()
 }
 
 bool
-JobWindow::IsUniqueJob(const char* commandline)
+JobWindow::_IsUniqueJob(const char* commandline)
 {
 	for (int32 i = 0; i < fJobList->CountRows(); i++) {
 		JobRow* row = dynamic_cast<JobRow*>(fJobList->RowAt(i));
@@ -539,7 +539,7 @@ JobWindow::IsUniqueJob(const char* commandline)
 
 
 int32
-JobWindow::IndexOfSameFilename(const char* filename)
+JobWindow::_IndexOfSameFilename(const char* filename)
 {
 	for (int32 i = 0; i < fJobList->CountRows(); i++) {
 		JobRow* row = dynamic_cast<JobRow*>(fJobList->RowAt(i));
@@ -552,7 +552,7 @@ JobWindow::IndexOfSameFilename(const char* filename)
 
 
 JobRow*
-JobWindow::GetNextJob()
+JobWindow::_GetNextJob()
 {
 	for (int32 i = 0; i < fJobList->CountRows(); i++) {
 		JobRow* row = dynamic_cast<JobRow*>(fJobList->RowAt(i));
@@ -565,10 +565,10 @@ JobWindow::GetNextJob()
 
 
 void
-JobWindow::UpdateButtonStates()
+JobWindow::_UpdateButtonStates()
 {
 	int32 count = fJobList->CountRows();
-	SetStartButtonLabel((fJobRunning == true) ? ABORT : START);
+	_SetStartButtonLabel((fJobRunning == true) ? ABORT : START);
 
 	// Empty list
 	if (count == 0) {
@@ -623,7 +623,7 @@ JobWindow::UpdateButtonStates()
 
 
 void
-JobWindow::SetStartButtonLabel(int32 state)
+JobWindow::_SetStartButtonLabel(int32 state)
 {
 	int32 count = fJobList->CountRows();
 	BString text;

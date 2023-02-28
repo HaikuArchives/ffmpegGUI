@@ -17,6 +17,7 @@
 class Spinner : public BSpinner {
 public:
 			Spinner(const char* name, const char* label, BMessage* message);
+
 	void 	Increment();
 	void 	Decrement();
 	void 	SetStep(int32 step);
@@ -29,6 +30,7 @@ private:
 class DecSpinner : public BDecimalSpinner {
 public:
 			DecSpinner(const char* name, const char* label, BMessage* message);
+
 	void 	Increment();
 	void 	Decrement();
 };

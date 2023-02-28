@@ -48,7 +48,6 @@ public:
 	void			SetStatus(BString status);
 	void			AddToLog(BString log);
 
-
 private:
 	BString			fFilename;
 	BString			fJobName;
