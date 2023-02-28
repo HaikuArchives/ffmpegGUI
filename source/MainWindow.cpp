@@ -8,13 +8,13 @@
 */
 
 
-#include "Utilities.h"
-#include "MainWindow.h"
-#include "CommandLauncher.h"
 #include "App.h"
-#include "Spinner.h"
+#include "CommandLauncher.h"
 #include "JobWindow.h"
+#include "MainWindow.h"
 #include "Messages.h"
+#include "Spinner.h"
+#include "Utilities.h"
 
 #include <Alert.h>
 #include <Box.h>
@@ -59,11 +59,10 @@
 static const char* kIdleText = B_TRANSLATE_MARK("Waiting to start encoding" B_UTF8_ELLIPSIS);
 static const char* kEmptySource = B_TRANSLATE_MARK("Please select a source file.");
 static const char* kSourceDoesntExist = B_TRANSLATE_MARK("There's no file with that name.");
-static const char* kOutputExists
-	= B_TRANSLATE_MARK("This file already exists. It will be overwritten!");
-static const char* kOutputIsSource
-	= B_TRANSLATE_MARK("Cannot overwrite the source file. Please choose "
-					   "another output file name.");
+static const char* kOutputExists = B_TRANSLATE_MARK(
+	"This file already exists. It will be overwritten!");
+static const char* kOutputIsSource = B_TRANSLATE_MARK(
+	"Cannot overwrite the source file. Please choose another output file name.");
 
 // Use ffmpeg for 2ndary architecture (gcc11+) on 32bit Haiku
 // because vp8 and vp9 codecs are not available on gcc2 builds of ffmpeg_tools
@@ -106,164 +105,68 @@ MainWindow::MainWindow(BRect r, const char* name, window_type type, ulong mode)
 
 	fEncodeStartTime = 0; // 0 means: no encoding in progress
 
-	// Source file
-	fSourceButton = new BButton(B_TRANSLATE("Source file"), new BMessage(M_SOURCE));
-	fSourceButton->SetExplicitMaxSize(BSize(B_SIZE_UNLIMITED, B_SIZE_UNLIMITED));
-	fSourceTextControl = new BTextControl("", "", new BMessage('srcf'));
-	fSourceTextControl->SetModificationMessage(new BMessage(M_SOURCEFILE));
+	fSourceFilePanel = new BFilePanel(B_OPEN_PANEL, new BMessenger(this), NULL, B_FILE_NODE, false,
+		new BMessage(M_SOURCEFILE_REF));
 
-	fMediaInfoView = new BStringView("mediainfo", B_TRANSLATE_NOCOLLECT(kEmptySource));
-	fMediaInfoView->SetExplicitMaxSize(BSize(B_SIZE_UNLIMITED, B_SIZE_UNSET));
-	BFont font(be_plain_font);
-	font.SetSize(ceilf(font.Size() * 0.9));
-	fMediaInfoView->SetFont(&font, B_FONT_SIZE);
+	fOutputFilePanel = new BFilePanel(B_SAVE_PANEL, new BMessenger(this), NULL, B_FILE_NODE, false,
+		new BMessage(M_OUTPUTFILE_REF));
 
-	// Output file
-	fOutputButton = new BButton(B_TRANSLATE("Output file"), new BMessage(M_OUTPUT));
-	fOutputButton->SetExplicitMaxSize(BSize(B_SIZE_UNLIMITED, B_SIZE_UNLIMITED));
-	fOutputTextControl = new BTextControl("", "", new BMessage('outf'));
-	fOutputTextControl->SetModificationMessage(new BMessage(M_OUTPUTFILE));
+	// _Building layouts
+	BMenuBar* menuBar = _BuildMenu();
+	BView* fileoptionsview = _BuildFileOptions();
+	BView* mainoptionsview = _BuildMainOptions();
+//	BView* advancedoptionsview = _BuildAdvancedOptions();
+	_BuildLogView();
+	BView* encodeprogressview = _BuildEncodeProgress();
 
-	fOutputCheckView = new BStringView("outputcheck", "");
-	fOutputCheckView->SetExplicitMaxSize(BSize(B_SIZE_UNLIMITED, B_SIZE_UNSET));
-	fOutputCheckView->SetFont(&font, B_FONT_SIZE);
+	BView* logview = new BScrollView("", fLogView, B_SUPPORTS_LAYOUT, true, true);
 
-	// Play buttons
-	fSourcePlayButton = new BButton("⯈", new BMessage(M_PLAY_SOURCE));
-	fOutputPlayButton = new BButton("⯈", new BMessage(M_PLAY_OUTPUT));
-	float height;
-	fSourceTextControl->GetPreferredSize(NULL, &height);
-	BSize size(height, height);
-	fSourcePlayButton->SetExplicitSize(size);
-	fOutputPlayButton->SetExplicitSize(size);
-	fSourcePlayButton->SetEnabled(false);
-	fOutputPlayButton->SetEnabled(false);
+	fTabView = new BTabView("");
+	BTab* mainoptionstab = new BTab();
+	BTab* advancedoptionstab = new BTab();
+	BTab* logtab = new BTab();
 
-	PopulateCodecOptions();
+	fTabView->AddTab(mainoptionsview, mainoptionstab);
+	// fTabView->AddTab(advancedoptionsview, advancedoptionstab); //don´t remove,
+	// will be needed later
+	fTabView->AddTab(logview, logtab);
 
-	// File format pop-up menu
-	fFileFormatPopup = new BPopUpMenu("");
-	bool separator = false;
-	std::vector<ContainerOption>::iterator container_iter;
-	container_iter = fContainerFormats.begin();
-	fFileFormatPopup = new BPopUpMenu(container_iter->Extension.String(), false, false);
-	fFileFormatPopup->SetRadioMode(true);
+	mainoptionstab->SetLabel(B_TRANSLATE("Main options"));
+	// advancedoptionstab->SetLabel(B_TRANSLATE("Advanced options"));
+	logtab->SetLabel(B_TRANSLATE("Log"));
 
-	for (container_iter = fContainerFormats.begin(); container_iter != fContainerFormats.end();
-		++container_iter) {
-		if ((container_iter->Capability == CAP_AUDIO_ONLY) and (separator == false)) {
-			fFileFormatPopup->AddSeparatorItem();
-			separator = true;
-		} else {
-			fFileFormatPopup->AddItem(new BMenuItem(container_iter->Description.String(),
-				new BMessage(M_OUTPUTFILEFORMAT)));
-		}
-	}
-	fFileFormatPopup->ItemAt(0)->SetMarked(true);
-	fFileFormat = new BMenuField(NULL, fFileFormatPopup);
+	fPlayFinishedBox = new BCheckBox("play_finished", B_TRANSLATE("Play when finished"), NULL);
+	fPlayFinishedBox->SetValue(B_CONTROL_OFF);
 
-	// Video codec pop-up menu
-	std::vector<CodecOption>::iterator codec_iter;
-	codec_iter = fVideoCodecs.begin();
-	fVideoFormatPopup = new BPopUpMenu(codec_iter->Shortlabel.String(), false, false);
-	fVideoFormatPopup->SetRadioMode(true);
+	fStatusBar = new BStatusBar("");
+	fStatusBar->SetText(B_TRANSLATE_NOCOLLECT(kIdleText));
 
-	for (codec_iter = fVideoCodecs.begin(); codec_iter != fVideoCodecs.end(); ++codec_iter) {
-		fVideoFormatPopup->AddItem(
-			new BMenuItem(codec_iter->Description.String(), new BMessage(M_OUTPUTVIDEOFORMAT)));
-	}
-	fVideoFormatPopup->ItemAt(0)->SetMarked(true);
-	fVideoFormat = new BMenuField(B_TRANSLATE("Video codec:"), fVideoFormatPopup);
+	// main layout
+	BLayoutBuilder::Group<>(this, B_VERTICAL, 0)
+		.SetInsets(-2, 0, -2, 0)
+		.Add(menuBar)
+		.Add(fileoptionsview)
+		.Add(fTabView)
+		.Add(encodeprogressview)
+		.AddGroup(B_HORIZONTAL)
+			.SetInsets(B_USE_DEFAULT_SPACING, B_USE_DEFAULT_SPACING, B_USE_DEFAULT_SPACING,
+				B_USE_DEFAULT_SPACING)
+			.Add(fStatusBar)
+			.AddGroup(B_VERTICAL)
+				.AddGlue()
+				.Add(fPlayFinishedBox)
+			.End()
+		.End()
+		.AddGlue()
+		.Layout();
 
-	// Audio codec pop-up menu
-	codec_iter=fAudioCodecs.begin();
-	fAudioFormatPopup = new BPopUpMenu(codec_iter->Shortlabel.String(), false, false);
-	fAudioFormatPopup->SetRadioMode(true);
-	for (codec_iter = fAudioCodecs.begin(); codec_iter != fAudioCodecs.end(); ++codec_iter) {
-		fAudioFormatPopup->AddItem(
-			new BMenuItem(codec_iter->Description.String(), new BMessage(M_OUTPUTAUDIOFORMAT)));
-	}
-	fAudioFormatPopup->ItemAt(0)->SetMarked(true);
-	fAudioFormat = new BMenuField(B_TRANSLATE("Audio codec:"), fAudioFormatPopup);
-
-	// Video options
-	fEnableVideoBox
-		= new BCheckBox("", B_TRANSLATE("Enable video encoding"), new BMessage(M_ENABLEVIDEO));
-	fEnableVideoBox->SetValue(B_CONTROL_ON);
-	fVideoBitrateSpinner = new Spinner("", B_TRANSLATE("Bitrate (Kbit/s):"),
-		new BMessage(M_VBITRATE));
-	fFramerate = new DecSpinner("", B_TRANSLATE("Framerate (fps):"),
-		new BMessage(M_FRAMERATE));
-	fCustomResolutionBox = new BCheckBox("", B_TRANSLATE("Use custom resolution"),
-		new BMessage(M_CUSTOMRES));
-	fXres = new Spinner("", B_TRANSLATE("Width:"), new BMessage(M_XRES));
-	fYres = new Spinner("", B_TRANSLATE("Height:"), new BMessage(M_YRES));
-
-	// Cropping options
-	fEnableCropBox
-		= new BCheckBox("", B_TRANSLATE("Enable video cropping"), new BMessage(M_ENABLECROPPING));
-	fEnableCropBox->SetValue(B_CONTROL_OFF);
-	fTopCrop = new Spinner("", B_TRANSLATE("Top:"), new BMessage(M_TOPCROP));
-	fBottomCrop = new Spinner("", B_TRANSLATE("Bottom:"), new BMessage(M_BOTTOMCROP));
-	fLeftCrop = new Spinner("", B_TRANSLATE("Left:"), new BMessage(M_LEFTCROP));
-	fRightCrop = new Spinner("", B_TRANSLATE("Right:"), new BMessage(M_RIGHTCROP));
-
-	// Audio options
-	fEnableAudioBox
-		= new BCheckBox("", B_TRANSLATE("Enable audio encoding"), new BMessage(M_ENABLEAUDIO));
-	fEnableAudioBox->SetValue(B_CONTROL_ON);
-
-	fAudioBitsPopup = new BPopUpMenu("");
-	fAudioBitsPopup->AddItem(new BMenuItem("48", new BMessage(M_AUDIOBITRATE)));
-	fAudioBitsPopup->AddItem(new BMenuItem("96", new BMessage(M_AUDIOBITRATE)));
-	fAudioBitsPopup->AddItem(new BMenuItem("128", new BMessage(M_AUDIOBITRATE)));
-	fAudioBitsPopup->AddItem(new BMenuItem("160", new BMessage(M_AUDIOBITRATE)));
-	fAudioBitsPopup->AddItem(new BMenuItem("196", new BMessage(M_AUDIOBITRATE)));
-	fAudioBitsPopup->AddItem(new BMenuItem("320", new BMessage(M_AUDIOBITRATE)));
-	fAudioBitsPopup->AddItem(new BMenuItem("625", new BMessage(M_AUDIOBITRATE)));
-	fAudioBitsPopup->AddItem(new BMenuItem("1411", new BMessage(M_AUDIOBITRATE)));
-	fAudioBitsPopup->ItemAt(1)->SetMarked(true);
-	fAudioBits = new BMenuField(B_TRANSLATE("Bitrate (Kbit/s):"), fAudioBitsPopup);
-
-	fSampleratePopup = new BPopUpMenu("");
-	fSampleratePopup->AddItem(new BMenuItem("22050", new BMessage(M_SAMPLERATE)));
-	fSampleratePopup->AddItem(new BMenuItem("44100", new BMessage(M_SAMPLERATE)));
-	fSampleratePopup->AddItem(new BMenuItem("48000", new BMessage(M_SAMPLERATE)));
-	fSampleratePopup->AddItem(new BMenuItem("96000", new BMessage(M_SAMPLERATE)));
-	fSampleratePopup->AddItem(new BMenuItem("192000", new BMessage(M_SAMPLERATE)));
-	fSampleratePopup->ItemAt(1)->SetMarked(true);
-	fSamplerate = new BMenuField(B_TRANSLATE("Sampling rate (Hz):"), fSampleratePopup);
-	fChannelCount = new Spinner("", B_TRANSLATE("Audio channels:"), new BMessage(M_CHANNELS));
-
-	// Advanced options (currently ignored / hidden)
-	fBFrames = new Spinner("", B_TRANSLATE("'B' frames:"), nullptr);
-	fGop = new Spinner("", B_TRANSLATE("GOP size:"), nullptr);
-	fHighQualityBox
-		= new BCheckBox("", B_TRANSLATE("Use high quality settings"), new BMessage(M_HIGHQUALITY));
-	fFourMotionBox
-		= new BCheckBox("", B_TRANSLATE("Use four motion vector"), new BMessage(M_FOURMOTION));
-	fDeinterlaceBox
-		= new BCheckBox("", B_TRANSLATE("Deinterlace pictures"), new BMessage(M_DEINTERLACE));
-	fCalcNpsnrBox = new BCheckBox(
-		"", B_TRANSLATE("Calculate PSNR of compressed frames"), new BMessage(M_CALCPSNR));
-
-	fFixedQuantizer = new Spinner("", B_TRANSLATE("Use fixed video quantizer scale:"), nullptr);
-	fMinQuantizer = new Spinner("", B_TRANSLATE("Min video quantizer scale:"), nullptr);
-	fMaxQuantizer = new Spinner("", B_TRANSLATE("Max video quantizer scale:"), nullptr);
-	fQuantDiff
-		= new Spinner("", B_TRANSLATE("Max difference between quantizer scale:"), nullptr);
-	fQuantBlur = new Spinner("", B_TRANSLATE("Video quantizer scale blur:"), nullptr);
-	fQuantCompression
-		= new Spinner("", B_TRANSLATE("Video quantizer scale compression:"), nullptr);
-
-	fLogView = new BTextView("");
-	fLogView->SetViewColor(ui_color(B_PANEL_BACKGROUND_COLOR));
-	fLogView->MakeEditable(false);
-
-	// Start/Stop, commandline, status bar
-	fStartAbortButton = new BButton(B_TRANSLATE("Start"), new BMessage(M_ENCODE));
-	fStartAbortButton->SetEnabled(false);
-	fCommandlineTextControl = new BTextControl("", "", nullptr);
+	ResizeToPreferred();
+	float min_width, min_height, max_width, max_height;
+	GetSizeLimits(&min_width, &max_width, &min_height, &max_height);
+	BSize window_size = Size();
+	min_width = window_size.width;
+	min_height = window_size.height;
+	SetSizeLimits(min_width, max_width, min_height, max_height);
 
 	fSourceFilePanel = new BFilePanel(B_OPEN_PANEL, new BMessenger(this), NULL, B_FILE_NODE, false,
 		new BMessage(M_SOURCEFILE_REF));
@@ -271,11 +174,25 @@ MainWindow::MainWindow(BRect r, const char* name, window_type type, ulong mode)
 	fOutputFilePanel = new BFilePanel(B_SAVE_PANEL, new BMessenger(this), NULL, B_FILE_NODE, false,
 		new BMessage(M_OUTPUTFILE_REF));
 
-	fPlayFinishedBox = new BCheckBox("play_finished", B_TRANSLATE("Play when finished"), NULL);
-	fPlayFinishedBox->SetValue(B_CONTROL_OFF);
+	BMessage settings;
+	LoadSettings(settings);
 
-	fStatusBar = new BStatusBar("");
-	fStatusBar->SetText(B_TRANSLATE_NOCOLLECT(kIdleText));
+	BRect frame = Frame();
+	if (settings.FindRect("main_window", &frame) == B_OK) {
+		MoveTo(frame.LeftTop());
+		ResizeTo(frame.Width(), frame.Height());
+	}
+	MoveOnScreen();
+
+	// create job window
+	frame = Frame();
+	frame.InsetBySelf(10, 200);
+	fJobWindow = new JobWindow(frame, &settings, new BMessenger(this));
+	fJobWindow->Show();
+	fJobWindow->Hide();
+
+	// initialize command launcher
+	fCommandLauncher = new CommandLauncher(new BMessenger(this));
 
 	// set the min and max values for the spin controls
 	fVideoBitrateSpinner->SetMinValue(64);
@@ -311,259 +228,6 @@ MainWindow::MainWindow(BRect r, const char* name, window_type type, ulong mode)
 	// set the initial command line
 	SetDefaults();
 	BuildLine();
-
-	// create tabs and boxes
-	BView* fileoptionsview = new BView("fileoptions", B_SUPPORTS_LAYOUT);
-	BLayoutBuilder::Group<>(fileoptionsview, B_VERTICAL, B_USE_SMALL_SPACING)
-		.SetInsets(B_USE_DEFAULT_SPACING, B_USE_DEFAULT_SPACING, B_USE_DEFAULT_SPACING, 4)
-		.AddGrid(B_USE_SMALL_SPACING, 0.0)
-			.Add(fSourceButton, 0, 0)
-			.Add(fSourceTextControl, 1, 0, 2, 1)
-			.Add(fSourcePlayButton, 3, 0)
-			.Add(fMediaInfoView, 1, 1, 2, 1)
-			.Add(fOutputButton, 0, 3)
-			.Add(fOutputTextControl, 1, 3)
-			.Add(fFileFormat, 2, 3)
-			.Add(fOutputPlayButton, 3, 3)
-			.Add(fOutputCheckView, 1, 4, 3, 1)
-			.SetColumnWeight(0, 0)
-			.SetColumnWeight(1, 1)
-			.SetColumnWeight(2, 0)
-			.SetColumnWeight(3, 0)
-		.End();
-
-	BView* encodeview = new BView("encodeview", B_SUPPORTS_LAYOUT);
-	BLayoutBuilder::Group<>(encodeview, B_VERTICAL)
-		.AddGroup(B_HORIZONTAL)
-		.SetInsets(B_USE_DEFAULT_SPACING, B_USE_DEFAULT_SPACING, B_USE_DEFAULT_SPACING, 0)
-			.Add(fStartAbortButton)
-			.Add(fCommandlineTextControl)
-		.End()
-		.Add(new BSeparatorView(B_HORIZONTAL));
-
-	BBox* videobox = new BBox("");
-	videobox->SetLabel(B_TRANSLATE("Video"));
-	BGroupLayout* videolayout = BLayoutBuilder::Group<>(B_VERTICAL)
-		.SetInsets(B_USE_DEFAULT_SPACING, B_USE_DEFAULT_SPACING,
-			B_USE_DEFAULT_SPACING, B_USE_DEFAULT_SPACING)
-		.Add(fEnableVideoBox)
-		.AddGrid(B_USE_SMALL_SPACING, B_USE_SMALL_SPACING)
-			.Add(fVideoFormat->CreateLabelLayoutItem(), 0, 0)
-			.Add(fVideoFormat->CreateMenuBarLayoutItem(), 1, 0)
-			.Add(fVideoBitrateSpinner->CreateLabelLayoutItem(), 0, 1)
-			.Add(fVideoBitrateSpinner->CreateTextViewLayoutItem(), 1, 1)
-			.Add(fFramerate->CreateLabelLayoutItem(), 0, 2)
-			.Add(fFramerate->CreateTextViewLayoutItem(), 1, 2)
-		.End()
-		.Add(new BSeparatorView(B_HORIZONTAL))
-		.Add(fCustomResolutionBox)
-		.AddGrid(B_USE_SMALL_SPACING, B_USE_SMALL_SPACING)
-			.Add(fXres->CreateLabelLayoutItem(), 0, 0)
-			.Add(fXres->CreateTextViewLayoutItem(), 1, 0)
-			.Add(fYres->CreateLabelLayoutItem(), 0, 1)
-			.Add(fYres->CreateTextViewLayoutItem(), 1, 1)
-		.End();
-	videobox->AddChild(videolayout->View());
-
-	BBox* croppingoptionsbox = new BBox("");
-	croppingoptionsbox->SetLabel(B_TRANSLATE("Cropping options"));
-	BGroupLayout* croppingoptionslayout = BLayoutBuilder::Group<>(B_VERTICAL)
-		.SetInsets(B_USE_DEFAULT_SPACING, B_USE_DEFAULT_SPACING, B_USE_DEFAULT_SPACING,
-		  B_USE_DEFAULT_SPACING)
-		.Add(fEnableCropBox)
-		.AddGrid(B_USE_SMALL_SPACING, B_USE_SMALL_SPACING)
-			.Add(fTopCrop->CreateLabelLayoutItem(), 0, 0)
-			.Add(fTopCrop->CreateTextViewLayoutItem(), 1, 0)
-			.Add(fBottomCrop->CreateLabelLayoutItem(), 0, 1)
-			.Add(fBottomCrop->CreateTextViewLayoutItem(), 1, 1)
-			.Add(fLeftCrop->CreateLabelLayoutItem(), 0, 2)
-			.Add(fLeftCrop->CreateTextViewLayoutItem(), 1, 2)
-			.Add(fRightCrop->CreateLabelLayoutItem(), 0, 3)
-			.Add(fRightCrop->CreateTextViewLayoutItem(), 1, 3)
-		.End()
-		.AddGlue();
-	croppingoptionsbox->AddChild(croppingoptionslayout->View());
-
-	BBox* audiobox = new BBox("");
-	audiobox->SetLabel(B_TRANSLATE("Audio"));
-	BGroupLayout* audiolayout = BLayoutBuilder::Group<>(B_VERTICAL)
-		.SetInsets(B_USE_DEFAULT_SPACING, B_USE_DEFAULT_SPACING,
-			B_USE_DEFAULT_SPACING, B_USE_DEFAULT_SPACING)
-		.Add(fEnableAudioBox)
-		.AddGrid(B_USE_SMALL_SPACING, B_USE_SMALL_SPACING)
-			.Add(fAudioFormat->CreateLabelLayoutItem(), 0, 0)
-			.Add(fAudioFormat->CreateMenuBarLayoutItem(), 1, 0)
-			.Add(fAudioBits->CreateLabelLayoutItem(), 0, 1)
-			.Add(fAudioBits->CreateMenuBarLayoutItem(), 1, 1)
-			.Add(fSamplerate->CreateLabelLayoutItem(), 0, 2)
-			.Add(fSamplerate->CreateMenuBarLayoutItem(), 1, 2)
-			.Add(fChannelCount->CreateLabelLayoutItem(), 0, 3)
-			.Add(fChannelCount->CreateTextViewLayoutItem(), 1, 3)
-		.End()
-		.AddGlue();
-	audiobox->AddChild(audiolayout->View());
-
-	BView* mainoptionsview = new BView("", B_SUPPORTS_LAYOUT);
-	BView* advancedoptionsview = new BView("", B_SUPPORTS_LAYOUT);
-	BView* outputview = new BScrollView("", fLogView, B_SUPPORTS_LAYOUT, true, true);
-
-	BLayoutBuilder::Group<>(mainoptionsview, B_HORIZONTAL)
-		.SetInsets(B_USE_DEFAULT_SPACING, B_USE_DEFAULT_SPACING, B_USE_DEFAULT_SPACING,
-			B_USE_DEFAULT_SPACING)
-		.Add(videobox)
-		.Add(croppingoptionsbox)
-		.Add(audiobox)
-		.Layout();
-
-	BLayoutBuilder::Group<>(advancedoptionsview, B_HORIZONTAL)
-		.SetInsets(B_USE_DEFAULT_SPACING, B_USE_DEFAULT_SPACING, B_USE_DEFAULT_SPACING,
-			B_USE_DEFAULT_SPACING)
-		.AddGroup(B_VERTICAL)
-			.AddGrid(B_USE_SMALL_SPACING, B_USE_SMALL_SPACING)
-				.Add(fBFrames->CreateLabelLayoutItem(), 0, 0)
-				.Add(fBFrames->CreateTextViewLayoutItem(), 1, 0)
-				.Add(fGop->CreateLabelLayoutItem(), 0, 1)
-				.Add(fGop->CreateTextViewLayoutItem(), 1, 1)
-			.End()
-			.Add(new BSeparatorView(B_HORIZONTAL))
-			.Add(fHighQualityBox)
-			.Add(fFourMotionBox)
-			.Add(fDeinterlaceBox)
-			.Add(fCalcNpsnrBox)
-		.End()
-		.Add(new BSeparatorView(B_VERTICAL))
-		.AddGroup(B_VERTICAL)
-			.AddGrid(B_USE_SMALL_SPACING, B_USE_SMALL_SPACING)
-				.Add(fFixedQuantizer->CreateLabelLayoutItem(), 0, 0)
-				.Add(fFixedQuantizer->CreateTextViewLayoutItem(), 1, 0)
-				.Add(fMinQuantizer->CreateLabelLayoutItem(), 0, 1)
-				.Add(fMinQuantizer->CreateTextViewLayoutItem(), 1, 1)
-				.Add(fMaxQuantizer->CreateLabelLayoutItem(), 0, 2)
-				.Add(fMaxQuantizer->CreateTextViewLayoutItem(), 1, 2)
-				.Add(fQuantDiff->CreateLabelLayoutItem(), 0, 3)
-				.Add(fQuantDiff->CreateTextViewLayoutItem(), 1, 3)
-				.Add(fQuantBlur->CreateLabelLayoutItem(), 0, 4)
-				.Add(fQuantBlur->CreateTextViewLayoutItem(), 1, 4)
-				.Add(fQuantCompression->CreateLabelLayoutItem(), 0, 5)
-				.Add(fQuantCompression->CreateTextViewLayoutItem(), 1, 5)
-			.End()
-		.AddGlue()
-		.End();
-
-	fTabView = new BTabView("");
-	BTab* mainoptionstab = new BTab();
-	BTab* advancedoptionstab = new BTab();
-	BTab* outputtab = new BTab();
-
-	fTabView->AddTab(mainoptionsview, mainoptionstab);
-	// fTabView->AddTab(advancedoptionsview, advancedoptionstab); //don´t remove,
-	// will be needed later
-	fTabView->AddTab(outputview, outputtab);
-	mainoptionstab->SetLabel(B_TRANSLATE("Main options"));
-	advancedoptionstab->SetLabel(B_TRANSLATE("Advanced options"));
-	outputtab->SetLabel(B_TRANSLATE("Log"));
-
-	// menu bar
-	BMenuBar* menuBar = new BMenuBar("menubar");
-	BMenu* menu;
-	BMenuItem* item;
-
-	menu = new BMenu(B_TRANSLATE("File"));
-	item = new BMenuItem(
-		B_TRANSLATE("Open source file" B_UTF8_ELLIPSIS), new BMessage(M_SOURCE), 'O');
-	menu->AddItem(item);
-	item = new BMenuItem(
-		B_TRANSLATE("Select output file" B_UTF8_ELLIPSIS), new BMessage(M_OUTPUT), 'S');
-	menu->AddItem(item);
-	menu->AddSeparatorItem();
-	fMenuPlaySource
-		= new BMenuItem(B_TRANSLATE("Play source file"), new BMessage(M_PLAY_SOURCE), 'P');
-	fMenuPlaySource->SetEnabled(false);
-	menu->AddItem(fMenuPlaySource);
-	fMenuPlayOutput = new BMenuItem(
-		B_TRANSLATE("Play output file"), new BMessage(M_PLAY_OUTPUT), 'P', B_SHIFT_KEY);
-	fMenuPlayOutput->SetEnabled(false);
-	menu->AddItem(fMenuPlayOutput);
-	menu->AddSeparatorItem();
-	item = new BMenuItem(B_TRANSLATE("About ffmpegGUI"), new BMessage(B_ABOUT_REQUESTED));
-	menu->AddItem(item);
-	item = new BMenuItem(B_TRANSLATE("Quit"), new BMessage(B_QUIT_REQUESTED), 'Q');
-	menu->AddItem(item);
-	menuBar->AddItem(menu);
-
-	menu = new BMenu(B_TRANSLATE("Encoding"));
-	fMenuStartEncode = new BMenuItem(B_TRANSLATE("Start encoding"), new BMessage(M_ENCODE), 'E');
-	fMenuStartEncode->SetEnabled(false);
-	menu->AddItem(fMenuStartEncode);
-	fMenuStopEncode
-		= new BMenuItem(B_TRANSLATE("Abort encoding"), new BMessage(M_STOP_ENCODING), 'A');
-	fMenuStopEncode->SetEnabled(false);
-	menu->AddItem(fMenuStopEncode);
-	menu->AddSeparatorItem();
-	item = new BMenuItem(B_TRANSLATE("Copy commandline"), new BMessage(M_COPY_COMMAND), 'L');
-	menu->AddItem(item);
-	menuBar->AddItem(menu);
-
-	menu = new BMenu(B_TRANSLATE("Jobs"));
-	fMenuAddJob = new BMenuItem(B_TRANSLATE("Add as new job"), new BMessage(M_ADD_JOB), 'J');
-	fMenuAddJob->SetEnabled(false);
-	menu->AddItem(fMenuAddJob);
-	item = new BMenuItem(B_TRANSLATE("Open job manager" B_UTF8_ELLIPSIS),
-		new BMessage(M_JOB_MANAGER), 'M');
-	menu->AddItem(item);
-	menuBar->AddItem(menu);
-
-	menu = new BMenu(B_TRANSLATE("Options"));
-	fMenuDefaults = new BMenuItem(B_TRANSLATE("Default options"), new BMessage(M_DEFAULTS), 'D');
-	menu->AddItem(fMenuDefaults);
-	menuBar->AddItem(menu);
-
-	// main layout
-	BLayoutBuilder::Group<>(this, B_VERTICAL, 0)
-		.SetInsets(-2, 0, -2, 0)
-		.Add(menuBar)
-		.Add(fileoptionsview)
-		.Add(fTabView)
-		.Add(encodeview)
-		.AddGroup(B_HORIZONTAL)
-			.SetInsets(B_USE_DEFAULT_SPACING, B_USE_DEFAULT_SPACING, B_USE_DEFAULT_SPACING,
-				B_USE_DEFAULT_SPACING)
-			.Add(fStatusBar)
-			.AddGroup(B_VERTICAL)
-				.AddGlue()
-				.Add(fPlayFinishedBox)
-			.End()
-		.End()
-		.AddGlue()
-		.Layout();
-
-	ResizeToPreferred();
-	float min_width, min_height, max_width, max_height;
-	GetSizeLimits(&min_width, &max_width, &min_height, &max_height);
-	BSize window_size = Size();
-	min_width = window_size.width;
-	min_height = window_size.height;
-	SetSizeLimits(min_width, max_width, min_height, max_height);
-
-	BMessage settings;
-	LoadSettings(settings);
-
-	BRect frame = Frame();
-	if (settings.FindRect("main_window", &frame) == B_OK) {
-		MoveTo(frame.LeftTop());
-		ResizeTo(frame.Width(), frame.Height());
-	}
-	MoveOnScreen();
-
-	// create job window
-	frame = Frame();
-	frame.InsetBySelf(10, 200);
-	fJobWindow = new JobWindow(frame, &settings, new BMessenger(this));
-	fJobWindow->Show();
-	fJobWindow->Hide();
-
-	// initialize command launcher
-	fCommandLauncher = new CommandLauncher(new BMessenger(this));
 }
 
 
@@ -1125,6 +789,408 @@ MainWindow::SaveSettings()
 }
 
 
+
+BMenuBar*
+MainWindow::_BuildMenu()
+{
+	// menu bar
+	BMenuBar* menuBar = new BMenuBar("menubar");
+	BMenu* menu;
+	BMenuItem* item;
+
+	// File menu
+	menu = new BMenu(B_TRANSLATE("File"));
+	item = new BMenuItem(
+		B_TRANSLATE("Open source file" B_UTF8_ELLIPSIS), new BMessage(M_SOURCE), 'O');
+	menu->AddItem(item);
+	item = new BMenuItem(
+		B_TRANSLATE("Select output file" B_UTF8_ELLIPSIS), new BMessage(M_OUTPUT), 'S');
+	menu->AddItem(item);
+	menu->AddSeparatorItem();
+	fMenuPlaySource
+		= new BMenuItem(B_TRANSLATE("Play source file"), new BMessage(M_PLAY_SOURCE), 'P');
+	fMenuPlaySource->SetEnabled(false);
+	menu->AddItem(fMenuPlaySource);
+	fMenuPlayOutput = new BMenuItem(
+		B_TRANSLATE("Play output file"), new BMessage(M_PLAY_OUTPUT), 'P', B_SHIFT_KEY);
+	fMenuPlayOutput->SetEnabled(false);
+	menu->AddItem(fMenuPlayOutput);
+	menu->AddSeparatorItem();
+	item = new BMenuItem(B_TRANSLATE("About ffmpegGUI"), new BMessage(B_ABOUT_REQUESTED));
+	menu->AddItem(item);
+	item = new BMenuItem(B_TRANSLATE("Quit"), new BMessage(B_QUIT_REQUESTED), 'Q');
+	menu->AddItem(item);
+	menuBar->AddItem(menu);
+
+	// Encoding menu
+	menu = new BMenu(B_TRANSLATE("Encoding"));
+	fMenuStartEncode = new BMenuItem(B_TRANSLATE("Start encoding"), new BMessage(M_ENCODE), 'E');
+	fMenuStartEncode->SetEnabled(false);
+	menu->AddItem(fMenuStartEncode);
+	fMenuStopEncode
+		= new BMenuItem(B_TRANSLATE("Abort encoding"), new BMessage(M_STOP_ENCODING), 'A');
+	fMenuStopEncode->SetEnabled(false);
+	menu->AddItem(fMenuStopEncode);
+	menu->AddSeparatorItem();
+	item = new BMenuItem(B_TRANSLATE("Copy commandline"), new BMessage(M_COPY_COMMAND), 'L');
+	menu->AddItem(item);
+	menuBar->AddItem(menu);
+
+	// Jobs menu
+	menu = new BMenu(B_TRANSLATE("Jobs"));
+	fMenuAddJob = new BMenuItem(B_TRANSLATE("Add as new job"), new BMessage(M_ADD_JOB), 'J');
+	fMenuAddJob->SetEnabled(false);
+	menu->AddItem(fMenuAddJob);
+	item = new BMenuItem(B_TRANSLATE("Open job manager" B_UTF8_ELLIPSIS),
+		new BMessage(M_JOB_MANAGER), 'M');
+	menu->AddItem(item);
+	menuBar->AddItem(menu);
+
+	// Options menu
+	menu = new BMenu(B_TRANSLATE("Options"));
+	fMenuDefaults = new BMenuItem(B_TRANSLATE("Default options"), new BMessage(M_DEFAULTS), 'D');
+	menu->AddItem(fMenuDefaults);
+	menuBar->AddItem(menu);
+
+	return menuBar;
+}
+
+
+BView*
+MainWindow::_BuildFileOptions()
+{
+	// Source file
+	fSourceButton = new BButton(B_TRANSLATE("Source file"), new BMessage(M_SOURCE));
+	fSourceButton->SetExplicitMaxSize(BSize(B_SIZE_UNLIMITED, B_SIZE_UNLIMITED));
+	fSourceTextControl = new BTextControl("", "", new BMessage('srcf'));
+	fSourceTextControl->SetModificationMessage(new BMessage(M_SOURCEFILE));
+
+	fMediaInfoView = new BStringView("mediainfo", B_TRANSLATE_NOCOLLECT(kEmptySource));
+	fMediaInfoView->SetExplicitMaxSize(BSize(B_SIZE_UNLIMITED, B_SIZE_UNSET));
+	BFont font(be_plain_font);
+	font.SetSize(ceilf(font.Size() * 0.9));
+	fMediaInfoView->SetFont(&font, B_FONT_SIZE);
+
+	// Output file
+	fOutputButton = new BButton(B_TRANSLATE("Output file"), new BMessage(M_OUTPUT));
+	fOutputButton->SetExplicitMaxSize(BSize(B_SIZE_UNLIMITED, B_SIZE_UNLIMITED));
+	fOutputTextControl = new BTextControl("", "", new BMessage('outf'));
+	fOutputTextControl->SetModificationMessage(new BMessage(M_OUTPUTFILE));
+
+	fOutputCheckView = new BStringView("outputcheck", "");
+	fOutputCheckView->SetExplicitMaxSize(BSize(B_SIZE_UNLIMITED, B_SIZE_UNSET));
+	fOutputCheckView->SetFont(&font, B_FONT_SIZE);
+
+	// Play buttons
+	fSourcePlayButton = new BButton("⯈", new BMessage(M_PLAY_SOURCE));
+	fOutputPlayButton = new BButton("⯈", new BMessage(M_PLAY_OUTPUT));
+	float height;
+	fSourceTextControl->GetPreferredSize(NULL, &height);
+	BSize size(height, height);
+	fSourcePlayButton->SetExplicitSize(size);
+	fOutputPlayButton->SetExplicitSize(size);
+	fSourcePlayButton->SetEnabled(false);
+	fOutputPlayButton->SetEnabled(false);
+
+	PopulateCodecOptions();
+
+	// File format pop-up menu
+	fFileFormatPopup = new BPopUpMenu("");
+	bool separator = false;
+	std::vector<ContainerOption>::iterator container_iter;
+	container_iter = fContainerFormats.begin();
+	fFileFormatPopup = new BPopUpMenu(container_iter->Extension.String(), false, false);
+	fFileFormatPopup->SetRadioMode(true);
+
+	for (container_iter = fContainerFormats.begin(); container_iter != fContainerFormats.end();
+		++container_iter) {
+		if ((container_iter->Capability == CAP_AUDIO_ONLY) and (separator == false)) {
+			fFileFormatPopup->AddSeparatorItem();
+			separator = true;
+		} else {
+			fFileFormatPopup->AddItem(new BMenuItem(container_iter->Description.String(),
+				new BMessage(M_OUTPUTFILEFORMAT)));
+		}
+	}
+	fFileFormatPopup->ItemAt(0)->SetMarked(true);
+	fFileFormat = new BMenuField(NULL, fFileFormatPopup);
+
+	// Build File Options layout
+	BView* fileoptionsview = new BView("fileoptions", B_SUPPORTS_LAYOUT);
+	BLayoutBuilder::Group<>(fileoptionsview, B_VERTICAL, B_USE_SMALL_SPACING)
+		.SetInsets(B_USE_DEFAULT_SPACING, B_USE_DEFAULT_SPACING, B_USE_DEFAULT_SPACING, 4)
+		.AddGrid(B_USE_SMALL_SPACING, 0.0)
+			.Add(fSourceButton, 0, 0)
+			.Add(fSourceTextControl, 1, 0, 2, 1)
+			.Add(fSourcePlayButton, 3, 0)
+			.Add(fMediaInfoView, 1, 1, 2, 1)
+			.Add(fOutputButton, 0, 3)
+			.Add(fOutputTextControl, 1, 3)
+			.Add(fFileFormat, 2, 3)
+			.Add(fOutputPlayButton, 3, 3)
+			.Add(fOutputCheckView, 1, 4, 3, 1)
+			.SetColumnWeight(0, 0)
+			.SetColumnWeight(1, 1)
+			.SetColumnWeight(2, 0)
+			.SetColumnWeight(3, 0)
+		.End();
+
+	return fileoptionsview;
+}
+
+
+BView*
+MainWindow::_BuildMainOptions()
+{
+	// Video codec pop-up menu
+	std::vector<CodecOption>::iterator codec_iter;
+	codec_iter = fVideoCodecs.begin();
+	fVideoFormatPopup = new BPopUpMenu(codec_iter->Shortlabel.String(), false, false);
+	fVideoFormatPopup->SetRadioMode(true);
+
+	for (codec_iter = fVideoCodecs.begin(); codec_iter != fVideoCodecs.end(); ++codec_iter) {
+		fVideoFormatPopup->AddItem(
+			new BMenuItem(codec_iter->Description.String(), new BMessage(M_OUTPUTVIDEOFORMAT)));
+	}
+	fVideoFormatPopup->ItemAt(0)->SetMarked(true);
+	fVideoFormat = new BMenuField(B_TRANSLATE("Video codec:"), fVideoFormatPopup);
+
+	// Video options
+	fEnableVideoBox
+		= new BCheckBox("", B_TRANSLATE("Enable video encoding"), new BMessage(M_ENABLEVIDEO));
+	fEnableVideoBox->SetValue(B_CONTROL_ON);
+	fVideoBitrateSpinner = new Spinner("", B_TRANSLATE("Bitrate (Kbit/s):"),
+		new BMessage(M_VBITRATE));
+	fFramerate = new DecSpinner("", B_TRANSLATE("Framerate (fps):"),
+		new BMessage(M_FRAMERATE));
+	fCustomResolutionBox = new BCheckBox("", B_TRANSLATE("Use custom resolution"),
+		new BMessage(M_CUSTOMRES));
+	fXres = new Spinner("", B_TRANSLATE("Width:"), new BMessage(M_XRES));
+	fYres = new Spinner("", B_TRANSLATE("Height:"), new BMessage(M_YRES));
+
+	// Build Video Options layout
+	BBox* videobox = new BBox("");
+	videobox->SetLabel(B_TRANSLATE("Video"));
+	BGroupLayout* videolayout = BLayoutBuilder::Group<>(B_VERTICAL)
+		.SetInsets(B_USE_DEFAULT_SPACING, B_USE_DEFAULT_SPACING,
+			B_USE_DEFAULT_SPACING, B_USE_DEFAULT_SPACING)
+		.Add(fEnableVideoBox)
+		.AddGrid(B_USE_SMALL_SPACING, B_USE_SMALL_SPACING)
+			.Add(fVideoFormat->CreateLabelLayoutItem(), 0, 0)
+			.Add(fVideoFormat->CreateMenuBarLayoutItem(), 1, 0)
+			.Add(fVideoBitrateSpinner->CreateLabelLayoutItem(), 0, 1)
+			.Add(fVideoBitrateSpinner->CreateTextViewLayoutItem(), 1, 1)
+			.Add(fFramerate->CreateLabelLayoutItem(), 0, 2)
+			.Add(fFramerate->CreateTextViewLayoutItem(), 1, 2)
+		.End()
+		.Add(new BSeparatorView(B_HORIZONTAL))
+		.Add(fCustomResolutionBox)
+		.AddGrid(B_USE_SMALL_SPACING, B_USE_SMALL_SPACING)
+			.Add(fXres->CreateLabelLayoutItem(), 0, 0)
+			.Add(fXres->CreateTextViewLayoutItem(), 1, 0)
+			.Add(fYres->CreateLabelLayoutItem(), 0, 1)
+			.Add(fYres->CreateTextViewLayoutItem(), 1, 1)
+		.End();
+	videobox->AddChild(videolayout->View());
+
+	// Cropping options
+	fEnableCropBox
+		= new BCheckBox("", B_TRANSLATE("Enable video cropping"), new BMessage(M_ENABLECROPPING));
+	fEnableCropBox->SetValue(B_CONTROL_OFF);
+	fTopCrop = new Spinner("", B_TRANSLATE("Top:"), new BMessage(M_TOPCROP));
+	fBottomCrop = new Spinner("", B_TRANSLATE("Bottom:"), new BMessage(M_BOTTOMCROP));
+	fLeftCrop = new Spinner("", B_TRANSLATE("Left:"), new BMessage(M_LEFTCROP));
+	fRightCrop = new Spinner("", B_TRANSLATE("Right:"), new BMessage(M_RIGHTCROP));
+
+	// Build Cropping Options layout
+	BBox* croppingoptionsbox = new BBox("");
+	croppingoptionsbox->SetLabel(B_TRANSLATE("Cropping options"));
+	BGroupLayout* croppingoptionslayout = BLayoutBuilder::Group<>(B_VERTICAL)
+		.SetInsets(B_USE_DEFAULT_SPACING, B_USE_DEFAULT_SPACING, B_USE_DEFAULT_SPACING,
+		  B_USE_DEFAULT_SPACING)
+		.Add(fEnableCropBox)
+		.AddGrid(B_USE_SMALL_SPACING, B_USE_SMALL_SPACING)
+			.Add(fTopCrop->CreateLabelLayoutItem(), 0, 0)
+			.Add(fTopCrop->CreateTextViewLayoutItem(), 1, 0)
+			.Add(fBottomCrop->CreateLabelLayoutItem(), 0, 1)
+			.Add(fBottomCrop->CreateTextViewLayoutItem(), 1, 1)
+			.Add(fLeftCrop->CreateLabelLayoutItem(), 0, 2)
+			.Add(fLeftCrop->CreateTextViewLayoutItem(), 1, 2)
+			.Add(fRightCrop->CreateLabelLayoutItem(), 0, 3)
+			.Add(fRightCrop->CreateTextViewLayoutItem(), 1, 3)
+		.End()
+		.AddGlue();
+	croppingoptionsbox->AddChild(croppingoptionslayout->View());
+
+	// Audio codec pop-up menu
+	codec_iter=fAudioCodecs.begin();
+	fAudioFormatPopup = new BPopUpMenu(codec_iter->Shortlabel.String(), false, false);
+	fAudioFormatPopup->SetRadioMode(true);
+	for (codec_iter = fAudioCodecs.begin(); codec_iter != fAudioCodecs.end(); ++codec_iter) {
+		fAudioFormatPopup->AddItem(
+			new BMenuItem(codec_iter->Description.String(), new BMessage(M_OUTPUTAUDIOFORMAT)));
+	}
+	fAudioFormatPopup->ItemAt(0)->SetMarked(true);
+	fAudioFormat = new BMenuField(B_TRANSLATE("Audio codec:"), fAudioFormatPopup);
+
+	// Audio options
+	fEnableAudioBox
+		= new BCheckBox("", B_TRANSLATE("Enable audio encoding"), new BMessage(M_ENABLEAUDIO));
+	fEnableAudioBox->SetValue(B_CONTROL_ON);
+
+	fAudioBitsPopup = new BPopUpMenu("");
+	fAudioBitsPopup->AddItem(new BMenuItem("48", new BMessage(M_AUDIOBITRATE)));
+	fAudioBitsPopup->AddItem(new BMenuItem("96", new BMessage(M_AUDIOBITRATE)));
+	fAudioBitsPopup->AddItem(new BMenuItem("128", new BMessage(M_AUDIOBITRATE)));
+	fAudioBitsPopup->AddItem(new BMenuItem("160", new BMessage(M_AUDIOBITRATE)));
+	fAudioBitsPopup->AddItem(new BMenuItem("196", new BMessage(M_AUDIOBITRATE)));
+	fAudioBitsPopup->AddItem(new BMenuItem("320", new BMessage(M_AUDIOBITRATE)));
+	fAudioBitsPopup->AddItem(new BMenuItem("625", new BMessage(M_AUDIOBITRATE)));
+	fAudioBitsPopup->AddItem(new BMenuItem("1411", new BMessage(M_AUDIOBITRATE)));
+	fAudioBitsPopup->ItemAt(1)->SetMarked(true);
+	fAudioBits = new BMenuField(B_TRANSLATE("Bitrate (Kbit/s):"), fAudioBitsPopup);
+
+	fSampleratePopup = new BPopUpMenu("");
+	fSampleratePopup->AddItem(new BMenuItem("22050", new BMessage(M_SAMPLERATE)));
+	fSampleratePopup->AddItem(new BMenuItem("44100", new BMessage(M_SAMPLERATE)));
+	fSampleratePopup->AddItem(new BMenuItem("48000", new BMessage(M_SAMPLERATE)));
+	fSampleratePopup->AddItem(new BMenuItem("96000", new BMessage(M_SAMPLERATE)));
+	fSampleratePopup->AddItem(new BMenuItem("192000", new BMessage(M_SAMPLERATE)));
+	fSampleratePopup->ItemAt(1)->SetMarked(true);
+	fSamplerate = new BMenuField(B_TRANSLATE("Sampling rate (Hz):"), fSampleratePopup);
+	fChannelCount = new Spinner("", B_TRANSLATE("Audio channels:"), new BMessage(M_CHANNELS));
+
+	// Build Audio Options layout
+	BBox* audiobox = new BBox("");
+	audiobox->SetLabel(B_TRANSLATE("Audio"));
+	BGroupLayout* audiolayout = BLayoutBuilder::Group<>(B_VERTICAL)
+		.SetInsets(B_USE_DEFAULT_SPACING, B_USE_DEFAULT_SPACING,
+			B_USE_DEFAULT_SPACING, B_USE_DEFAULT_SPACING)
+		.Add(fEnableAudioBox)
+		.AddGrid(B_USE_SMALL_SPACING, B_USE_SMALL_SPACING)
+			.Add(fAudioFormat->CreateLabelLayoutItem(), 0, 0)
+			.Add(fAudioFormat->CreateMenuBarLayoutItem(), 1, 0)
+			.Add(fAudioBits->CreateLabelLayoutItem(), 0, 1)
+			.Add(fAudioBits->CreateMenuBarLayoutItem(), 1, 1)
+			.Add(fSamplerate->CreateLabelLayoutItem(), 0, 2)
+			.Add(fSamplerate->CreateMenuBarLayoutItem(), 1, 2)
+			.Add(fChannelCount->CreateLabelLayoutItem(), 0, 3)
+			.Add(fChannelCount->CreateTextViewLayoutItem(), 1, 3)
+		.End()
+		.AddGlue();
+	audiobox->AddChild(audiolayout->View());
+
+	// Build Main Options tab layout
+	BView* mainoptionsview = new BView("", B_SUPPORTS_LAYOUT);
+	BLayoutBuilder::Group<>(mainoptionsview, B_HORIZONTAL)
+		.SetInsets(B_USE_DEFAULT_SPACING, B_USE_DEFAULT_SPACING, B_USE_DEFAULT_SPACING,
+			B_USE_DEFAULT_SPACING)
+		.Add(videobox)
+		.Add(croppingoptionsbox)
+		.Add(audiobox)
+		.Layout();
+
+	return mainoptionsview;
+}
+
+
+BView*
+MainWindow::_BuildAdvancedOptions()
+{
+	// Advanced options (currently ignored / hidden)
+	fBFrames = new Spinner("", B_TRANSLATE("'B' frames:"), nullptr);
+	fGop = new Spinner("", B_TRANSLATE("GOP size:"), nullptr);
+	fHighQualityBox
+		= new BCheckBox("", B_TRANSLATE("Use high quality settings"), new BMessage(M_HIGHQUALITY));
+	fFourMotionBox
+		= new BCheckBox("", B_TRANSLATE("Use four motion vector"), new BMessage(M_FOURMOTION));
+	fDeinterlaceBox
+		= new BCheckBox("", B_TRANSLATE("Deinterlace pictures"), new BMessage(M_DEINTERLACE));
+	fCalcNpsnrBox = new BCheckBox(
+		"", B_TRANSLATE("Calculate PSNR of compressed frames"), new BMessage(M_CALCPSNR));
+
+	fFixedQuantizer = new Spinner("", B_TRANSLATE("Use fixed video quantizer scale:"), nullptr);
+	fMinQuantizer = new Spinner("", B_TRANSLATE("Min video quantizer scale:"), nullptr);
+	fMaxQuantizer = new Spinner("", B_TRANSLATE("Max video quantizer scale:"), nullptr);
+	fQuantDiff
+		= new Spinner("", B_TRANSLATE("Max difference between quantizer scale:"), nullptr);
+	fQuantBlur = new Spinner("", B_TRANSLATE("Video quantizer scale blur:"), nullptr);
+	fQuantCompression
+		= new Spinner("", B_TRANSLATE("Video quantizer scale compression:"), nullptr);
+
+	// Build Advanced Options layout
+	BView* advancedoptionsview = new BView("", B_SUPPORTS_LAYOUT);
+	BLayoutBuilder::Group<>(advancedoptionsview, B_HORIZONTAL)
+		.SetInsets(B_USE_DEFAULT_SPACING, B_USE_DEFAULT_SPACING, B_USE_DEFAULT_SPACING,
+			B_USE_DEFAULT_SPACING)
+		.AddGroup(B_VERTICAL)
+			.AddGrid(B_USE_SMALL_SPACING, B_USE_SMALL_SPACING)
+				.Add(fBFrames->CreateLabelLayoutItem(), 0, 0)
+				.Add(fBFrames->CreateTextViewLayoutItem(), 1, 0)
+				.Add(fGop->CreateLabelLayoutItem(), 0, 1)
+				.Add(fGop->CreateTextViewLayoutItem(), 1, 1)
+			.End()
+			.Add(new BSeparatorView(B_HORIZONTAL))
+			.Add(fHighQualityBox)
+			.Add(fFourMotionBox)
+			.Add(fDeinterlaceBox)
+			.Add(fCalcNpsnrBox)
+		.End()
+		.Add(new BSeparatorView(B_VERTICAL))
+		.AddGroup(B_VERTICAL)
+			.AddGrid(B_USE_SMALL_SPACING, B_USE_SMALL_SPACING)
+				.Add(fFixedQuantizer->CreateLabelLayoutItem(), 0, 0)
+				.Add(fFixedQuantizer->CreateTextViewLayoutItem(), 1, 0)
+				.Add(fMinQuantizer->CreateLabelLayoutItem(), 0, 1)
+				.Add(fMinQuantizer->CreateTextViewLayoutItem(), 1, 1)
+				.Add(fMaxQuantizer->CreateLabelLayoutItem(), 0, 2)
+				.Add(fMaxQuantizer->CreateTextViewLayoutItem(), 1, 2)
+				.Add(fQuantDiff->CreateLabelLayoutItem(), 0, 3)
+				.Add(fQuantDiff->CreateTextViewLayoutItem(), 1, 3)
+				.Add(fQuantBlur->CreateLabelLayoutItem(), 0, 4)
+				.Add(fQuantBlur->CreateTextViewLayoutItem(), 1, 4)
+				.Add(fQuantCompression->CreateLabelLayoutItem(), 0, 5)
+				.Add(fQuantCompression->CreateTextViewLayoutItem(), 1, 5)
+			.End()
+		.AddGlue()
+		.End();
+
+	return advancedoptionsview;
+}
+
+
+void
+MainWindow::BuildLogView()
+{
+	fLogView = new BTextView("");
+	fLogView->SetViewColor(ui_color(B_PANEL_BACKGROUND_COLOR));
+	fLogView->MakeEditable(false);
+}
+
+
+BView*
+MainWindow::_BuildEncodeProgress()
+{
+	// Start/Stop, commandline, status bar
+	fStartAbortButton = new BButton(B_TRANSLATE("Start"), new BMessage(M_ENCODE));
+	fStartAbortButton->SetEnabled(false);
+	fCommandlineTextControl = new BTextControl("", "", nullptr);
+
+	// Build Encode/Progress view layout
+	BView* encodeprogressview = new BView("encodeview", B_SUPPORTS_LAYOUT);
+	BLayoutBuilder::Group<>(encodeprogressview, B_VERTICAL)
+		.AddGroup(B_HORIZONTAL)
+			.SetInsets(B_USE_DEFAULT_SPACING, B_USE_DEFAULT_SPACING, B_USE_DEFAULT_SPACING, 0)
+			.Add(fStartAbortButton)
+			.Add(fCommandlineTextControl)
+			.End()
+		.Add(new BSeparatorView(B_HORIZONTAL))
+		.End();
+
+	return encodeprogressview;
+}
+
+
 void
 MainWindow::BuildLine() // ask all the views what they hold, reset the command string
 {
@@ -1133,8 +1199,7 @@ MainWindow::BuildLine() // ask all the views what they hold, reset the command s
 	source_filename.Trim();
 	output_filename.Trim();
 	BString fCommand(kFFMpeg);
-	fCommand << " -i \"" << source_filename << "\""; // append the input file
-													// name
+	fCommand << " -i \"" << source_filename << "\""; // append the input file name
 
 	// file format
 	int32 option_index = fFileFormatPopup->FindMarkedIndex();

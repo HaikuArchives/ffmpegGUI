@@ -54,7 +54,7 @@ CommandLauncher::MessageReceived(BMessage* message)
 				fCommandFlag = ENCODING;
 
 				thread_id thread
-					= spawn_thread(_ffmpeg_command, "ffmpeg command", B_LOW_PRIORITY, this);
+					= spawn_thread(_Command, "ffmpeg command", B_LOW_PRIORITY, this);
 				if (thread >= B_OK)
 					resume_thread(thread);
 			}
@@ -71,7 +71,7 @@ CommandLauncher::MessageReceived(BMessage* message)
 				fCommandFlag = INFO;
 
 				thread_id thread
-					= spawn_thread(_ffmpeg_command, "ffprobe command", B_LOW_PRIORITY, this);
+					= spawn_thread(_Command, "ffprobe command", B_LOW_PRIORITY, this);
 				if (thread >= B_OK)
 					resume_thread(thread);
 			}
