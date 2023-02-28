@@ -7,8 +7,8 @@
 */
 
 
-#include "commandlauncher.h"
-#include "messages.h"
+#include "CommandLauncher.h"
+#include "Messages.h"
 #include "Utilities.h"
 
 #include <algorithm>
@@ -20,7 +20,7 @@
 
 CommandLauncher::CommandLauncher(BMessenger* target_messenger)
 	:
-	BLooper("commandlauncher"),
+	BLooper("CommandLauncher"),
 	fTargetMessenger(target_messenger),
 	fOutputMessage(NULL),
 	fFinishMessage(NULL)
@@ -84,7 +84,7 @@ CommandLauncher::MessageReceived(BMessage* message)
 
 
 status_t
-CommandLauncher::_ffmpeg_command(void* _self)
+CommandLauncher::_Command(void* _self)
 {
 	CommandLauncher* self = (CommandLauncher*) _self;
 	self->RunCommand();

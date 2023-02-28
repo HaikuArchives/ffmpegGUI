@@ -7,7 +7,7 @@
 
 
 #include "JobWindow.h"
-#include "messages.h"
+#include "Messages.h"
 
 #include <Alert.h>
 #include <Catalog.h>

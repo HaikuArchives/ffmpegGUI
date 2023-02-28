@@ -9,12 +9,12 @@
 
 
 #include "Utilities.h"
-#include "ffgui-window.h"
-#include "commandlauncher.h"
-#include "ffgui-application.h"
-#include "ffgui-spinner.h"
+#include "MainWindow.h"
+#include "CommandLauncher.h"
+#include "App.h"
+#include "Spinner.h"
 #include "JobWindow.h"
-#include "messages.h"
+#include "Messages.h"
 
 #include <Alert.h>
 #include <Box.h>
@@ -95,7 +95,7 @@ CodecOption::CodecOption(const BString& option,const BString& shortlabel,const B
 }
 
 
-ffguiwin::ffguiwin(BRect r, const char* name, window_type type, ulong mode)
+MainWindow::MainWindow(BRect r, const char* name, window_type type, ulong mode)
 	:
 	BWindow(r, name, type, mode),
 	fStopAlert(NULL)
@@ -190,23 +190,23 @@ ffguiwin::ffguiwin(BRect r, const char* name, window_type type, ulong mode)
 	fEnableVideoBox
 		= new BCheckBox("", B_TRANSLATE("Enable video encoding"), new BMessage(M_ENABLEVIDEO));
 	fEnableVideoBox->SetValue(B_CONTROL_ON);
-	fVideoBitrateSpinner = new ffguispinner("", B_TRANSLATE("Bitrate (Kbit/s):"),
+	fVideoBitrateSpinner = new Spinner("", B_TRANSLATE("Bitrate (Kbit/s):"),
 		new BMessage(M_VBITRATE));
-	fFramerate = new ffguidecspinner("", B_TRANSLATE("Framerate (fps):"),
+	fFramerate = new DecSpinner("", B_TRANSLATE("Framerate (fps):"),
 		new BMessage(M_FRAMERATE));
 	fCustomResolutionBox = new BCheckBox("", B_TRANSLATE("Use custom resolution"),
 		new BMessage(M_CUSTOMRES));
-	fXres = new ffguispinner("", B_TRANSLATE("Width:"), new BMessage(M_XRES));
-	fYres = new ffguispinner("", B_TRANSLATE("Height:"), new BMessage(M_YRES));
+	fXres = new Spinner("", B_TRANSLATE("Width:"), new BMessage(M_XRES));
+	fYres = new Spinner("", B_TRANSLATE("Height:"), new BMessage(M_YRES));
 
 	// Cropping options
 	fEnableCropBox
 		= new BCheckBox("", B_TRANSLATE("Enable video cropping"), new BMessage(M_ENABLECROPPING));
 	fEnableCropBox->SetValue(B_CONTROL_OFF);
-	fTopCrop = new ffguispinner("", B_TRANSLATE("Top:"), new BMessage(M_TOPCROP));
-	fBottomCrop = new ffguispinner("", B_TRANSLATE("Bottom:"), new BMessage(M_BOTTOMCROP));
-	fLeftCrop = new ffguispinner("", B_TRANSLATE("Left:"), new BMessage(M_LEFTCROP));
-	fRightCrop = new ffguispinner("", B_TRANSLATE("Right:"), new BMessage(M_RIGHTCROP));
+	fTopCrop = new Spinner("", B_TRANSLATE("Top:"), new BMessage(M_TOPCROP));
+	fBottomCrop = new Spinner("", B_TRANSLATE("Bottom:"), new BMessage(M_BOTTOMCROP));
+	fLeftCrop = new Spinner("", B_TRANSLATE("Left:"), new BMessage(M_LEFTCROP));
+	fRightCrop = new Spinner("", B_TRANSLATE("Right:"), new BMessage(M_RIGHTCROP));
 
 	// Audio options
 	fEnableAudioBox
@@ -233,11 +233,11 @@ ffguiwin::ffguiwin(BRect r, const char* name, window_type type, ulong mode)
 	fSampleratePopup->AddItem(new BMenuItem("192000", new BMessage(M_SAMPLERATE)));
 	fSampleratePopup->ItemAt(1)->SetMarked(true);
 	fSamplerate = new BMenuField(B_TRANSLATE("Sampling rate (Hz):"), fSampleratePopup);
-	fChannelCount = new ffguispinner("", B_TRANSLATE("Audio channels:"), new BMessage(M_CHANNELS));
+	fChannelCount = new Spinner("", B_TRANSLATE("Audio channels:"), new BMessage(M_CHANNELS));
 
 	// Advanced options (currently ignored / hidden)
-	fBFrames = new ffguispinner("", B_TRANSLATE("'B' frames:"), nullptr);
-	fGop = new ffguispinner("", B_TRANSLATE("GOP size:"), nullptr);
+	fBFrames = new Spinner("", B_TRANSLATE("'B' frames:"), nullptr);
+	fGop = new Spinner("", B_TRANSLATE("GOP size:"), nullptr);
 	fHighQualityBox
 		= new BCheckBox("", B_TRANSLATE("Use high quality settings"), new BMessage(M_HIGHQUALITY));
 	fFourMotionBox
@@ -247,14 +247,14 @@ ffguiwin::ffguiwin(BRect r, const char* name, window_type type, ulong mode)
 	fCalcNpsnrBox = new BCheckBox(
 		"", B_TRANSLATE("Calculate PSNR of compressed frames"), new BMessage(M_CALCPSNR));
 
-	fFixedQuantizer = new ffguispinner("", B_TRANSLATE("Use fixed video quantizer scale:"), nullptr);
-	fMinQuantizer = new ffguispinner("", B_TRANSLATE("Min video quantizer scale:"), nullptr);
-	fMaxQuantizer = new ffguispinner("", B_TRANSLATE("Max video quantizer scale:"), nullptr);
+	fFixedQuantizer = new Spinner("", B_TRANSLATE("Use fixed video quantizer scale:"), nullptr);
+	fMinQuantizer = new Spinner("", B_TRANSLATE("Min video quantizer scale:"), nullptr);
+	fMaxQuantizer = new Spinner("", B_TRANSLATE("Max video quantizer scale:"), nullptr);
 	fQuantDiff
-		= new ffguispinner("", B_TRANSLATE("Max difference between quantizer scale:"), nullptr);
-	fQuantBlur = new ffguispinner("", B_TRANSLATE("Video quantizer scale blur:"), nullptr);
+		= new Spinner("", B_TRANSLATE("Max difference between quantizer scale:"), nullptr);
+	fQuantBlur = new Spinner("", B_TRANSLATE("Video quantizer scale blur:"), nullptr);
 	fQuantCompression
-		= new ffguispinner("", B_TRANSLATE("Video quantizer scale compression:"), nullptr);
+		= new Spinner("", B_TRANSLATE("Video quantizer scale compression:"), nullptr);
 
 	fLogView = new BTextView("");
 	fLogView->SetViewColor(ui_color(B_PANEL_BACKGROUND_COLOR));
@@ -568,7 +568,7 @@ ffguiwin::ffguiwin(BRect r, const char* name, window_type type, ulong mode)
 
 
 bool
-ffguiwin::QuitRequested()
+MainWindow::QuitRequested()
 {
 	// encoding in progress
 	if (fEncodeStartTime > 0) {
@@ -606,7 +606,7 @@ ffguiwin::QuitRequested()
 
 
 void
-ffguiwin::MessageReceived(BMessage* message)
+MainWindow::MessageReceived(BMessage* message)
 {
 	switch (message->what) {
 		case B_ABOUT_REQUESTED:
@@ -1064,7 +1064,7 @@ ffguiwin::MessageReceived(BMessage* message)
 
 
 status_t
-ffguiwin::LoadSettings(BMessage& settings)
+MainWindow::LoadSettings(BMessage& settings)
 {
 	BPath path;
 	status_t status = find_directory(B_USER_SETTINGS_DIRECTORY, &path);
@@ -1089,7 +1089,7 @@ ffguiwin::LoadSettings(BMessage& settings)
 
 
 status_t
-ffguiwin::SaveSettings()
+MainWindow::SaveSettings()
 {
 	BPath path;
 	status_t status = find_directory(B_USER_SETTINGS_DIRECTORY, &path);
@@ -1126,7 +1126,7 @@ ffguiwin::SaveSettings()
 
 
 void
-ffguiwin::BuildLine() // ask all the views what they hold, reset the command string
+MainWindow::BuildLine() // ask all the views what they hold, reset the command string
 {
 	BString source_filename(fSourceTextControl->Text());
 	BString output_filename(fOutputTextControl->Text());
@@ -1181,7 +1181,7 @@ ffguiwin::BuildLine() // ask all the views what they hold, reset the command str
 
 
 void
-ffguiwin::GetMediaInfo()
+MainWindow::GetMediaInfo()
 {
 	// Reset media info and video/audio tags
 	fMediainfo = fVideoCodec = fAudioCodec = fVideoWidth = fVideoHeight = fVideoFramerate
@@ -1204,7 +1204,7 @@ ffguiwin::GetMediaInfo()
 
 
 void
-ffguiwin::UpdateMediaInfo()
+MainWindow::UpdateMediaInfo()
 {
 	if (fVideoFramerate != "" && fVideoFramerate != "N/A") {
 		// Convert fractional representation (e.g. 50/1) to floating number
@@ -1266,7 +1266,7 @@ ffguiwin::UpdateMediaInfo()
 
 
 void
-ffguiwin::ParseMediaOutput()
+MainWindow::ParseMediaOutput()
 {
 	BStringList list;
 	fMediainfo.ReplaceAll("\n", "=");
@@ -1305,7 +1305,7 @@ ffguiwin::ParseMediaOutput()
 
 
 void
-ffguiwin::AdoptDefaults()
+MainWindow::AdoptDefaults()
 {
 	if (!fVideoBitrate.IsEmpty() && fVideoBitrate != "N/A")
 		fVideoBitrateSpinner->SetValue(atoi(fVideoBitrate));
@@ -1332,7 +1332,7 @@ ffguiwin::AdoptDefaults()
 
 
 void
-ffguiwin::SetDefaults()
+MainWindow::SetDefaults()
 {
 	// set the initial values
 	fVideoBitrateSpinner->SetValue(1000);
@@ -1370,7 +1370,7 @@ ffguiwin::SetDefaults()
 
 
 void
-ffguiwin::PopulateCodecOptions()
+MainWindow::PopulateCodecOptions()
 {
 	//	container formats (ffmpeg option, extension, description)
 	fContainerFormats.push_back(
@@ -1417,7 +1417,7 @@ ffguiwin::PopulateCodecOptions()
 
 
 bool
-ffguiwin::FileExists(const char* filepath)
+MainWindow::FileExists(const char* filepath)
 {
 	BEntry entry(filepath);
 	bool status = entry.Exists();
@@ -1427,7 +1427,7 @@ ffguiwin::FileExists(const char* filepath)
 
 
 void
-ffguiwin::SetFileExtension()
+MainWindow::SetFileExtension()
 {
 	BString output_filename(fOutputTextControl->Text());
 	if (output_filename == "")
@@ -1448,7 +1448,7 @@ ffguiwin::SetFileExtension()
 
 
 void
-ffguiwin::SetFiletype(entry_ref* ref)
+MainWindow::SetFiletype(entry_ref* ref)
 {
 	BFile file(ref, B_READ_ONLY);
 	BNodeInfo nodeInfo(&file);
@@ -1465,7 +1465,7 @@ ffguiwin::SetFiletype(entry_ref* ref)
 
 
 void
-ffguiwin::SetSpinnerMinsize(BSpinner* spinner)
+MainWindow::SetSpinnerMinsize(BSpinner* spinner)
 {
 	BSize textview_prefsize = spinner->TextView()->PreferredSize();
 	textview_prefsize.width += 20;
@@ -1475,7 +1475,7 @@ ffguiwin::SetSpinnerMinsize(BSpinner* spinner)
 
 
 void
-ffguiwin::SetSpinnerMinsize(BDecimalSpinner* spinner)
+MainWindow::SetSpinnerMinsize(BDecimalSpinner* spinner)
 {
 	BSize textview_prefsize = spinner->TextView()->PreferredSize();
 	textview_prefsize.width += 20;
@@ -1485,7 +1485,7 @@ ffguiwin::SetSpinnerMinsize(BDecimalSpinner* spinner)
 
 
 void
-ffguiwin::ReadyToEncode()
+MainWindow::ReadyToEncode()
 {
 	BString source_filename(fSourceTextControl->Text());
 	BString output_filename(fOutputTextControl->Text());
@@ -1530,7 +1530,7 @@ ffguiwin::ReadyToEncode()
 
 
 void
-ffguiwin::PlayVideo(const char* filepath)
+MainWindow::PlayVideo(const char* filepath)
 {
 	BEntry video_entry(filepath);
 	entry_ref video_ref;
@@ -1540,7 +1540,7 @@ ffguiwin::PlayVideo(const char* filepath)
 
 
 void
-ffguiwin::SetPlaybuttonsState()
+MainWindow::SetPlaybuttonsState()
 {
 	bool valid = FileExists(fSourceTextControl->Text());
 	fSourcePlayButton->SetEnabled(valid);
@@ -1553,7 +1553,7 @@ ffguiwin::SetPlaybuttonsState()
 
 
 void
-ffguiwin::ToggleVideo()
+MainWindow::ToggleVideo()
 {
 	bool video_options_enabled;
 
@@ -1584,7 +1584,7 @@ ffguiwin::ToggleVideo()
 
 
 void
-ffguiwin::ToggleCropping()
+MainWindow::ToggleCropping()
 {
 	// disable cropping if video options are not enabled;
 	if ((fEnableVideoBox->IsEnabled()) and (fEnableVideoBox->Value() == B_CONTROL_ON)
@@ -1607,7 +1607,7 @@ ffguiwin::ToggleCropping()
 
 
 void
-ffguiwin::ToggleAudio()
+MainWindow::ToggleAudio()
 {
 	bool audio_options_enabled;
 	if (fEnableAudioBox->Value() == B_CONTROL_ON) {

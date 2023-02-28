@@ -10,7 +10,7 @@
 #include <Button.h>
 #include <Window.h>
 
-#include "commandlauncher.h"
+#include "CommandLauncher.h"
 #include "JobList.h"
 
 // Start/Abort button status
