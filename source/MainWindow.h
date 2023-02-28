@@ -17,22 +17,23 @@
 #include <vector>
 
 
-class BView;
-class BTextView;
-class BTextControl;
 class BAlert;
 class BButton;
-class BDecimalSpinner;
-class BSpinner;
 class BCheckBox;
-class BPopUpMenu;
-class BMenuField;
-class BMenuBar;
-class BTabView;
-class BStatusBar;
+class BDecimalSpinner;
 class BFilePanel;
+class BMenuBar;
+class BMenuField;
+class BPopUpMenu;
+class BSpinner;
+class BStatusBar;
 class BString;
 class BStringView;
+class BTabView;
+class BTextControl;
+class BTextView;
+class BView;
+
 class CommandLauncher;
 class Spinner;
 class DecSpinner;
@@ -61,7 +62,7 @@ public:
 					CodecOption(const BString& option, const BString& shortlabel,
 						const BString& description);
 	BString 		Option;
-	BString Shortlabel;
+	BString 		Shortlabel;
 	BString 		Description;
 };
 
@@ -69,6 +70,7 @@ public:
 class MainWindow : public BWindow {
 public:
 					MainWindow(BRect, const char* name, window_type type, ulong mode);
+
 	virtual bool 	QuitRequested();
 	virtual void 	MessageReceived(BMessage* message);
 
@@ -76,7 +78,13 @@ private:
 	status_t		LoadSettings(BMessage& settings);
 	status_t		SaveSettings();
 
-	void 			BuildLine();
+	BMenuBar*		_BuildMenu();
+	BView* 			_BuildFileOptions();
+	BView*  		_BuildMainOptions();
+	BView*  		_BuildAdvancedOptions();
+	void	 		_BuildLogView();
+	BView*  		_BuildEncodeProgress();
+	void 			_BuildLine();
 
 	void 			GetMediaInfo();
 	void 			UpdateMediaInfo();
