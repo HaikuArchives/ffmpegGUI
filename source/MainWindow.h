@@ -50,6 +50,7 @@ class ContainerOption {
 public:
 					ContainerOption(const BString& option, const BString& extension,
 						const BString& description, format_capability capability);
+
 	BString 		Option;
 	BString 		Extension;
 	BString 		Description;
@@ -61,6 +62,7 @@ class CodecOption {
 public:
 					CodecOption(const BString& option, const BString& shortlabel,
 						const BString& description);
+
 	BString 		Option;
 	BString 		Shortlabel;
 	BString 		Description;
@@ -75,8 +77,8 @@ public:
 	virtual void 	MessageReceived(BMessage* message);
 
 private:
-	status_t		LoadSettings(BMessage& settings);
-	status_t		SaveSettings();
+	status_t		_LoadSettings(BMessage& settings);
+	status_t		_SaveSettings();
 
 	BMenuBar*		_BuildMenu();
 	BView* 			_BuildFileOptions();
@@ -84,33 +86,34 @@ private:
 	BView*  		_BuildAdvancedOptions();
 	void	 		_BuildLogView();
 	BView*  		_BuildEncodeProgress();
+
 	void 			_BuildLine();
 
-	void 			GetMediaInfo();
-	void 			UpdateMediaInfo();
-	void 			ParseMediaOutput();
+	void 			_GetMediaInfo();
+	void 			_UpdateMediaInfo();
+	void 			_ParseMediaOutput();
 
-	void 			AdoptDefaults();
-	void			SetDefaults();
-	void			PopulateCodecOptions();
+	void 			_AdoptDefaults();
+	void			_SetDefaults();
+	void			_PopulateCodecOptions();
 
-	bool			FileExists(const char* filepath);
-	void 			SetFileExtension();
-	void 			SetFiletype(entry_ref* ref);
+	bool			_FileExists(const char* filepath);
+	void 			_SetFileExtension();
+	void 			_SetFiletype(entry_ref* ref);
 
-	int32 			GetSeconds(BString& time_string);
-	void 			RemoveOverPrecision(BString& float_string);
+	int32 			_GetSeconds(BString& time_string);
+	void 			_RemoveOverPrecision(BString& float_string);
 
-	void 			SetSpinnerMinsize(BSpinner* spinner);
-	void 			SetSpinnerMinsize(BDecimalSpinner* spinner);
+	void 			_SetSpinnerMinsize(BSpinner* spinner);
+	void 			_SetSpinnerMinsize(BDecimalSpinner* spinner);
 
-	void 			ReadyToEncode();
-	void 			PlayVideo(const char* filepath);
+	void 			_ReadyToEncode();
+	void 			_PlayVideo(const char* filepath);
 
-	void 			SetPlaybuttonsState();
-	void 			ToggleVideo();
-	void 			ToggleCropping();
-	void 			ToggleAudio();
+	void 			_SetPlaybuttonsState();
+	void 			_ToggleVideo();
+	void 			_ToggleCropping();
+	void 			_ToggleAudio();
 
 	// text views
 	BTextView* 		fLogView;

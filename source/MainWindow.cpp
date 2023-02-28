@@ -121,6 +121,7 @@ MainWindow::MainWindow(BRect r, const char* name, window_type type, ulong mode)
 
 	BView* logview = new BScrollView("", fLogView, B_SUPPORTS_LAYOUT, true, true);
 
+	// _Building tab view
 	fTabView = new BTabView("");
 	BTab* mainoptionstab = new BTab();
 	BTab* advancedoptionstab = new BTab();
@@ -168,14 +169,8 @@ MainWindow::MainWindow(BRect r, const char* name, window_type type, ulong mode)
 	min_height = window_size.height;
 	SetSizeLimits(min_width, max_width, min_height, max_height);
 
-	fSourceFilePanel = new BFilePanel(B_OPEN_PANEL, new BMessenger(this), NULL, B_FILE_NODE, false,
-		new BMessage(M_SOURCEFILE_REF));
-
-	fOutputFilePanel = new BFilePanel(B_SAVE_PANEL, new BMessenger(this), NULL, B_FILE_NODE, false,
-		new BMessage(M_OUTPUTFILE_REF));
-
 	BMessage settings;
-	LoadSettings(settings);
+	_LoadSettings(settings);
 
 	BRect frame = Frame();
 	if (settings.FindRect("main_window", &frame) == B_OK) {
@@ -212,22 +207,22 @@ MainWindow::MainWindow(BRect r, const char* name, window_type type, ulong mode)
 	fChannelCount->SetValue(2);
 
 	// set minimum size for the spinners
-	SetSpinnerMinsize(fVideoBitrateSpinner);
-	SetSpinnerMinsize(fFramerate);
-	SetSpinnerMinsize(fXres);
-	SetSpinnerMinsize(fYres);
-	SetSpinnerMinsize(fChannelCount);
-	SetSpinnerMinsize(fTopCrop);
-	SetSpinnerMinsize(fBottomCrop);
-	SetSpinnerMinsize(fLeftCrop);
-	SetSpinnerMinsize(fRightCrop);
+	_SetSpinnerMinsize(fVideoBitrateSpinner);
+	_SetSpinnerMinsize(fFramerate);
+	_SetSpinnerMinsize(fXres);
+	_SetSpinnerMinsize(fYres);
+	_SetSpinnerMinsize(fChannelCount);
+	_SetSpinnerMinsize(fTopCrop);
+	_SetSpinnerMinsize(fBottomCrop);
+	_SetSpinnerMinsize(fLeftCrop);
+	_SetSpinnerMinsize(fRightCrop);
 
 	// set step values for the spinners
 	fVideoBitrateSpinner->SetStep(100);
 
 	// set the initial command line
-	SetDefaults();
-	BuildLine();
+	_SetDefaults();
+	_BuildLine();
 }
 
 
@@ -259,7 +254,7 @@ MainWindow::QuitRequested()
 				fJobWindow->PostMessage(M_JOB_ABORT);
 		}
 	}
-	SaveSettings();
+	_SaveSettings();
 
 	fJobWindow->LockLooper();
 	fJobWindow->Quit();
@@ -332,20 +327,20 @@ MainWindow::MessageReceived(BMessage* message)
 		}
 		case M_DEFAULTS:
 		{
-			SetDefaults();
-			if (FileExists(fSourceTextControl->Text()))
-				AdoptDefaults();
+			_SetDefaults();
+			if (_FileExists(fSourceTextControl->Text()))
+				_AdoptDefaults();
 			break;
 		}
 		case M_SOURCEFILE:
 		{
-			GetMediaInfo();
+			_GetMediaInfo();
 		} // intentional fall-though
 		case M_OUTPUTFILE:
 		{
-			BuildLine();
-			ReadyToEncode();
-			SetPlaybuttonsState();
+			_BuildLine();
+			_ReadyToEncode();
+			_SetPlaybuttonsState();
 
 			break;
 		}
@@ -361,18 +356,18 @@ MainWindow::MessageReceived(BMessage* message)
 			else
 				fEnableVideoBox->SetEnabled(true);
 
-			ToggleVideo();
+			_ToggleVideo();
 
 			BString outputfilename(fOutputTextControl->Text());
 			outputfilename = outputfilename.Trim();
 
 			if (!outputfilename.IsEmpty()) {
-				SetFileExtension();
-				ReadyToEncode();
-				SetPlaybuttonsState();
+				_SetFileExtension();
+				_ReadyToEncode();
+				_SetPlaybuttonsState();
 			}
 
-			BuildLine();
+			_BuildLine();
 			break;
 		}
 		case M_OUTPUTVIDEOFORMAT:
@@ -382,9 +377,9 @@ MainWindow::MessageReceived(BMessage* message)
 			if (item != NULL)
 				item->SetLabel(fVideoCodecs[marked].Shortlabel);
 
-			ToggleVideo();
-			ToggleCropping();
-			BuildLine();
+			_ToggleVideo();
+			_ToggleCropping();
+			_BuildLine();
 			break;
 		}
 		case M_OUTPUTAUDIOFORMAT:
@@ -394,8 +389,8 @@ MainWindow::MessageReceived(BMessage* message)
 			if (item != NULL)
 				item->SetLabel(fAudioCodecs[marked].Shortlabel);
 
-			ToggleAudio();
-			BuildLine();
+			_ToggleAudio();
+			_BuildLine();
 			break;
 		}
 		case M_VBITRATE:
@@ -410,36 +405,36 @@ MainWindow::MessageReceived(BMessage* message)
 		case M_SAMPLERATE:
 		case M_CHANNELS:
 		{
-			BuildLine();
+			_BuildLine();
 			break;
 		}
 
 		case M_ENABLEVIDEO:
 		{
-			ToggleVideo();
-			ToggleCropping();
-			BuildLine();
+			_ToggleVideo();
+			_ToggleCropping();
+			_BuildLine();
 			break;
 		}
 
 		case M_CUSTOMRES:
 		{
-			ToggleVideo();
-			BuildLine();
+			_ToggleVideo();
+			_BuildLine();
 			break;
 		}
 
 		case M_ENABLECROPPING:
 		{
-			ToggleCropping();
-			BuildLine();
+			_ToggleCropping();
+			_BuildLine();
 			break;
 		}
 
 		case M_ENABLEAUDIO:
 		{
-			ToggleAudio();
-			BuildLine();
+			_ToggleAudio();
+			_BuildLine();
 			break;
 		}
 		case M_SOURCE:
@@ -466,7 +461,7 @@ MainWindow::MessageReceived(BMessage* message)
 			BPath file_path(&file_entry);
 			fSourceTextControl->SetText(file_path.Path());
 			fOutputTextControl->SetText(file_path.Path());
-			SetFileExtension();
+			_SetFileExtension();
 			break;
 		}
 		case M_OUTPUTFILE_REF:
@@ -481,7 +476,7 @@ MainWindow::MessageReceived(BMessage* message)
 			filename.Prepend(directory_path.Path());
 
 			fOutputTextControl->SetText(filename);
-			SetFileExtension();
+			_SetFileExtension();
 			break;
 		}
 		case M_INFO_OUTPUT:
@@ -494,9 +489,9 @@ MainWindow::MessageReceived(BMessage* message)
 		case M_INFO_FINISHED:
 		{
 			fEncodeDuration = 0;
-			ParseMediaOutput();
-			UpdateMediaInfo();
-			AdoptDefaults();
+			_ParseMediaOutput();
+			_UpdateMediaInfo();
+			_AdoptDefaults();
 			break;
 		}
 		case M_ENCODE:
@@ -615,7 +610,7 @@ MainWindow::MessageReceived(BMessage* message)
 			fStatusBar->Reset();
 			fStatusBar->SetText(B_TRANSLATE_NOCOLLECT(kIdleText));
 
-			if (FileExists(fOutputTextControl->Text()))
+			if (_FileExists(fOutputTextControl->Text()))
 				fOutputCheckView->SetText(B_TRANSLATE_NOCOLLECT(kOutputExists));
 			else
 				fOutputCheckView->SetText("");
@@ -634,7 +629,7 @@ MainWindow::MessageReceived(BMessage* message)
 				encodeFinished.SetContent(B_TRANSLATE("Encoding finished successfully!"));
 
 				if (fPlayFinishedBox->Value() == B_CONTROL_ON)
-					PlayVideo(fOutputTextControl->Text());
+					_PlayVideo(fOutputTextControl->Text());
 				else {
 					BPath path = fOutputTextControl->Text();
 
@@ -643,11 +638,11 @@ MainWindow::MessageReceived(BMessage* message)
 
 						entry_ref ref;
 						get_ref_for_path(path.Path(), &ref);
-						SetFiletype(&ref);
+						_SetFiletype(&ref);
 						encodeFinished.SetOnClickFile(&ref);
 					}
 				}
-				SetPlaybuttonsState();
+				_SetPlaybuttonsState();
 			} else {
 				encodeFinished.SetContent(B_TRANSLATE("Encoding failed."));
 				fTabView->Select(1);
@@ -670,12 +665,12 @@ MainWindow::MessageReceived(BMessage* message)
 		}
 		case M_PLAY_SOURCE:
 		{
-			PlayVideo(fSourceTextControl->Text());
+			_PlayVideo(fSourceTextControl->Text());
 			break;
 		}
 		case M_PLAY_OUTPUT:
 		{
-			PlayVideo(fOutputTextControl->Text());
+			_PlayVideo(fOutputTextControl->Text());
 			break;
 		}
 		case B_REFS_RECEIVED:
@@ -686,7 +681,7 @@ MainWindow::MessageReceived(BMessage* message)
 				BPath file_path(&file_entry);
 				fSourceTextControl->SetText(file_path.Path());
 				fOutputTextControl->SetText(file_path.Path());
-				SetFileExtension();
+				_SetFileExtension();
 			}
 			break;
 		}
@@ -717,7 +712,7 @@ MainWindow::MessageReceived(BMessage* message)
 			else
 				break;
 
-			SetFileExtension();
+			_SetFileExtension();
 			break;
 		}
 		default:
@@ -728,7 +723,7 @@ MainWindow::MessageReceived(BMessage* message)
 
 
 status_t
-MainWindow::LoadSettings(BMessage& settings)
+MainWindow::_LoadSettings(BMessage& settings)
 {
 	BPath path;
 	status_t status = find_directory(B_USER_SETTINGS_DIRECTORY, &path);
@@ -753,7 +748,7 @@ MainWindow::LoadSettings(BMessage& settings)
 
 
 status_t
-MainWindow::SaveSettings()
+MainWindow::_SaveSettings()
 {
 	BPath path;
 	status_t status = find_directory(B_USER_SETTINGS_DIRECTORY, &path);
@@ -787,7 +782,6 @@ MainWindow::SaveSettings()
 
 	return status;
 }
-
 
 
 BMenuBar*
@@ -892,7 +886,7 @@ MainWindow::_BuildFileOptions()
 	fSourcePlayButton->SetEnabled(false);
 	fOutputPlayButton->SetEnabled(false);
 
-	PopulateCodecOptions();
+	_PopulateCodecOptions();
 
 	// File format pop-up menu
 	fFileFormatPopup = new BPopUpMenu("");
@@ -968,7 +962,7 @@ MainWindow::_BuildMainOptions()
 	fXres = new Spinner("", B_TRANSLATE("Width:"), new BMessage(M_XRES));
 	fYres = new Spinner("", B_TRANSLATE("Height:"), new BMessage(M_YRES));
 
-	// Build Video Options layout
+	// _Build Video Options layout
 	BBox* videobox = new BBox("");
 	videobox->SetLabel(B_TRANSLATE("Video"));
 	BGroupLayout* videolayout = BLayoutBuilder::Group<>(B_VERTICAL)
@@ -1060,7 +1054,7 @@ MainWindow::_BuildMainOptions()
 	fSamplerate = new BMenuField(B_TRANSLATE("Sampling rate (Hz):"), fSampleratePopup);
 	fChannelCount = new Spinner("", B_TRANSLATE("Audio channels:"), new BMessage(M_CHANNELS));
 
-	// Build Audio Options layout
+	// _Build Audio Options layout
 	BBox* audiobox = new BBox("");
 	audiobox->SetLabel(B_TRANSLATE("Audio"));
 	BGroupLayout* audiolayout = BLayoutBuilder::Group<>(B_VERTICAL)
@@ -1160,7 +1154,7 @@ MainWindow::_BuildAdvancedOptions()
 
 
 void
-MainWindow::BuildLogView()
+MainWindow::_BuildLogView()
 {
 	fLogView = new BTextView("");
 	fLogView->SetViewColor(ui_color(B_PANEL_BACKGROUND_COLOR));
@@ -1192,7 +1186,7 @@ MainWindow::_BuildEncodeProgress()
 
 
 void
-MainWindow::BuildLine() // ask all the views what they hold, reset the command string
+MainWindow::_BuildLine() // ask all the views what they hold, reset the command string
 {
 	BString source_filename(fSourceTextControl->Text());
 	BString output_filename(fOutputTextControl->Text());
@@ -1246,7 +1240,7 @@ MainWindow::BuildLine() // ask all the views what they hold, reset the command s
 
 
 void
-MainWindow::GetMediaInfo()
+MainWindow::_GetMediaInfo()
 {
 	// Reset media info and video/audio tags
 	fMediainfo = fVideoCodec = fAudioCodec = fVideoWidth = fVideoHeight = fVideoFramerate
@@ -1269,7 +1263,7 @@ MainWindow::GetMediaInfo()
 
 
 void
-MainWindow::UpdateMediaInfo()
+MainWindow::_UpdateMediaInfo()
 {
 	if (fVideoFramerate != "" && fVideoFramerate != "N/A") {
 		// Convert fractional representation (e.g. 50/1) to floating number
@@ -1326,12 +1320,12 @@ MainWindow::UpdateMediaInfo()
 	text << "    🕛: " << fDuration;
 
 	fMediaInfoView->SetText(text.String());
-	ReadyToEncode();
+	_ReadyToEncode();
 }
 
 
 void
-MainWindow::ParseMediaOutput()
+MainWindow::_ParseMediaOutput()
 {
 	BStringList list;
 	fMediainfo.ReplaceAll("\n", "=");
@@ -1370,7 +1364,7 @@ MainWindow::ParseMediaOutput()
 
 
 void
-MainWindow::AdoptDefaults()
+MainWindow::_AdoptDefaults()
 {
 	if (!fVideoBitrate.IsEmpty() && fVideoBitrate != "N/A")
 		fVideoBitrateSpinner->SetValue(atoi(fVideoBitrate));
@@ -1397,7 +1391,7 @@ MainWindow::AdoptDefaults()
 
 
 void
-MainWindow::SetDefaults()
+MainWindow::_SetDefaults()
 {
 	// set the initial values
 	fVideoBitrateSpinner->SetValue(1000);
@@ -1428,14 +1422,14 @@ MainWindow::SetDefaults()
 	fYres->SetEnabled(B_CONTROL_OFF);
 
 	// create internal logic
-	ToggleVideo();
-	ToggleCropping();
-	ToggleAudio();
+	_ToggleVideo();
+	_ToggleCropping();
+	_ToggleAudio();
 }
 
 
 void
-MainWindow::PopulateCodecOptions()
+MainWindow::_PopulateCodecOptions()
 {
 	//	container formats (ffmpeg option, extension, description)
 	fContainerFormats.push_back(
@@ -1482,7 +1476,7 @@ MainWindow::PopulateCodecOptions()
 
 
 bool
-MainWindow::FileExists(const char* filepath)
+MainWindow::_FileExists(const char* filepath)
 {
 	BEntry entry(filepath);
 	bool status = entry.Exists();
@@ -1492,7 +1486,7 @@ MainWindow::FileExists(const char* filepath)
 
 
 void
-MainWindow::SetFileExtension()
+MainWindow::_SetFileExtension()
 {
 	BString output_filename(fOutputTextControl->Text());
 	if (output_filename == "")
@@ -1513,7 +1507,7 @@ MainWindow::SetFileExtension()
 
 
 void
-MainWindow::SetFiletype(entry_ref* ref)
+MainWindow::_SetFiletype(entry_ref* ref)
 {
 	BFile file(ref, B_READ_ONLY);
 	BNodeInfo nodeInfo(&file);
@@ -1530,7 +1524,7 @@ MainWindow::SetFiletype(entry_ref* ref)
 
 
 void
-MainWindow::SetSpinnerMinsize(BSpinner* spinner)
+MainWindow::_SetSpinnerMinsize(BSpinner* spinner)
 {
 	BSize textview_prefsize = spinner->TextView()->PreferredSize();
 	textview_prefsize.width += 20;
@@ -1540,7 +1534,7 @@ MainWindow::SetSpinnerMinsize(BSpinner* spinner)
 
 
 void
-MainWindow::SetSpinnerMinsize(BDecimalSpinner* spinner)
+MainWindow::_SetSpinnerMinsize(BDecimalSpinner* spinner)
 {
 	BSize textview_prefsize = spinner->TextView()->PreferredSize();
 	textview_prefsize.width += 20;
@@ -1550,7 +1544,7 @@ MainWindow::SetSpinnerMinsize(BDecimalSpinner* spinner)
 
 
 void
-MainWindow::ReadyToEncode()
+MainWindow::_ReadyToEncode()
 {
 	BString source_filename(fSourceTextControl->Text());
 	BString output_filename(fOutputTextControl->Text());
@@ -1566,14 +1560,14 @@ MainWindow::ReadyToEncode()
 		fOutputTextControl->SetText("");
 		fOutputCheckView->SetText("");
 		ready = false;
-	} else	if (!FileExists(source_filename)) {
+	} else	if (!_FileExists(source_filename)) {
 		fMediaInfoView->SetText(B_TRANSLATE_NOCOLLECT(kSourceDoesntExist));
 		fSourceTextControl->MarkAsInvalid(true);
 		fOutputCheckView->SetText("");
 		ready = false;
 	}
 
-	if (FileExists(output_filename))
+	if (_FileExists(output_filename))
 		fOutputCheckView->SetText(B_TRANSLATE_NOCOLLECT(kOutputExists));
 	else
 		fOutputCheckView->SetText("");
@@ -1587,7 +1581,7 @@ MainWindow::ReadyToEncode()
 	if (output_filename.IsEmpty())
 		ready = false;
 
-	SetPlaybuttonsState();
+	_SetPlaybuttonsState();
 	fStartAbortButton->SetEnabled(ready);
 	fMenuStartEncode->SetEnabled(ready);
 	fMenuAddJob->SetEnabled(ready);
@@ -1595,7 +1589,7 @@ MainWindow::ReadyToEncode()
 
 
 void
-MainWindow::PlayVideo(const char* filepath)
+MainWindow::_PlayVideo(const char* filepath)
 {
 	BEntry video_entry(filepath);
 	entry_ref video_ref;
@@ -1605,20 +1599,20 @@ MainWindow::PlayVideo(const char* filepath)
 
 
 void
-MainWindow::SetPlaybuttonsState()
+MainWindow::_SetPlaybuttonsState()
 {
-	bool valid = FileExists(fSourceTextControl->Text());
+	bool valid = _FileExists(fSourceTextControl->Text());
 	fSourcePlayButton->SetEnabled(valid);
 	fMenuPlaySource->SetEnabled(valid);
 
-	valid = FileExists(fOutputTextControl->Text());
+	valid = _FileExists(fOutputTextControl->Text());
 	fOutputPlayButton->SetEnabled(valid);
 	fMenuPlayOutput->SetEnabled(valid);
 }
 
 
 void
-MainWindow::ToggleVideo()
+MainWindow::_ToggleVideo()
 {
 	bool video_options_enabled;
 
@@ -1649,7 +1643,7 @@ MainWindow::ToggleVideo()
 
 
 void
-MainWindow::ToggleCropping()
+MainWindow::_ToggleCropping()
 {
 	// disable cropping if video options are not enabled;
 	if ((fEnableVideoBox->IsEnabled()) and (fEnableVideoBox->Value() == B_CONTROL_ON)
@@ -1672,7 +1666,7 @@ MainWindow::ToggleCropping()
 
 
 void
-MainWindow::ToggleAudio()
+MainWindow::_ToggleAudio()
 {
 	bool audio_options_enabled;
 	if (fEnableAudioBox->Value() == B_CONTROL_ON) {

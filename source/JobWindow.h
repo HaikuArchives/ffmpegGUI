@@ -36,19 +36,19 @@ public:
 			void	SetColumnState(BMessage* archive);
 
 private:
-	status_t		LoadJobs(BMessage& jobs);
-	status_t		SaveJobs();
+	status_t		_LoadJobs(BMessage& jobs);
+	status_t		_SaveJobs();
 
-	void			PlayVideo(const char* filepath);
-	void			ShowLog(JobRow* row);
+	void			_PlayVideo(const char* filepath);
+	void			_ShowLog(JobRow* row);
 
-	void			SendJobCount(int32);
-	int32			CountFinished();
-	bool			IsUniqueJob(const char* commandline);
-	int32			IndexOfSameFilename(const char* filename);
-	JobRow*			GetNextJob();
-	void			UpdateButtonStates();
-	void			SetStartButtonLabel(int32 state);
+	void			_SendJobCount(int32);
+	int32			_CountFinished();
+	bool			_IsUniqueJob(const char* commandline);
+	int32			_IndexOfSameFilename(const char* filename);
+	JobRow*			_GetNextJob();
+	void			_UpdateButtonStates();
+	void			_SetStartButtonLabel(int32 state);
 
 	CommandLauncher*	fJobCommandLauncher;
 	BMessenger*		fMainWindow;

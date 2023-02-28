@@ -87,13 +87,13 @@ status_t
 CommandLauncher::_Command(void* _self)
 {
 	CommandLauncher* self = (CommandLauncher*) _self;
-	self->RunCommand();
+	self->_RunCommand();
 	return B_OK;
 }
 
 
 void
-CommandLauncher::RunCommand()
+CommandLauncher::_RunCommand()
 {
 	// redirect stderr + stout
 	int stderr_pipe[2];
@@ -152,7 +152,7 @@ CommandLauncher::RunCommand()
 			// Make sure the buffer is null terminated
 			buffer[amount_read] = 0;
 
-			int32 seconds = GetCurrentTime(buffer);
+			int32 seconds = _GetCurrentTime(buffer);
 			fOutputMessage->AddInt32("time", seconds);
 			fOutputMessage->AddString("data", buffer);
 			fTargetMessenger->SendMessage(fOutputMessage);
@@ -192,7 +192,7 @@ CommandLauncher::RunCommand()
 
 
 int32
-CommandLauncher::GetCurrentTime(const char* buffer)
+CommandLauncher::_GetCurrentTime(const char* buffer)
 {
 	BString output(buffer);
 	int32 time_startpos = output.FindFirst("time=");
