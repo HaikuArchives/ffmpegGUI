@@ -9,6 +9,7 @@
 
 
 #include "App.h"
+#include "CodecContainerOptions.h"
 #include "CommandLauncher.h"
 #include "JobWindow.h"
 #include "MainWindow.h"
@@ -73,25 +74,6 @@ static const char* kFFProbe = "ffprobe-x86";
 static const char* kFFMpeg = "ffmpeg";
 static const char* kFFProbe = "ffprobe";
 #endif
-
-ContainerOption::ContainerOption(const BString& option, const BString& extension,
-	const BString& description, format_capability capability)
-	:
-	Option(option),
-	Extension(extension),
-	Description(description),
-	Capability(capability)
-{
-}
-
-
-CodecOption::CodecOption(const BString& option,const BString& shortlabel,const BString& description)
-	:
-	Option(option),
-	Shortlabel(shortlabel),
-	Description(description)
-{
-}
 
 
 MainWindow::MainWindow(BRect r, const char* name, window_type type, ulong mode)
@@ -205,17 +187,6 @@ MainWindow::MainWindow(BRect r, const char* name, window_type type, ulong mode)
 	fXres->SetValue(1280);
 	fYres->SetValue(720);
 	fChannelCount->SetValue(2);
-
-	// set minimum size for the spinners
-	_SetSpinnerMinsize(fVideoBitrateSpinner);
-	_SetSpinnerMinsize(fFramerate);
-	_SetSpinnerMinsize(fXres);
-	_SetSpinnerMinsize(fYres);
-	_SetSpinnerMinsize(fChannelCount);
-	_SetSpinnerMinsize(fTopCrop);
-	_SetSpinnerMinsize(fBottomCrop);
-	_SetSpinnerMinsize(fLeftCrop);
-	_SetSpinnerMinsize(fRightCrop);
 
 	// set step values for the spinners
 	fVideoBitrateSpinner->SetStep(100);
@@ -1520,26 +1491,6 @@ MainWindow::_SetFiletype(entry_ref* ref)
 			nodeInfo.SetType(type.Type());
 		}
 	}
-}
-
-
-void
-MainWindow::_SetSpinnerMinsize(BSpinner* spinner)
-{
-	BSize textview_prefsize = spinner->TextView()->PreferredSize();
-	textview_prefsize.width += 20;
-	textview_prefsize.height = B_SIZE_UNSET;
-	spinner->CreateTextViewLayoutItem()->SetExplicitMinSize(textview_prefsize);
-}
-
-
-void
-MainWindow::_SetSpinnerMinsize(BDecimalSpinner* spinner)
-{
-	BSize textview_prefsize = spinner->TextView()->PreferredSize();
-	textview_prefsize.width += 20;
-	textview_prefsize.height = B_SIZE_UNSET;
-	spinner->CreateTextViewLayoutItem()->SetExplicitMinSize(textview_prefsize);
 }
 
 

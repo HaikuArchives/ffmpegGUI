@@ -34,39 +34,12 @@ class BTextControl;
 class BTextView;
 class BView;
 
+class CodecOption;
+class ContainerOption;
 class CommandLauncher;
 class Spinner;
 class DecSpinner;
 class JobWindow;
-
-
-enum format_capability {
-	CAP_AUDIO_VIDEO,
-	CAP_AUDIO_ONLY
-};
-
-
-class ContainerOption {
-public:
-					ContainerOption(const BString& option, const BString& extension,
-						const BString& description, format_capability capability);
-
-	BString 		Option;
-	BString 		Extension;
-	BString 		Description;
-	format_capability Capability;
-};
-
-
-class CodecOption {
-public:
-					CodecOption(const BString& option, const BString& shortlabel,
-						const BString& description);
-
-	BString 		Option;
-	BString 		Shortlabel;
-	BString 		Description;
-};
 
 
 class MainWindow : public BWindow {
@@ -103,9 +76,6 @@ private:
 
 	int32 			_GetSeconds(BString& time_string);
 	void 			_RemoveOverPrecision(BString& float_string);
-
-	void 			_SetSpinnerMinsize(BSpinner* spinner);
-	void 			_SetSpinnerMinsize(BDecimalSpinner* spinner);
 
 	void 			_ReadyToEncode();
 	void 			_PlayVideo(const char* filepath);

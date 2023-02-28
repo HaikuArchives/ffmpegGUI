@@ -30,6 +30,7 @@ APP_MIME_SIG = application/x-vnd.HaikuArchives-ffmpegGUI
 #	Also note that spaces in folder names do not work well with this Makefile.
 SRCS = \
 	 source/App.cpp  \
+	 source/CodecContainerOptions.cpp \
 	 source/CommandLauncher.cpp  \
 	 source/JobList.cpp \
 	 source/JobWindow.cpp \
