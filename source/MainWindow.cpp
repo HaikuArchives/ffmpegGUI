@@ -16,6 +16,7 @@
 #include "Messages.h"
 #include "Spinner.h"
 #include "Utilities.h"
+#include "CropView.h"
 
 #include <Alert.h>
 #include <Box.h>
@@ -955,7 +956,8 @@ MainWindow::_BuildMainOptions()
 			.Add(fXres->CreateTextViewLayoutItem(), 1, 0)
 			.Add(fYres->CreateLabelLayoutItem(), 0, 1)
 			.Add(fYres->CreateTextViewLayoutItem(), 1, 1)
-		.End();
+		.End()
+		.AddGlue();
 	videobox->AddChild(videolayout->View());
 
 	// Cropping options
@@ -966,6 +968,11 @@ MainWindow::_BuildMainOptions()
 	fBottomCrop = new Spinner("", B_TRANSLATE("Bottom:"), new BMessage(M_BOTTOMCROP));
 	fLeftCrop = new Spinner("", B_TRANSLATE("Left:"), new BMessage(M_LEFTCROP));
 	fRightCrop = new Spinner("", B_TRANSLATE("Right:"), new BMessage(M_RIGHTCROP));
+
+	// Cropping preview
+	fCropView = new CropView();
+	fCropView->LoadImage("/boot/home/Desktop/test2.jpg");
+	fCropView->SetExplicitMinSize(BSize(320, 180));
 
 	// Build Cropping Options layout
 	BBox* croppingoptionsbox = new BBox("");
@@ -984,7 +991,7 @@ MainWindow::_BuildMainOptions()
 			.Add(fRightCrop->CreateLabelLayoutItem(), 0, 3)
 			.Add(fRightCrop->CreateTextViewLayoutItem(), 1, 3)
 		.End()
-		.AddGlue();
+		.Add(fCropView);
 	croppingoptionsbox->AddChild(croppingoptionslayout->View());
 
 	// Audio codec pop-up menu

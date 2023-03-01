@@ -40,6 +40,7 @@ class CommandLauncher;
 class Spinner;
 class DecSpinner;
 class JobWindow;
+class CropView;
 
 
 class MainWindow : public BWindow {
@@ -89,6 +90,9 @@ private:
 	BTextView* 		fLogView;
 	BStringView*	fMediaInfoView;
 	BStringView* 	fOutputCheckView;
+
+	// misc views
+	CropView*		fCropView;
 
 	// text controls
 	BTextControl* 	fSourceTextControl;
