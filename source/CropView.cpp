@@ -59,7 +59,7 @@ CropView::Draw(BRect updateRect)
 		if ((fTopCrop+fBottomCrop+fLeftCrop+fRightCrop) > 0) // only draw crop marker when
 		{													 // at least on cropping value is set
 			SetHighColor(255,0,0);
-			StrokeRect(fCropMarkerRect, B_SOLID_HIGH);
+			StrokeRect(fMarkerRect, B_SOLID_HIGH);
 		}
 
 		Invalidate();
@@ -140,10 +140,10 @@ CropView::_SetMarkerRect()
 {
 	if (fImageLoaded)
 	{
-		fCropMarkerRect = fDrawingRect;
-		fCropMarkerRect.top += fTopCrop * fResizeFactor;
-		fCropMarkerRect.bottom -= fBottomCrop * fResizeFactor;
-		fCropMarkerRect.left += fLeftCrop * fResizeFactor;
-		fCropMarkerRect.right -= fRightCrop * fResizeFactor;
+		fMarkerRect = fDrawingRect;
+		fMarkerRect.top += fTopCrop * fResizeFactor;
+		fMarkerRect.bottom -= fBottomCrop * fResizeFactor;
+		fMarkerRect.left += fLeftCrop * fResizeFactor;
+		fMarkerRect.right -= fRightCrop * fResizeFactor;
 	}
 }
