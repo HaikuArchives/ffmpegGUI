@@ -369,14 +369,34 @@ MainWindow::MessageReceived(BMessage* message)
 			_BuildLine();
 			break;
 		}
+		case M_TOPCROP:
+		{
+			fCropView->SetTopCrop(fTopCrop->Value());
+			_BuildLine();
+			break;
+		}
+		case M_BOTTOMCROP:
+		{
+			fCropView->SetBottomCrop(fBottomCrop->Value());
+			_BuildLine();
+			break;
+		}
+		case M_LEFTCROP:
+		{
+			fCropView->SetLeftCrop(fLeftCrop->Value());
+			_BuildLine();
+			break;
+		}
+		case M_RIGHTCROP:
+		{
+			fCropView->SetRightCrop(fRightCrop->Value());
+			_BuildLine();
+			break;
+		}
 		case M_VBITRATE:
 		case M_FRAMERATE:
 		case M_XRES:
 		case M_YRES:
-		case M_TOPCROP:
-		case M_BOTTOMCROP:
-		case M_LEFTCROP:
-		case M_RIGHTCROP:
 		case M_AUDIOBITRATE:
 		case M_SAMPLERATE:
 		case M_CHANNELS:
