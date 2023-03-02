@@ -68,6 +68,8 @@ private:
 	void 			_UpdateMediaInfo();
 	void 			_ParseMediaOutput();
 
+	void 			_ExtractImage();
+
 	void 			_AdoptDefaults();
 	void			_SetDefaults();
 	void			_PopulateCodecOptions();
@@ -172,6 +174,7 @@ private:
 	// bstrings
 	BString 		fCommand;
 	BString 		fMediainfo;
+	BString			fCropImageFilename;
 
 	// ffprobe stream tags
 	BString 		fVideoCodec;

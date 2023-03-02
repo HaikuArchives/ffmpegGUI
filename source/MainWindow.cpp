@@ -480,6 +480,7 @@ MainWindow::MessageReceived(BMessage* message)
 			_ParseMediaOutput();
 			_UpdateMediaInfo();
 			_AdoptDefaults();
+			_ExtractImage();
 			break;
 		}
 		case M_ENCODE:
@@ -659,6 +660,11 @@ MainWindow::MessageReceived(BMessage* message)
 		case M_PLAY_OUTPUT:
 		{
 			_PlayVideo(fOutputTextControl->Text());
+			break;
+		}
+		case M_EXTRACTIMAGE_FINISHED:
+		{
+			fCropView->LoadImage(fCropImageFilename);
 			break;
 		}
 		case B_REFS_RECEIVED:
@@ -1057,8 +1063,7 @@ MainWindow::_BuildCroppingOptions()
 
 	// Cropping preview
 	fCropView = new CropView();
-	fCropView->LoadImage("/boot/home/Desktop/test2.jpg");
-	//fCropView->SetExplicitMinSize(BSize(320, 180));
+	//fCropView->LoadImage("/boot/home/Desktop/test2.jpg");
 
 	BView* croppingoptionsview = new BView("", B_SUPPORTS_LAYOUT);
 	BLayoutBuilder::Group<>(croppingoptionsview, B_VERTICAL)
@@ -1361,6 +1366,28 @@ MainWindow::_ParseMediaOutput()
 	}
 }
 
+
+void
+MainWindow::_ExtractImage()
+{
+	BMessage extract_image_message(M_EXTRACTIMAGE_COMMAND);
+	BPath source_path(fSourceTextControl->Text());
+	BPath target_path;
+	find_directory(B_SYSTEM_TEMP_DIRECTORY, &target_path);
+	BString target_filename(source_path.Leaf());
+	int32 extension_start = target_filename.FindLast(".")+1;
+	target_filename.Remove(extension_start, target_filename.Length() - extension_start);
+	target_filename.Append("jpg");
+	target_filename.Prepend("ffmpegGUI_");
+	target_path.Append(target_filename);
+	fCropImageFilename = target_path.Path();
+
+	BString extract_image_cmd;
+	extract_image_cmd 	<< "ffmpeg -y -i " << source_path.Path()
+						<< " -frames:v 1 " << target_path.Path();
+	extract_image_message.AddString("cmdline", extract_image_cmd);
+	fCommandLauncher->PostMessage(&extract_image_message);
+}
 
 void
 MainWindow::_AdoptDefaults()
