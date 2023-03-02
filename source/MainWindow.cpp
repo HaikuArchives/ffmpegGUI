@@ -98,6 +98,7 @@ MainWindow::MainWindow(BRect r, const char* name, window_type type, ulong mode)
 	BMenuBar* menuBar = _BuildMenu();
 	BView* fileoptionsview = _BuildFileOptions();
 	BView* mainoptionsview = _BuildMainOptions();
+	BView* croppingoptionsview = _BuildCroppingOptions();
 //	BView* advancedoptionsview = _BuildAdvancedOptions();
 	_BuildLogView();
 	BView* encodeprogressview = _BuildEncodeProgress();
@@ -107,15 +108,18 @@ MainWindow::MainWindow(BRect r, const char* name, window_type type, ulong mode)
 	// _Building tab view
 	fTabView = new BTabView("");
 	BTab* mainoptionstab = new BTab();
+	BTab* croppingoptionstab = new BTab();
 	BTab* advancedoptionstab = new BTab();
 	BTab* logtab = new BTab();
 
 	fTabView->AddTab(mainoptionsview, mainoptionstab);
+	fTabView->AddTab(croppingoptionsview, croppingoptionstab);
 	// fTabView->AddTab(advancedoptionsview, advancedoptionstab); //don´t remove,
 	// will be needed later
 	fTabView->AddTab(logview, logtab);
 
 	mainoptionstab->SetLabel(B_TRANSLATE("Main options"));
+	croppingoptionstab->SetLabel(B_TRANSLATE("Cropping options"));
 	// advancedoptionstab->SetLabel(B_TRANSLATE("Advanced options"));
 	logtab->SetLabel(B_TRANSLATE("Log"));
 
@@ -960,40 +964,6 @@ MainWindow::_BuildMainOptions()
 		.AddGlue();
 	videobox->AddChild(videolayout->View());
 
-	// Cropping options
-	fEnableCropBox
-		= new BCheckBox("", B_TRANSLATE("Enable video cropping"), new BMessage(M_ENABLECROPPING));
-	fEnableCropBox->SetValue(B_CONTROL_OFF);
-	fTopCrop = new Spinner("", B_TRANSLATE("Top:"), new BMessage(M_TOPCROP));
-	fBottomCrop = new Spinner("", B_TRANSLATE("Bottom:"), new BMessage(M_BOTTOMCROP));
-	fLeftCrop = new Spinner("", B_TRANSLATE("Left:"), new BMessage(M_LEFTCROP));
-	fRightCrop = new Spinner("", B_TRANSLATE("Right:"), new BMessage(M_RIGHTCROP));
-
-	// Cropping preview
-	fCropView = new CropView();
-	fCropView->LoadImage("/boot/home/Desktop/test2.jpg");
-	fCropView->SetExplicitMinSize(BSize(320, 180));
-
-	// Build Cropping Options layout
-	BBox* croppingoptionsbox = new BBox("");
-	croppingoptionsbox->SetLabel(B_TRANSLATE("Cropping options"));
-	BGroupLayout* croppingoptionslayout = BLayoutBuilder::Group<>(B_VERTICAL)
-		.SetInsets(B_USE_DEFAULT_SPACING, B_USE_DEFAULT_SPACING, B_USE_DEFAULT_SPACING,
-		  B_USE_DEFAULT_SPACING)
-		.Add(fEnableCropBox)
-		.AddGrid(B_USE_SMALL_SPACING, B_USE_SMALL_SPACING)
-			.Add(fTopCrop->CreateLabelLayoutItem(), 0, 0)
-			.Add(fTopCrop->CreateTextViewLayoutItem(), 1, 0)
-			.Add(fBottomCrop->CreateLabelLayoutItem(), 0, 1)
-			.Add(fBottomCrop->CreateTextViewLayoutItem(), 1, 1)
-			.Add(fLeftCrop->CreateLabelLayoutItem(), 0, 2)
-			.Add(fLeftCrop->CreateTextViewLayoutItem(), 1, 2)
-			.Add(fRightCrop->CreateLabelLayoutItem(), 0, 3)
-			.Add(fRightCrop->CreateTextViewLayoutItem(), 1, 3)
-		.End()
-		.Add(fCropView);
-	croppingoptionsbox->AddChild(croppingoptionslayout->View());
-
 	// Audio codec pop-up menu
 	codec_iter=fAudioCodecs.begin();
 	fAudioFormatPopup = new BPopUpMenu(codec_iter->Shortlabel.String(), false, false);
@@ -1058,11 +1028,47 @@ MainWindow::_BuildMainOptions()
 		.SetInsets(B_USE_DEFAULT_SPACING, B_USE_DEFAULT_SPACING, B_USE_DEFAULT_SPACING,
 			B_USE_DEFAULT_SPACING)
 		.Add(videobox)
-		.Add(croppingoptionsbox)
 		.Add(audiobox)
 		.Layout();
 
 	return mainoptionsview;
+}
+
+
+BView*
+MainWindow::_BuildCroppingOptions()
+{
+	fEnableCropBox
+		= new BCheckBox("", B_TRANSLATE("Enable video cropping"), new BMessage(M_ENABLECROPPING));
+	fEnableCropBox->SetValue(B_CONTROL_OFF);
+	fTopCrop = new Spinner("", B_TRANSLATE("Top:"), new BMessage(M_TOPCROP));
+	fBottomCrop = new Spinner("", B_TRANSLATE("Bottom:"), new BMessage(M_BOTTOMCROP));
+	fLeftCrop = new Spinner("", B_TRANSLATE("Left:"), new BMessage(M_LEFTCROP));
+	fRightCrop = new Spinner("", B_TRANSLATE("Right:"), new BMessage(M_RIGHTCROP));
+
+	// Cropping preview
+	fCropView = new CropView();
+	fCropView->LoadImage("/boot/home/Desktop/test2.jpg");
+	//fCropView->SetExplicitMinSize(BSize(320, 180));
+
+	BView* croppingoptionsview = new BView("", B_SUPPORTS_LAYOUT);
+	BLayoutBuilder::Group<>(croppingoptionsview, B_VERTICAL)
+		.SetInsets(B_USE_DEFAULT_SPACING, B_USE_DEFAULT_SPACING, B_USE_DEFAULT_SPACING,
+			B_USE_DEFAULT_SPACING)
+		.AddGrid(B_USE_SMALL_SPACING, B_USE_SMALL_SPACING)
+			.Add(fTopCrop->CreateLabelLayoutItem(), 0, 0)
+			.Add(fTopCrop->CreateTextViewLayoutItem(), 1, 0)
+			.Add(fBottomCrop->CreateLabelLayoutItem(), 2, 0)
+			.Add(fBottomCrop->CreateTextViewLayoutItem(), 3, 0)
+			.Add(fLeftCrop->CreateLabelLayoutItem(), 0, 1)
+			.Add(fLeftCrop->CreateTextViewLayoutItem(), 1, 1)
+			.Add(fRightCrop->CreateLabelLayoutItem(), 2, 1)
+			.Add(fRightCrop->CreateTextViewLayoutItem(), 3, 1)
+		.End()
+		.Add(fCropView,2)
+		.Layout();
+
+	return croppingoptionsview;
 }
 
 
