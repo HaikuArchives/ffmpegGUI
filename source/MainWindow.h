@@ -137,7 +137,6 @@ private:
 	// checkboxes
 	BCheckBox* 		fEnableVideoBox;
 	BCheckBox* 		fEnableAudioBox;
-	BCheckBox* 		fEnableCropBox;
 	BCheckBox* 		fCustomResolutionBox;
 
 	// popup menus
