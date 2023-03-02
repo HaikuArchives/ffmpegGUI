@@ -399,14 +399,6 @@ MainWindow::MessageReceived(BMessage* message)
 			_BuildLine();
 			break;
 		}
-
-		case M_ENABLECROPPING:
-		{
-			_ToggleCropping();
-			_BuildLine();
-			break;
-		}
-
 		case M_ENABLEAUDIO:
 		{
 			_ToggleAudio();
@@ -1038,9 +1030,6 @@ MainWindow::_BuildMainOptions()
 BView*
 MainWindow::_BuildCroppingOptions()
 {
-	fEnableCropBox
-		= new BCheckBox("", B_TRANSLATE("Enable video cropping"), new BMessage(M_ENABLECROPPING));
-	fEnableCropBox->SetValue(B_CONTROL_OFF);
 	fTopCrop = new Spinner("", B_TRANSLATE("Top:"), new BMessage(M_TOPCROP));
 	fBottomCrop = new Spinner("", B_TRANSLATE("Bottom:"), new BMessage(M_BOTTOMCROP));
 	fLeftCrop = new Spinner("", B_TRANSLATE("Left:"), new BMessage(M_LEFTCROP));
@@ -1195,10 +1184,16 @@ MainWindow::_BuildLine() // ask all the views what they hold, reset the command 
 				fCommand << " -s " << fXres->Value() << "x" << fYres->Value();
 
 			// cropping options
-			if (fEnableCropBox->IsEnabled() && fEnableCropBox->Value()) {
-				fCommand << " -vf crop=iw-" << fLeftCrop->Value() + fRightCrop->Value() << ":ih-"
-							<< fTopCrop->Value() + fBottomCrop->Value() << ":" << fLeftCrop->Value()
-							<< ":" << fTopCrop->Value();
+			int32 topcrop = fTopCrop->Value();
+			int32 bottomcrop = fBottomCrop->Value();
+			int32 leftcrop = fLeftCrop->Value();
+			int32 rightcrop = fRightCrop->Value();
+
+			if ((topcrop + bottomcrop + leftcrop + rightcrop) > 0)
+			{
+				fCommand << " -vf crop=iw-" << leftcrop + rightcrop << ":ih-"
+						<< topcrop + bottomcrop << ":" << leftcrop
+						<< ":" << topcrop;
 			}
 		}
 	} else
@@ -1398,8 +1393,6 @@ MainWindow::_SetDefaults()
 	fEnableAudioBox->SetValue(true);
 	fEnableAudioBox->SetEnabled(B_CONTROL_ON);
 
-	fEnableCropBox->SetValue(false);
-	fEnableCropBox->SetEnabled(B_CONTROL_OFF);
 	fCustomResolutionBox->SetValue(false);
 	fCustomResolutionBox->SetEnabled(B_CONTROL_OFF);
 	fXres->SetEnabled(B_CONTROL_OFF);
@@ -1610,14 +1603,9 @@ void
 MainWindow::_ToggleCropping()
 {
 	// disable cropping if video options are not enabled;
+	bool cropping_options_enabled;
 	if ((fEnableVideoBox->IsEnabled()) and (fEnableVideoBox->Value() == B_CONTROL_ON)
 		and (fVideoFormatPopup->FindMarkedIndex() != 0))
-			fEnableCropBox->SetEnabled(true);
-	else
-		fEnableCropBox->SetEnabled(false);
-
-	bool cropping_options_enabled;
-	if ((fEnableCropBox->IsEnabled()) and (fEnableCropBox->Value() == B_CONTROL_ON))
 		cropping_options_enabled = true;
 	else
 		cropping_options_enabled = false;
