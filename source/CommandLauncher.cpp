@@ -77,6 +77,23 @@ CommandLauncher::MessageReceived(BMessage* message)
 			}
 			break;
 		}
+		case M_EXTRACTIMAGE_COMMAND:
+		{
+			if (!fBusy) {
+				fOutputMessage = new BMessage();
+				fFinishMessage = new BMessage(M_EXTRACTIMAGE_FINISHED);
+				message->FindString("cmdline", &fCommandline);
+				fBusy = true;
+				fErrorCode = 0;
+				fCommandFlag = EXTRACTIMAGE;
+
+				thread_id thread
+					= spawn_thread(_Command, "ffmpeg command", B_LOW_PRIORITY, this);
+				if (thread >= B_OK)
+					resume_thread(thread);
+			}
+			break;
+		}
 		default:
 			BLooper::MessageReceived(message);
 	}
@@ -141,7 +158,7 @@ CommandLauncher::_RunCommand()
 		char buffer[4096];
 		while (true) {
 			ssize_t amount_read;
-			if (fCommandFlag == ENCODING)
+			if ((fCommandFlag == ENCODING) or (fCommandFlag == EXTRACTIMAGE))
 				amount_read = read(stderr_pipe[0], buffer, sizeof(buffer));
 			else
 				amount_read = read(stdout_pipe[0], buffer, sizeof(buffer));
@@ -152,12 +169,15 @@ CommandLauncher::_RunCommand()
 			// Make sure the buffer is null terminated
 			buffer[amount_read] = 0;
 
-			int32 seconds = _GetCurrentTime(buffer);
-			fOutputMessage->AddInt32("time", seconds);
-			fOutputMessage->AddString("data", buffer);
-			fTargetMessenger->SendMessage(fOutputMessage);
-			fOutputMessage->RemoveName("time");
-			fOutputMessage->RemoveName("data");
+			if (fCommandFlag != EXTRACTIMAGE)
+			{
+				int32 seconds = _GetCurrentTime(buffer);
+				fOutputMessage->AddInt32("time", seconds);
+				fOutputMessage->AddString("data", buffer);
+				fTargetMessenger->SendMessage(fOutputMessage);
+				fOutputMessage->RemoveName("time");
+				fOutputMessage->RemoveName("data");
+			}
 
 			// check if output contains error messages
 			BString output_string(buffer);
