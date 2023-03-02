@@ -57,6 +57,7 @@ private:
 	BMenuBar*		_BuildMenu();
 	BView* 			_BuildFileOptions();
 	BView*  		_BuildMainOptions();
+	BView*			_BuildCroppingOptions();
 	BView*  		_BuildAdvancedOptions();
 	void	 		_BuildLogView();
 	BView*  		_BuildEncodeProgress();
