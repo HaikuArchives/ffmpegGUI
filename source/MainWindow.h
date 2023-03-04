@@ -69,6 +69,7 @@ private:
 	void 			_ParseMediaOutput();
 
 	void 			_ExtractImage();
+	void			_DeleteTempFiles();
 
 	void 			_AdoptDefaults();
 	void			_SetDefaults();
