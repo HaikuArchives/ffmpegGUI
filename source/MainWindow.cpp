@@ -231,6 +231,7 @@ MainWindow::QuitRequested()
 		}
 	}
 	_SaveSettings();
+	_DeleteTempFiles();
 
 	fJobWindow->LockLooper();
 	fJobWindow->Quit();
@@ -1388,6 +1389,27 @@ MainWindow::_ExtractImage()
 	extract_image_message.AddString("cmdline", extract_image_cmd);
 	fCommandLauncher->PostMessage(&extract_image_message);
 }
+
+
+void
+MainWindow::_DeleteTempFiles()
+{
+	BPath temp_path;
+	find_directory(B_SYSTEM_TEMP_DIRECTORY, &temp_path);
+	BDirectory temp_dir(temp_path.Path());
+	BEntry current_entry;
+	BPath current_path;
+	while (temp_dir.GetNextEntry(&current_entry) == B_OK)
+	{
+		current_entry.GetPath(&current_path);
+		BString current_filename(current_path.Leaf());
+		if (current_filename.StartsWith("ffmpegGUI_"))
+		{
+			current_entry.Remove();
+		}
+	}
+}
+
 
 void
 MainWindow::_AdoptDefaults()
