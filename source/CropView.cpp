@@ -40,7 +40,7 @@ CropView::LoadImage(const BString& filename)
 
 			_SetDrawingRect();
 			_SetMarkerRect();
-
+			Invalidate();
 			return B_OK;
 		}
 	}
