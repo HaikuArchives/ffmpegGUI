@@ -1384,8 +1384,8 @@ MainWindow::_ExtractImage()
 	fCropImageFilename = target_path.Path();
 
 	BString extract_image_cmd;
-	extract_image_cmd 	<< "ffmpeg -y -i " << source_path.Path()
-						<< " -frames:v 1 " << target_path.Path();
+	extract_image_cmd 	<< "ffmpeg -y -i \"" << source_path.Path()
+						<< "\" -frames:v 1 \"" << target_path.Path() << "\"";
 	extract_image_message.AddString("cmdline", extract_image_cmd);
 	fCommandLauncher->PostMessage(&extract_image_message);
 }
