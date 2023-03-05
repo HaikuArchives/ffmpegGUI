@@ -1683,6 +1683,7 @@ MainWindow::_ToggleCropping()
 	fBottomCrop->SetEnabled(cropping_options_enabled);
 	fLeftCrop->SetEnabled(cropping_options_enabled);
 	fRightCrop->SetEnabled(cropping_options_enabled);
+	fCropView->SetEnabled(cropping_options_enabled);
 }
 
 

@@ -23,6 +23,7 @@ CropView::CropView()
 	fBottomCrop = 0;
 	fLeftCrop = 0;
 	fRightCrop = 0;
+	fEnabled = false;
 }
 
 
@@ -54,6 +55,7 @@ CropView::Draw(BRect updateRect)
 {
 	if (fImageLoaded)
 	{
+		SetDrawingMode(B_OP_COPY);
 		DrawBitmap(fBitmap, fBitmap->Bounds(), fDrawingRect);
 
 		if ((fTopCrop+fBottomCrop+fLeftCrop+fRightCrop) > 0) // only draw crop marker when
@@ -62,6 +64,12 @@ CropView::Draw(BRect updateRect)
 			StrokeRect(fMarkerRect, B_SOLID_HIGH);
 		}
 
+		if (!fEnabled) // grey out the view if it is not enabled
+		{
+			SetLowColor(0,0,0);
+			SetDrawingMode(B_OP_BLEND);
+			FillRect(fDrawingRect, B_SOLID_LOW);
+		}
 		Invalidate();
 	}
 }
@@ -109,6 +117,13 @@ CropView::SetBottomCrop(int32 bottomcrop)
 	_SetMarkerRect();
 }
 
+
+void
+CropView::SetEnabled(bool enabled)
+{
+	fEnabled = enabled;
+	Invalidate();
+}
 
 void
 CropView::_SetDrawingRect()
