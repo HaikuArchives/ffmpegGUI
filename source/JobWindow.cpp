@@ -32,6 +32,7 @@ JobWindow::JobWindow(BRect frame, BMessage* settings, BMessenger* target)
 	BWindow(frame, B_TRANSLATE("Job manager"), B_TITLED_WINDOW,
 		B_NOT_ZOOMABLE | B_AUTO_UPDATE_SIZE_LIMITS),
 	fJobRunning(false),
+	fSingleJob(WAITING),
 	fJobNumber(1),
 	fMainWindow(target)
 {
@@ -177,15 +178,24 @@ JobWindow::MessageReceived(BMessage* message)
 		case M_JOB_INVOKED:
 		{
 			JobRow* currentRow = dynamic_cast<JobRow*>(fJobList->CurrentSelection());
-			if (currentRow != NULL) {
-				int32 status = currentRow->GetStatus();
-				if (status == FINISHED)
-					_PlayVideo(currentRow->GetFilename());
-				if (status == ERROR)
-					_ShowLog(currentRow);
-			}
-			break;
+			if (currentRow == NULL)
+				break;
+
+			int32 status = currentRow->GetStatus();
+			if (status == FINISHED) {
+				_PlayVideo(currentRow->GetFilename());
+				break;
+			} else if (status == ERROR) {
+				_ShowLog(currentRow);
+				break;
+			} else if (status == RUNNING)
+				break;
+
+			// Else we're WAITING: fall through and to a single job
 		}
+		case M_SINGLE_JOB:
+			fSingleJob = RUNNING;
+			// intentional fall through
 		case M_JOB_START:
 		{
 			fCurrentJob = _GetNextJob();
@@ -194,7 +204,7 @@ JobWindow::MessageReceived(BMessage* message)
 				fJobRunning = false;
 				_UpdateButtonStates();
 
-				int32 count = fJobList->CountRows();
+				int32 count = (fSingleJob == FINISHED)? 1 : fJobList->CountRows();
 				BString text;
 				static BStringFormat format(B_TRANSLATE("{0, plural,"
 					"one{Encoding job finished.}"
@@ -305,7 +315,10 @@ JobWindow::MessageReceived(BMessage* message)
 					encode_percentage = 0;
 
 				BString title(B_TRANSLATE("Job"));
-				title << " (" << _CountFinished() << "/" << fJobList->CountRows() << "): ";
+				if (fSingleJob == RUNNING)
+					title << " " << fCurrentJob->GetJobNumber() << ": ";
+				else
+					title << " (" << _CountFinished() << "/" << fJobList->CountRows() << "): ";
 				title << encode_percentage << "%";
 				SetTitle(title);
 
@@ -321,6 +334,7 @@ JobWindow::MessageReceived(BMessage* message)
 			message->FindInt32("exitcode", &exit_code);
 
 			if (exit_code == ABORTED) {
+				fSingleJob = WAITING;
 				fCurrentJob->SetStatus(WAITING);
 				_UpdateButtonStates();
 				break;
@@ -329,6 +343,9 @@ JobWindow::MessageReceived(BMessage* message)
 				fCurrentJob->SetStatus(FINISHED);
 			else
 				fCurrentJob->SetStatus(ERROR);
+
+			if (fSingleJob == RUNNING)
+				fSingleJob = FINISHED; // means single job finished
 
 			BMessenger(this).SendMessage(M_JOB_START);
 			break;
@@ -431,7 +448,7 @@ void
 JobWindow::_ShowLog(JobRow* row)
 {
 	BString text;
-	text << row->GetJobName() << ":\n" << row->GetLog();
+	text << row->GetJobName() << ":\n\n" << row->GetLog();
 	BAlert* alert = new BAlert("log", text, B_TRANSLATE("OK"));
 	alert->SetShortcut(0, B_ESCAPE);
 	alert->Go();
@@ -554,6 +571,15 @@ JobWindow::_IndexOfSameFilename(const char* filename)
 JobRow*
 JobWindow::_GetNextJob()
 {
+	if (fSingleJob == RUNNING) {
+		JobRow* currentRow = dynamic_cast<JobRow*>(fJobList->CurrentSelection());
+		return currentRow;
+	}
+
+	// single job finished
+	if (fSingleJob == FINISHED)
+		return NULL;
+
 	for (int32 i = 0; i < fJobList->CountRows(); i++) {
 		JobRow* row = dynamic_cast<JobRow*>(fJobList->RowAt(i));
 		int32 status = row->GetStatus();
@@ -625,7 +651,7 @@ JobWindow::_UpdateButtonStates()
 void
 JobWindow::_SetStartButtonLabel(int32 state)
 {
-	int32 count = fJobList->CountRows();
+	int32 count = (fSingleJob == RUNNING)? 1 : fJobList->CountRows();
 	BString text;
 
 	if (state == START) {

@@ -22,7 +22,7 @@ enum {
 	WAITING = 0,
 	RUNNING,
 	FINISHED,
-	ERROR
+	ERROR,
 };
 
 class JobList : public BColumnListView {
@@ -36,6 +36,7 @@ public:
 					JobRow(int32 jobnumber, const char* jobname, const char* duration,
 						const char* commandline, int32 statusID);
 
+	int32			GetJobNumber() { return fJobNumber; };
 	const char*		GetFilename() { return fFilename.String(); };
 	const char*		GetJobName() { return fJobName.String(); };
 	const char*		GetDuration() { return fDuration.String(); };
@@ -55,6 +56,7 @@ private:
 	BString			fCommandLine;
 	BString			fStatus;
 	BString			fLog;
+	int32			fJobNumber;
 	int32			fDurationSecs;
 	int32			fStatusID;
 };
