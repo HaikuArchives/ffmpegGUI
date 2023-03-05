@@ -57,6 +57,7 @@ private:
 	int32			fJobNumber;
 
 	bool			fJobRunning;
+	int32			fSingleJob;
 
 	BButton*		fStartAbortButton;
 	BButton*		fRemoveButton;

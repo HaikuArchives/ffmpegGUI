@@ -31,6 +31,7 @@ JobRow::JobRow(int32 jobnumber, const char* filename, const char* duration,
 	const char* commandline, int32 statusID)
 	:
 	BRow(),
+	fJobNumber(jobnumber),
 	fFilename(filename),
 	fDuration(duration),
 	fCommandLine(commandline),
