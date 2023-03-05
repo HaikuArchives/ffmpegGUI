@@ -27,21 +27,23 @@ public:
 	void SetRightCrop(int32 rightcrop);
 	void SetTopCrop(int32 topcrop);
 	void SetBottomCrop(int32 bottomcrop);
+	void SetEnabled(bool enabled);
 
 private:
 	void _SetDrawingRect();
 	void _SetMarkerRect();
 
-	BBitmap *fBitmap;
-	bool	fImageLoaded;
-	BSize	fImageSize;
-	float	fResizeFactor;
-	int32 	fLeftCrop;
-	int32 	fRightCrop;
-	int32 	fTopCrop;
-	int32 	fBottomCrop;
-	BRect fDrawingRect;
-	BRect fMarkerRect;
+	BBitmap*	fBitmap;
+	bool		fImageLoaded;
+	BSize		fImageSize;
+	float		fResizeFactor;
+	int32 		fLeftCrop;
+	int32 		fRightCrop;
+	int32 		fTopCrop;
+	int32 		fBottomCrop;
+	bool 		fEnabled;
+	BRect 		fDrawingRect;
+	BRect 		fMarkerRect;
 
 };
 
