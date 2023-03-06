@@ -92,11 +92,12 @@ enum {
 	 M_JOB_ABORT,
 	 M_JOB_LOG,
 	 M_JOB_REMOVE,
+	 M_JOB_REMOVE_ALL,
 	 M_JOB_COUNT,
-	 M_SINGLE_JOB,
 	 M_CLEAR_LIST,
 	 M_LIST_UP,
 	 M_LIST_DOWN,
+	 M_CLOSE,
 };
 
 #endif // MESSAGES_H
