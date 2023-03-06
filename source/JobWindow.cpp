@@ -16,6 +16,8 @@
 #include <File.h>
 #include <FindDirectory.h>
 #include <LayoutBuilder.h>
+#include <Menu.h>
+#include <MenuBar.h>
 #include <Notification.h>
 #include <Path.h>
 #include <Roster.h>
@@ -36,6 +38,45 @@ JobWindow::JobWindow(BRect frame, BMessage* settings, BMessenger* target)
 	fJobNumber(1),
 	fMainWindow(target)
 {
+	// menu bar
+	BMenuBar* menuBar = new BMenuBar("menubar");
+	BMenu* menu;
+
+	menu = new BMenu(B_TRANSLATE("Job manager"));
+	BMenuItem* item = new BMenuItem(B_TRANSLATE("Close"), new BMessage(M_CLOSE), 'W');
+	menu->AddItem(item);
+	menuBar->AddItem(menu);
+
+	menu = new BMenu(B_TRANSLATE("All jobs"));
+	fStartAbortMenu = new BMenuItem(
+		B_TRANSLATE("Start all jobs"), new BMessage(M_JOB_START), 'S');
+	menu->AddItem(fStartAbortMenu);
+	fClearMenu = new BMenuItem(
+		B_TRANSLATE("Clear finished"), new BMessage(M_CLEAR_LIST), 'F');
+	menu->AddItem(fClearMenu);
+	menu->AddSeparatorItem();
+	fRemoveAllMenu = new BMenuItem(
+		B_TRANSLATE("Remove all jobs"), new BMessage(M_JOB_REMOVE_ALL));
+	menu->AddItem(fRemoveAllMenu);
+	menuBar->AddItem(menu);
+
+	menu = new BMenu(B_TRANSLATE("Selected job"));
+	fStartAbortSingleMenu = new BMenuItem(
+		B_TRANSLATE("Start job"), new BMessage(M_JOB_INVOKED), 'S', B_SHIFT_KEY);
+	menu->AddItem(fStartAbortSingleMenu);
+	fPlayMenu = new BMenuItem(
+		B_TRANSLATE("Play output file"), new BMessage(M_JOB_INVOKED), 'P');
+	menu->AddItem(fPlayMenu);
+	fLogMenu = new BMenuItem(
+		B_TRANSLATE("Show error log"), new BMessage(M_JOB_INVOKED), 'E');
+	menu->AddItem(fLogMenu);
+	menu->AddSeparatorItem();
+	fRemoveMenu = new BMenuItem(
+		B_TRANSLATE("Remove this job"), new BMessage(M_JOB_REMOVE));
+	menu->AddItem(fRemoveMenu);
+	menuBar->AddItem(menu);
+
+	// columnlist of jobs
 	fJobList = new JobList();
 	fJobList->SetSelectionMode(B_SINGLE_SELECTION_LIST);
 	fJobList->SetSelectionMessage(new BMessage(M_JOB_SELECTED));
@@ -61,6 +102,7 @@ JobWindow::JobWindow(BRect frame, BMessage* settings, BMessenger* target)
 		colWidth / 4, colWidth * 2, B_TRUNCATE_END);
 	fJobList->AddColumn(statusCol, kStatusIndex);
 
+	// buttons
 	fStartAbortButton = new BButton(B_TRANSLATE("Start jobs"), new BMessage(M_JOB_START));
 	fStartAbortButton->MakeDefault(true);
 	fRemoveButton = new BButton(B_TRANSLATE("Remove"), new BMessage(M_JOB_REMOVE));
@@ -85,22 +127,26 @@ JobWindow::JobWindow(BRect frame, BMessage* settings, BMessenger* target)
 	fUpButton->SetExplicitSize(size);
 	fDownButton->SetExplicitSize(size);
 
-	BLayoutBuilder::Group<>(this, B_HORIZONTAL, B_USE_DEFAULT_SPACING)
-		.SetInsets(B_USE_WINDOW_SPACING)
-		.Add(fJobList)
-		.AddGroup(B_VERTICAL)
-			.Add(fStartAbortButton)
-			.Add(fRemoveButton)
-			.Add(fLogButton)
-			.Add(fClearButton)
-			.AddGlue()
-			.AddGroup(B_HORIZONTAL)
-				.Add(fUpButton)
+	// laying it all out
+	BLayoutBuilder::Group<>(this, B_VERTICAL, 0)
+		.Add(menuBar)
+		.AddGroup(B_HORIZONTAL)
+			.SetInsets(B_USE_WINDOW_SPACING)
+			.Add(fJobList)
+			.AddGroup(B_VERTICAL)
+				.Add(fStartAbortButton)
+				.Add(fRemoveButton)
+				.Add(fLogButton)
+				.Add(fClearButton)
 				.AddGlue()
-			.End()
-			.AddGroup(B_HORIZONTAL)
-				.Add(fDownButton)
-				.AddGlue()
+				.AddGroup(B_HORIZONTAL)
+					.Add(fUpButton)
+					.AddGlue()
+				.End()
+				.AddGroup(B_HORIZONTAL)
+					.Add(fDownButton)
+					.AddGlue()
+				.End()
 			.End()
 		.End();
 
@@ -124,7 +170,7 @@ JobWindow::JobWindow(BRect frame, BMessage* settings, BMessenger* target)
 	if (fJobList->CountRows() != 0)
 		fJobList->AddToSelection(fJobList->RowAt(0));
 
-	_UpdateButtonStates();
+	_UpdateStates();
 
 	// apply window settings
 	if (settings->FindRect("job_window", &frame) == B_OK) {
@@ -170,9 +216,14 @@ void
 JobWindow::MessageReceived(BMessage* message)
 {
 	switch (message->what) {
+		case M_CLOSE:
+		{
+			Hide();
+			break;
+		}
 		case M_JOB_SELECTED:
 		{
-			_UpdateButtonStates();
+			_UpdateStates();
 			break;
 		}
 		case M_JOB_INVOKED:
@@ -191,18 +242,17 @@ JobWindow::MessageReceived(BMessage* message)
 			} else if (status == RUNNING)
 				break;
 
-			// Else we're WAITING: fall through and to a single job
-		}
-		case M_SINGLE_JOB:
+			// Else we're WAITING and do a single job
 			fSingleJob = RUNNING;
 			// intentional fall through
+		}
 		case M_JOB_START:
 		{
 			fCurrentJob = _GetNextJob();
 			if (fCurrentJob == NULL) {
 				SetTitle(B_TRANSLATE("Job manager"));
 				fJobRunning = false;
-				_UpdateButtonStates();
+				_UpdateStates();
 
 				int32 count = (fSingleJob == FINISHED)? 1 : fJobList->CountRows();
 				BString text;
@@ -221,7 +271,7 @@ JobWindow::MessageReceived(BMessage* message)
 
 			fJobRunning = true;
 			fCurrentJob->SetStatus(RUNNING);
-			_UpdateButtonStates();
+			_UpdateStates();
 
 			BMessage startMsg(M_ENCODE_COMMAND);
 			startMsg.AddString("cmdline", fCurrentJob->GetCommandLine());
@@ -249,7 +299,28 @@ JobWindow::MessageReceived(BMessage* message)
 			fJobList->AddToSelection(
 				fJobList->RowAt((rowIndex > count - 1) ? count - 1 : rowIndex));
 
-			_UpdateButtonStates();
+			_UpdateStates();
+			break;
+		}
+		case M_JOB_REMOVE_ALL:
+		{
+			BAlert* alert = new BAlert("removeall",
+				B_TRANSLATE("Are you sure, that you want to remove all jobs?\n\n"),
+				B_TRANSLATE("Cancel"), B_TRANSLATE("Remove all"));
+			alert->SetShortcut(0, B_ESCAPE);
+
+			int32 choice = alert->Go();
+			switch (choice) {
+				case 0:
+					break;
+				case 1:
+				{
+					fJobList->Clear();
+					fJobNumber = 1;
+					_SendJobCount(0);
+					break;
+				}
+			}
 			break;
 		}
 		case M_JOB_LOG:
@@ -260,14 +331,23 @@ JobWindow::MessageReceived(BMessage* message)
 		}
 		case M_CLEAR_LIST:
 		{
+			BRow* selectedRow = fJobList->CurrentSelection();
+
 			for (int32 i = fJobList->CountRows() - 1; i >= 0; i--) {
 				JobRow* row = dynamic_cast<JobRow*>(fJobList->RowAt(i));
 				int32 status = row->GetStatus();
 				if (status == FINISHED)
 					fJobList->RemoveRow(row);
 			}
+
+			int32 index = fJobList->IndexOf(selectedRow);
+			if (index >= 0) // formerly selected row is still with us?
+				fJobList->AddToSelection(selectedRow);
+			else if (fJobList->CountRows() != 0)
+				fJobList->AddToSelection(fJobList->RowAt(0));
+
 			_SendJobCount(fJobList->CountRows());
-			_UpdateButtonStates();
+			_UpdateStates();
 			break;
 		}
 		case M_LIST_UP:
@@ -279,7 +359,7 @@ JobWindow::MessageReceived(BMessage* message)
 
 			fJobList->SwapRows(rowIndex, rowIndex - 1);
 			fJobList->AddToSelection(fJobList->RowAt(rowIndex - 1));
-			_UpdateButtonStates();
+			_UpdateStates();
 			break;
 		}
 		case M_LIST_DOWN:
@@ -292,7 +372,7 @@ JobWindow::MessageReceived(BMessage* message)
 
 			fJobList->SwapRows(rowIndex, rowIndex + 1);
 			fJobList->AddToSelection(fJobList->RowAt(rowIndex + 1));
-			_UpdateButtonStates();
+			_UpdateStates();
 			break;
 		}
 		case M_ENCODE_PROGRESS:
@@ -336,7 +416,7 @@ JobWindow::MessageReceived(BMessage* message)
 			if (exit_code == ABORTED) {
 				fSingleJob = WAITING;
 				fCurrentJob->SetStatus(WAITING);
-				_UpdateButtonStates();
+				_UpdateStates();
 				break;
 			}
 			if (exit_code == SUCCESS)
@@ -467,7 +547,7 @@ JobWindow::AddJob(const char* filename, const char* duration, const char* comman
 		JobRow* row = new JobRow(fJobNumber++, filename, duration, commandline, WAITING);
 		fJobList->AddRow(row);
 		_SendJobCount(fJobList->CountRows());
-		_UpdateButtonStates();
+		_UpdateStates();
 		return;
 	}
 
@@ -591,13 +671,22 @@ JobWindow::_GetNextJob()
 
 
 void
-JobWindow::_UpdateButtonStates()
+JobWindow::_UpdateStates()
 {
 	int32 count = fJobList->CountRows();
-	_SetStartButtonLabel((fJobRunning == true) ? ABORT : START);
+	_SetStartAbortLabel((fJobRunning == true) ? ABORT : START);
 
 	// Empty list
 	if (count == 0) {
+		// menus
+		fStartAbortMenu->SetEnabled(false);
+		fStartAbortSingleMenu->SetEnabled(false);
+		fPlayMenu->SetEnabled(false);
+		fRemoveMenu->SetEnabled(false);
+		fRemoveAllMenu->SetEnabled(false);
+		fLogMenu->SetEnabled(false);
+		fClearMenu->SetEnabled(false);
+		// buttons
 		fStartAbortButton->SetEnabled(false);
 		fRemoveButton->SetEnabled(false);
 		fLogButton->SetEnabled(false);
@@ -607,22 +696,35 @@ JobWindow::_UpdateButtonStates()
 		return;
 	}
 
-	bool finishOrError = false;
+	// check status of each job, see if any are finished, waiting or running
+	bool finished = false;
 	bool waitOrRun = false;
 	for (int32 i = 0; i < count; i++) {
 		JobRow* row = dynamic_cast<JobRow*>(fJobList->RowAt(i));
 		int32 status = row->GetStatus();
-		if ((status == FINISHED) or (status == ERROR))
-			finishOrError = true;
+		if (status == FINISHED)
+			finished = true;
 		if ((status == WAITING) or (status == RUNNING))
 			waitOrRun = true;
 	}
-	fClearButton->SetEnabled(finishOrError);
+	// menus
+	fClearMenu->SetEnabled(finished);
+	fStartAbortMenu->SetEnabled(waitOrRun);
+	fStartAbortSingleMenu->SetEnabled(waitOrRun);
+	// buttons
+	fClearButton->SetEnabled(finished);
 	fStartAbortButton->SetEnabled(waitOrRun);
 
+	// check the selected job's status
 	JobRow* currentRow = dynamic_cast<JobRow*>(fJobList->CurrentSelection());
 	// Nothing selected
 	if (currentRow == NULL) {
+		// menus
+		fPlayMenu->SetEnabled(false);
+		fRemoveMenu->SetEnabled(false);
+		fRemoveAllMenu->SetEnabled(false);
+		fLogMenu->SetEnabled(false);
+		// buttons
 		fRemoveButton->SetEnabled(false);
 		fLogButton->SetEnabled(false);
 		fUpButton->SetEnabled(false);
@@ -631,8 +733,20 @@ JobWindow::_UpdateButtonStates()
 	}
 
 	int32 status = currentRow->GetStatus();
-	fLogButton->SetEnabled((status == ERROR) ? true :false);
-	fRemoveButton->SetEnabled((status == RUNNING) ? false :true);
+	// menus
+	fLogMenu->SetEnabled((status == ERROR) ? true : false);
+	fRemoveMenu->SetEnabled((status == RUNNING) ? false : true);
+	fRemoveAllMenu->SetEnabled((fJobRunning) ? false : true);
+	fStartAbortSingleMenu->SetEnabled(
+		// disable the start/abort menu for the single selected job, if:
+		// a) the currently running job isn't a single job run, or
+		(((fJobRunning) and (fSingleJob == WAITING))
+		// b) the job already ran (enddd with error or successful
+		or ((status == ERROR) or (status == FINISHED))) ? false : true);
+	fPlayMenu->SetEnabled((status == FINISHED) ? true : false);
+	// buttons
+	fLogButton->SetEnabled((status == ERROR) ? true : false);
+	fRemoveButton->SetEnabled((status == RUNNING) ? false : true);
 
 	// Move up/down button logic
 	int32 rowIndex = fJobList->IndexOf(fJobList->CurrentSelection());
@@ -649,7 +763,7 @@ JobWindow::_UpdateButtonStates()
 
 
 void
-JobWindow::_SetStartButtonLabel(int32 state)
+JobWindow::_SetStartAbortLabel(int32 state)
 {
 	int32 count = (fSingleJob == RUNNING)? 1 : fJobList->CountRows();
 	BString text;
@@ -660,12 +774,22 @@ JobWindow::_SetStartButtonLabel(int32 state)
 			"other{Start jobs}}"));
 		format.Format(text, count);
 		fStartAbortButton->SetMessage(new BMessage(M_JOB_START));
+
+		fStartAbortMenu->SetLabel(B_TRANSLATE("Start all jobs"));
+		fStartAbortMenu->SetMessage(new BMessage(M_JOB_START));
+		fStartAbortSingleMenu->SetLabel(B_TRANSLATE("Start job"));
+		fStartAbortSingleMenu->SetMessage(new BMessage(M_JOB_INVOKED));
 	} else {
 		static BStringFormat format(B_TRANSLATE("{0, plural,"
 			"one{Abort job}"
 			"other{Abort jobs}}"));
 		format.Format(text, count);
 		fStartAbortButton->SetMessage(new BMessage(M_JOB_ABORT));
+
+		fStartAbortMenu->SetLabel(B_TRANSLATE("Abort all jobs"));
+		fStartAbortMenu->SetMessage(new BMessage(M_JOB_ABORT));
+		fStartAbortSingleMenu->SetLabel(B_TRANSLATE("Abort job"));
+		fStartAbortSingleMenu->SetMessage(new BMessage(M_JOB_ABORT));
 	}
 	fStartAbortButton->SetLabel(text);
 }

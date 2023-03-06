@@ -47,8 +47,8 @@ private:
 	bool			_IsUniqueJob(const char* commandline);
 	int32			_IndexOfSameFilename(const char* filename);
 	JobRow*			_GetNextJob();
-	void			_UpdateButtonStates();
-	void			_SetStartButtonLabel(int32 state);
+	void			_UpdateStates();
+	void			_SetStartAbortLabel(int32 state);
 
 	CommandLauncher*	fJobCommandLauncher;
 	BMessenger*		fMainWindow;
@@ -58,6 +58,15 @@ private:
 
 	bool			fJobRunning;
 	int32			fSingleJob;
+
+	BMenuItem*		fStartAbortMenu;
+	BMenuItem*		fStartAbortSingleMenu;
+	BMenuItem*		fClearMenu;
+	BMenuItem*		fPlayMenu;
+	BMenuItem*		fLogMenu;
+	BMenuItem*		fRemoveMenu;
+	BMenuItem*		fRemoveAllMenu;
+
 
 	BButton*		fStartAbortButton;
 	BButton*		fRemoveButton;
