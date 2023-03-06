@@ -8,6 +8,7 @@
 #define JOBWINDOW_H
 
 #include <Button.h>
+#include <PopUpMenu.h>
 #include <Window.h>
 
 #include "CommandLauncher.h"
@@ -17,6 +18,16 @@
 enum {
 	START = 0,
 	ABORT
+};
+
+
+class ContextMenu : public BPopUpMenu {
+public:
+					ContextMenu(const char* name, BMessenger target);
+	virtual 		~ContextMenu();
+
+private:
+	BMessenger		fTarget;
 };
 
 
@@ -36,6 +47,9 @@ public:
 			void	SetColumnState(BMessage* archive);
 
 private:
+	void			_ShowPopUpMenu(BPoint where);
+	bool			fShowingPopUpMenu;
+
 	status_t		_LoadJobs(BMessage& jobs);
 	status_t		_SaveJobs();
 
@@ -50,6 +64,7 @@ private:
 	void			_UpdateStates();
 	void			_SetStartAbortLabel(int32 state);
 
+private:
 	CommandLauncher*	fJobCommandLauncher;
 	BMessenger*		fMainWindow;
 	JobList*		fJobList;

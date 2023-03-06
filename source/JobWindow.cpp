@@ -29,6 +29,22 @@
 #define B_TRANSLATION_CONTEXT "JobWindow"
 
 
+// Context menu
+ContextMenu::ContextMenu(const char* name, BMessenger target)
+	:
+	BPopUpMenu(name, false, false),
+	fTarget(target)
+{
+	SetAsyncAutoDestruct(true);
+}
+
+
+ContextMenu::~ContextMenu()
+{
+	fTarget.SendMessage(M_CONTEXT_CLOSE);
+}
+
+
 JobWindow::JobWindow(BRect frame, BMessage* settings, BMessenger* target)
 	:
 	BWindow(frame, B_TRANSLATE("Job manager"), B_TITLED_WINDOW,
@@ -36,7 +52,8 @@ JobWindow::JobWindow(BRect frame, BMessage* settings, BMessenger* target)
 	fJobRunning(false),
 	fSingleJob(WAITING),
 	fJobNumber(1),
-	fMainWindow(target)
+	fMainWindow(target),
+	fShowingPopUpMenu(false)
 {
 	// menu bar
 	BMenuBar* menuBar = new BMenuBar("menubar");
@@ -224,6 +241,19 @@ JobWindow::MessageReceived(BMessage* message)
 		case M_JOB_SELECTED:
 		{
 			_UpdateStates();
+
+			BPoint where;
+			uint32 buttons;
+			fJobList->GetMouse(&where, &buttons);
+			where.x += 2; // to prevent occasional select
+			if (buttons & B_SECONDARY_MOUSE_BUTTON)
+				_ShowPopUpMenu(where);
+
+			break;
+		}
+		case M_CONTEXT_CLOSE:
+		{
+			fShowingPopUpMenu = false;
 			break;
 		}
 		case M_JOB_INVOKED:
@@ -435,6 +465,50 @@ JobWindow::MessageReceived(BMessage* message)
 			BWindow::MessageReceived(message);
 			break;
 	}
+}
+
+
+void
+JobWindow::_ShowPopUpMenu(BPoint where)
+{
+	if (fShowingPopUpMenu)
+		return;
+
+	JobRow* currentRow = dynamic_cast<JobRow*>(fJobList->CurrentSelection());
+	if (currentRow == NULL)
+		return;
+
+	ContextMenu* menu = new ContextMenu("contextmenu", this);
+
+	BMenuItem* item;
+	int32 status = currentRow->GetStatus();
+
+	BString label(B_TRANSLATE("Start this job"));
+	BMessage* message = new BMessage(M_JOB_INVOKED);
+	if (status == RUNNING) {
+		label = B_TRANSLATE("Abort this job");
+		message = new BMessage(M_JOB_ABORT);
+	}
+	item = new BMenuItem(label, message, 'S', B_SHIFT_KEY);
+	menu->AddItem(item);
+	item->SetEnabled(((status == RUNNING) or (status == WAITING)) ? true : false);
+
+	item = new BMenuItem(B_TRANSLATE("Play output file"), new BMessage(M_JOB_INVOKED), 'P');
+	menu->AddItem(item);
+	item->SetEnabled((status == FINISHED) ? true : false);
+
+	item = new BMenuItem(B_TRANSLATE("Show error log"), new BMessage(M_JOB_INVOKED), 'E');
+	menu->AddItem(item);
+	item->SetEnabled((status == ERROR) ? true : false);
+	menu->AddSeparatorItem();
+
+	item = new BMenuItem(B_TRANSLATE("Remove this job"), new BMessage(M_JOB_REMOVE));
+	menu->AddItem(item);
+	item->SetEnabled((status == RUNNING) ? false : true);
+
+	menu->SetTargetForItems(this);
+	menu->Go(fJobList->ConvertToScreen(where), true, true, true);
+	fShowingPopUpMenu = true;
 }
 
 
@@ -771,25 +845,24 @@ JobWindow::_SetStartAbortLabel(int32 state)
 	if (state == START) {
 		static BStringFormat format(B_TRANSLATE("{0, plural,"
 			"one{Start job}"
-			"other{Start jobs}}"));
+			"other{Start all jobs}}"));
 		format.Format(text, count);
 		fStartAbortButton->SetMessage(new BMessage(M_JOB_START));
-
-		fStartAbortMenu->SetLabel(B_TRANSLATE("Start all jobs"));
 		fStartAbortMenu->SetMessage(new BMessage(M_JOB_START));
-		fStartAbortSingleMenu->SetLabel(B_TRANSLATE("Start job"));
+
+		fStartAbortSingleMenu->SetLabel(B_TRANSLATE("Start this job"));
 		fStartAbortSingleMenu->SetMessage(new BMessage(M_JOB_INVOKED));
 	} else {
 		static BStringFormat format(B_TRANSLATE("{0, plural,"
 			"one{Abort job}"
-			"other{Abort jobs}}"));
+			"other{Abort all jobs}}"));
 		format.Format(text, count);
 		fStartAbortButton->SetMessage(new BMessage(M_JOB_ABORT));
-
-		fStartAbortMenu->SetLabel(B_TRANSLATE("Abort all jobs"));
 		fStartAbortMenu->SetMessage(new BMessage(M_JOB_ABORT));
-		fStartAbortSingleMenu->SetLabel(B_TRANSLATE("Abort job"));
+
+		fStartAbortSingleMenu->SetLabel(B_TRANSLATE("Abort this job"));
 		fStartAbortSingleMenu->SetMessage(new BMessage(M_JOB_ABORT));
 	}
 	fStartAbortButton->SetLabel(text);
+	fStartAbortMenu->SetLabel(text);
 }

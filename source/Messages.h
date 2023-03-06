@@ -98,6 +98,7 @@ enum {
 	 M_LIST_UP,
 	 M_LIST_DOWN,
 	 M_CLOSE,
+	 M_CONTEXT_CLOSE,
 };
 
 #endif // MESSAGES_H
