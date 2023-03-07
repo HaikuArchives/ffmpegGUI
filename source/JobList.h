@@ -42,7 +42,7 @@ public:
 	const char*		GetDuration() { return fDuration.String(); };
 	int32			GetDurationSeconds() { return fDurationSecs; };
 	const char*		GetCommandLine() { return fCommandLine.String(); };
-	BMessage*		GetJobMessage() { return &fJobMessage; };
+	BMessage		GetJobMessage() { return fJobMessage; };
 	int32			GetStatus() { return fStatusID; };
 	const char*		GetLog() { return fLog.String(); };
 

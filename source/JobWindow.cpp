@@ -11,6 +11,7 @@
 
 #include <Alert.h>
 #include <Catalog.h>
+#include <Clipboard.h>
 #include <ColumnTypes.h>
 #include <Directory.h>
 #include <File.h>
@@ -81,12 +82,18 @@ JobWindow::JobWindow(BRect frame, BMessage* settings, BMessenger* target)
 	fStartAbortSingleMenu = new BMenuItem(
 		B_TRANSLATE("Start job"), new BMessage(M_JOB_INVOKED), 'S', B_SHIFT_KEY);
 	menu->AddItem(fStartAbortSingleMenu);
+	fEditMenu = new BMenuItem(
+		B_TRANSLATE("Edit job"), new BMessage(M_JOB_EDIT), 'E');
+	menu->AddItem(fEditMenu);
 	fPlayMenu = new BMenuItem(
 		B_TRANSLATE("Play output file"), new BMessage(M_JOB_INVOKED), 'P');
 	menu->AddItem(fPlayMenu);
 	fLogMenu = new BMenuItem(
-		B_TRANSLATE("Show error log"), new BMessage(M_JOB_INVOKED), 'E');
+		B_TRANSLATE("Show error log"), new BMessage(M_JOB_INVOKED), 'L');
 	menu->AddItem(fLogMenu);
+	fCopyCommand = new BMenuItem(
+		B_TRANSLATE("Copy commandline"), new BMessage(M_COPY_COMMAND), 'C');
+	menu->AddItem(fCopyCommand);
 	menu->AddSeparatorItem();
 	fRemoveMenu = new BMenuItem(
 		B_TRANSLATE("Remove this job"), new BMessage(M_JOB_REMOVE));
@@ -253,6 +260,23 @@ JobWindow::MessageReceived(BMessage* message)
 
 			break;
 		}
+		case M_JOB_EDIT:
+		{
+			JobRow* row = dynamic_cast<JobRow*>(fJobList->CurrentSelection());
+			int32 rowIndex = fJobList->IndexOf(row);
+			BMessage jobArchive(row->GetJobMessage());
+			fMainWindow->SendMessage(&jobArchive);
+
+			fJobList->RemoveRow(row);
+			int32 count = fJobList->CountRows();
+			_SendJobCount(count);
+			// Did we remove the first or last row?
+			fJobList->AddToSelection(
+				fJobList->RowAt((rowIndex > count - 1) ? count - 1 : rowIndex));
+
+			_UpdateStates();
+			break;
+		}
 		case M_CONTEXT_CLOSE:
 		{
 			fShowingPopUpMenu = false;
@@ -274,7 +298,7 @@ JobWindow::MessageReceived(BMessage* message)
 			} else if (status == RUNNING)
 				break;
 
-			// Else we're WAITING and do a single job
+			// Else we're WAITING: fall through and to a single job
 			fSingleJob = RUNNING;
 			// intentional fall through
 		}
@@ -359,6 +383,23 @@ JobWindow::MessageReceived(BMessage* message)
 		{
 			JobRow* currentRow = dynamic_cast<JobRow*>(fJobList->CurrentSelection());
 			_ShowLog(currentRow);
+			break;
+		}
+		case M_COPY_COMMAND:
+		{
+			JobRow* currentRow = dynamic_cast<JobRow*>(fJobList->CurrentSelection());
+			BString text(currentRow->GetCommandLine());
+			ssize_t textLen = text.Length();
+			BMessage* clip = (BMessage*) NULL;
+
+			if (be_clipboard->Lock()) {
+				be_clipboard->Clear();
+				if ((clip = be_clipboard->Data())) {
+					clip->AddData("text/plain", B_MIME_TYPE, text.String(), textLen);
+					be_clipboard->Commit();
+				}
+				be_clipboard->Unlock();
+			}
 			break;
 		}
 		case M_CLEAR_LIST:
@@ -495,13 +536,21 @@ JobWindow::_ShowPopUpMenu(BPoint where)
 	menu->AddItem(item);
 	item->SetEnabled(((status == RUNNING) or (status == WAITING)) ? true : false);
 
+	item = new BMenuItem(B_TRANSLATE("Edit this job"), new BMessage(M_JOB_EDIT), 'E');
+	menu->AddItem(item);
+	item->SetEnabled((status != RUNNING) ? true : false);
+
 	item = new BMenuItem(B_TRANSLATE("Play output file"), new BMessage(M_JOB_INVOKED), 'P');
 	menu->AddItem(item);
 	item->SetEnabled((status == FINISHED) ? true : false);
 
-	item = new BMenuItem(B_TRANSLATE("Show error log"), new BMessage(M_JOB_INVOKED), 'E');
+	item = new BMenuItem(B_TRANSLATE("Show error log"), new BMessage(M_JOB_INVOKED), 'L');
 	menu->AddItem(item);
 	item->SetEnabled((status == ERROR) ? true : false);
+
+	item = new BMenuItem(B_TRANSLATE("Copy commandline"), new BMessage(M_COPY_COMMAND), 'C');
+	menu->AddItem(item);
+
 	menu->AddSeparatorItem();
 
 	item = new BMenuItem(B_TRANSLATE("Remove this job"), new BMessage(M_JOB_REMOVE));
@@ -580,7 +629,7 @@ JobWindow::_SaveJobs()
 			jobs.AddString("filename", row->GetFilename());
 			jobs.AddString("duration", row->GetDuration());
 			jobs.AddString("command", row->GetCommandLine());
-			jobs.AddMessage("jobmessage", row->GetJobMessage());
+			jobs.AddMessage("jobmessage", new BMessage(row->GetJobMessage()));
 		}
 	}
 
@@ -763,6 +812,8 @@ JobWindow::_UpdateStates()
 		fRemoveMenu->SetEnabled(false);
 		fRemoveAllMenu->SetEnabled(false);
 		fLogMenu->SetEnabled(false);
+		fCopyCommand->SetEnabled(false);
+		fEditMenu->SetEnabled(false);
 		fClearMenu->SetEnabled(false);
 		// buttons
 		fStartAbortButton->SetEnabled(false);
@@ -798,10 +849,12 @@ JobWindow::_UpdateStates()
 	// Nothing selected
 	if (currentRow == NULL) {
 		// menus
+		fEditMenu->SetEnabled(false);
 		fPlayMenu->SetEnabled(false);
 		fRemoveMenu->SetEnabled(false);
 		fRemoveAllMenu->SetEnabled(false);
 		fLogMenu->SetEnabled(false);
+		fCopyCommand->SetEnabled(false);
 		// buttons
 		fRemoveButton->SetEnabled(false);
 		fLogButton->SetEnabled(false);
@@ -822,6 +875,8 @@ JobWindow::_UpdateStates()
 		// b) the job already ran (enddd with error or successful
 		or ((status == ERROR) or (status == FINISHED))) ? false : true);
 	fPlayMenu->SetEnabled((status == FINISHED) ? true : false);
+	fEditMenu->SetEnabled(true);
+	fCopyCommand->SetEnabled(true);
 	// buttons
 	fLogButton->SetEnabled((status == ERROR) ? true : false);
 	fRemoveButton->SetEnabled((status == RUNNING) ? false : true);

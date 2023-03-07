@@ -267,6 +267,12 @@ MainWindow::MessageReceived(BMessage* message)
 			}
 			break;
 		}
+		case M_JOB_ARCHIVE:
+		{
+			_UnarchiveJob(*message);
+			Activate(true);
+			break;
+		}
 		case M_ADD_JOB:
 		{
 			BString filename(fOutputTextControl->Text());
@@ -814,6 +820,8 @@ MainWindow::_ArchiveJob()
 	text.Trim();
 	jobMessage.AddString("output", text);
 
+	jobMessage.AddString("mediainfo", fMediaInfoView->Text());
+
 	jobMessage.AddInt32("format", fFileFormatPopup->FindMarkedIndex());
 
 	jobMessage.AddBool("v_box_enabled", fEnableVideoBox->IsEnabled());
@@ -841,25 +849,42 @@ MainWindow::_ArchiveJob()
 	jobMessage.AddInt32("samplerate", fSampleratePopup->FindMarkedIndex());
 	jobMessage.AddInt32("channels", fChannelCount->Value());
 
+	jobMessage.AddString("commandline", fCommand);
+
 	return jobMessage;
 }
 
 
 void
-MainWindow::_UnarchiveJob(BMessage& jobMessage)
+MainWindow::_UnarchiveJob(BMessage jobMessage)
 {
 	BString text;
 	bool onoff;
 	int32 value;
 
+	// Don't trigger the message leading to _GetMediaInfo()
+	// which would overwrite the settings.
+	fSourceTextControl->SetModificationMessage(NULL);
 	if (jobMessage.FindString("source", &text) == B_OK)
 		fSourceTextControl->SetText(text);
+	fSourceTextControl->SetModificationMessage(new BMessage(M_SOURCEFILE));
+
+	// Don't trigger the message leading to _BuildLine()
+	// which would overwrite the commandline.
+	fOutputTextControl->SetModificationMessage(NULL);
 	if (jobMessage.FindString("output", &text) == B_OK)
 		fOutputTextControl->SetText(text);
+	fOutputTextControl->SetModificationMessage(new BMessage(M_OUTPUTFILE));
+
+	if (jobMessage.FindString("mediainfo", &text) == B_OK)
+		fMediaInfoView->SetText(text);
 
 	if (jobMessage.FindInt32("format", &value) == B_OK) {
 		BMenuItem* item = fFileFormatPopup->ItemAt(value);
 		item->SetMarked(true);
+		item = fFileFormatPopup->Superitem();
+		if (item != NULL)
+			item->SetLabel(fContainerFormats[value].Extension);
 	}
 
 	if (jobMessage.FindBool("v_box_enabled", &onoff) == B_OK)
@@ -869,6 +894,9 @@ MainWindow::_UnarchiveJob(BMessage& jobMessage)
 	if (jobMessage.FindInt32("v_codec", &value) == B_OK) {
 		BMenuItem* item = fVideoFormatPopup->ItemAt(value);
 		item->SetMarked(true);
+		item = fVideoFormatPopup->Superitem();
+		if (item != NULL)
+			item->SetLabel(fVideoCodecs[value].Shortlabel);
 	}
 	if (jobMessage.FindInt32("v_bitrate", &value) == B_OK)
 		fVideoBitrateSpinner->SetValue(value);
@@ -904,6 +932,9 @@ MainWindow::_UnarchiveJob(BMessage& jobMessage)
 	if (jobMessage.FindInt32("a_codec", &value) == B_OK) {
 		BMenuItem* item = fAudioFormatPopup->ItemAt(value);
 		item->SetMarked(true);
+		item = fAudioFormatPopup->Superitem();
+		if (item != NULL)
+			item->SetLabel(fAudioCodecs[value].Shortlabel);
 	}
 	if (jobMessage.FindInt32("a_bitrate", &value) == B_OK) {
 		BMenuItem* item = fAudioBitsPopup->ItemAt(value);
@@ -915,6 +946,13 @@ MainWindow::_UnarchiveJob(BMessage& jobMessage)
 	}
 	if (jobMessage.FindInt32("channels", &value) == B_OK)
 		fChannelCount->SetValue(value);
+
+	if (jobMessage.FindString("commandline", &text) == B_OK)
+		fCommandlineTextControl->SetText(text);
+
+	_ToggleVideo();
+	_ToggleCropping();
+	_ToggleAudio();
 }
 
 

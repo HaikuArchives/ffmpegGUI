@@ -77,8 +77,10 @@ private:
 	BMenuItem*		fStartAbortMenu;
 	BMenuItem*		fStartAbortSingleMenu;
 	BMenuItem*		fClearMenu;
+	BMenuItem*		fEditMenu;
 	BMenuItem*		fPlayMenu;
 	BMenuItem*		fLogMenu;
+	BMenuItem*		fCopyCommand;
 	BMenuItem*		fRemoveMenu;
 	BMenuItem*		fRemoveAllMenu;
 
