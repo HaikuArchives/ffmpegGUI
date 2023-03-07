@@ -78,14 +78,15 @@ enum {
 // Misc
 enum {
 	 M_STOP_ALERT_BUTTON = 1800,
-	 M_QUIT_ALERT_BUTTON
+	 M_QUIT_ALERT_BUTTON,
+	 M_JOB_ARCHIVE,
 };
 // Menus
 enum {
 	 M_COPY_COMMAND = 1900,
  	 M_ADD_JOB,
 	 M_JOB_MANAGER,
-	 M_DEFAULTS
+	 M_DEFAULTS,
 };
 // Job window
 enum {

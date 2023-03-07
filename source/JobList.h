@@ -34,7 +34,7 @@ public:
 class JobRow : public BRow {
 public:
 					JobRow(int32 jobnumber, const char* jobname, const char* duration,
-						const char* commandline, int32 statusID);
+						const char* commandline, BMessage jobmessage, int32 statusID);
 
 	int32			GetJobNumber() { return fJobNumber; };
 	const char*		GetFilename() { return fFilename.String(); };
@@ -42,6 +42,7 @@ public:
 	const char*		GetDuration() { return fDuration.String(); };
 	int32			GetDurationSeconds() { return fDurationSecs; };
 	const char*		GetCommandLine() { return fCommandLine.String(); };
+	BMessage*		GetJobMessage() { return &fJobMessage; };
 	int32			GetStatus() { return fStatusID; };
 	const char*		GetLog() { return fLog.String(); };
 
@@ -54,6 +55,7 @@ private:
 	BString			fJobName;
 	BString			fDuration;
 	BString			fCommandLine;
+	BMessage		fJobMessage;
 	BString			fStatus;
 	BString			fLog;
 	int32			fJobNumber;

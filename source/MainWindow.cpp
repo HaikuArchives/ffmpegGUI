@@ -274,8 +274,11 @@ MainWindow::MessageReceived(BMessage* message)
 
 			BString command(fCommandlineTextControl->Text());
 			command << " -y";
+
+			BMessage jobMessage(_ArchiveJob());
 			if (fJobWindow->Lock())
-				fJobWindow->AddJob(filename.String(), fDuration.String(), command.String());
+				fJobWindow->AddJob(
+					filename.String(), fDuration.String(), command.String(), jobMessage);
 			fJobWindow->Unlock();
 			break;
 		}
@@ -794,6 +797,124 @@ MainWindow::_SaveSettings()
 		status = settings.Flatten(&file);
 
 	return status;
+}
+
+
+BMessage
+MainWindow::_ArchiveJob()
+{
+	BMessage jobMessage(M_JOB_ARCHIVE);
+
+	BString text;
+	text = fSourceTextControl->Text();
+	text.Trim();
+	jobMessage.AddString("source", text);
+
+	text = fOutputTextControl->Text();
+	text.Trim();
+	jobMessage.AddString("output", text);
+
+	jobMessage.AddInt32("format", fFileFormatPopup->FindMarkedIndex());
+
+	jobMessage.AddBool("v_box_enabled", fEnableVideoBox->IsEnabled());
+	jobMessage.AddInt32("v_box_ticked", fEnableVideoBox->Value());
+	jobMessage.AddInt32("v_codec", fVideoFormatPopup->FindMarkedIndex());
+	jobMessage.AddInt32("v_bitrate", fVideoBitrateSpinner->Value());
+	jobMessage.AddInt32("framerate", fFramerate->Value());
+
+	jobMessage.AddBool("res_box_enabled", fCustomResolutionBox->IsEnabled());
+	jobMessage.AddInt32("res_box_ticked", fCustomResolutionBox->Value());
+	jobMessage.AddInt32("xres", fXres->Value());
+	jobMessage.AddInt32("yres", fYres->Value());
+
+	jobMessage.AddBool("crop_box_enabled", fEnableCropBox->IsEnabled());
+	jobMessage.AddInt32("crop_box_ticked", fEnableCropBox->Value());
+	jobMessage.AddInt32("lcrop", fLeftCrop->Value());
+	jobMessage.AddInt32("rcrop", fRightCrop->Value());
+	jobMessage.AddInt32("tcrop", fTopCrop->Value());
+	jobMessage.AddInt32("bcrop", fBottomCrop->Value());
+
+	jobMessage.AddBool("a_box_enabled", fEnableAudioBox->IsEnabled());
+	jobMessage.AddInt32("a_box_ticked", fEnableAudioBox->Value());
+	jobMessage.AddInt32("a_codec", fAudioFormatPopup->FindMarkedIndex());
+	jobMessage.AddInt32("a_bitrate", fAudioBitsPopup->FindMarkedIndex());
+	jobMessage.AddInt32("samplerate", fSampleratePopup->FindMarkedIndex());
+	jobMessage.AddInt32("channels", fChannelCount->Value());
+
+	return jobMessage;
+}
+
+
+void
+MainWindow::_UnarchiveJob(BMessage& jobMessage)
+{
+	BString text;
+	bool onoff;
+	int32 value;
+
+	if (jobMessage.FindString("source", &text) == B_OK)
+		fSourceTextControl->SetText(text);
+	if (jobMessage.FindString("output", &text) == B_OK)
+		fOutputTextControl->SetText(text);
+
+	if (jobMessage.FindInt32("format", &value) == B_OK) {
+		BMenuItem* item = fFileFormatPopup->ItemAt(value);
+		item->SetMarked(true);
+	}
+
+	if (jobMessage.FindBool("v_box_enabled", &onoff) == B_OK)
+		fEnableVideoBox->SetEnabled(onoff);
+	if (jobMessage.FindInt32("v_box_ticked", &value) == B_OK)
+		fEnableVideoBox->SetValue(value);
+	if (jobMessage.FindInt32("v_codec", &value) == B_OK) {
+		BMenuItem* item = fVideoFormatPopup->ItemAt(value);
+		item->SetMarked(true);
+	}
+	if (jobMessage.FindInt32("v_bitrate", &value) == B_OK)
+		fVideoBitrateSpinner->SetValue(value);
+	if (jobMessage.FindInt32("framerate", &value) == B_OK)
+		fFramerate->SetValue(value);
+
+	if (jobMessage.FindBool("res_box_enabled", &onoff) == B_OK)
+		fCustomResolutionBox->SetEnabled(onoff);
+	if (jobMessage.FindInt32("res_box_ticked", &value) == B_OK)
+		fCustomResolutionBox->SetValue(value);
+	if (jobMessage.FindInt32("xres", &value) == B_OK)
+		fXres->SetValue(value);
+	if (jobMessage.FindInt32("yres", &value) == B_OK)
+		fYres->SetValue(value);
+
+	if (jobMessage.FindBool("crop_box_enabled", &onoff) == B_OK)
+		fEnableCropBox->SetEnabled(onoff);
+	if (jobMessage.FindInt32("crop_box_ticked", &value) == B_OK)
+		fEnableCropBox->SetValue(value);
+	if (jobMessage.FindInt32("lcrop", &value) == B_OK)
+		fLeftCrop->SetValue(value);
+	if (jobMessage.FindInt32("rcrop", &value) == B_OK)
+		fRightCrop->SetValue(value);
+	if (jobMessage.FindInt32("tcrop", &value) == B_OK)
+		fTopCrop->SetValue(value);
+	if (jobMessage.FindInt32("bcrop", &value) == B_OK)
+		fBottomCrop->SetValue(value);
+
+	if (jobMessage.FindBool("a_box_enabled", &onoff) == B_OK)
+		fEnableAudioBox->SetEnabled(onoff);
+	if (jobMessage.FindInt32("a_box_ticked", &value) == B_OK)
+		fEnableAudioBox->SetValue(value);
+	if (jobMessage.FindInt32("a_codec", &value) == B_OK) {
+		BMenuItem* item = fAudioFormatPopup->ItemAt(value);
+		item->SetMarked(true);
+	}
+	if (jobMessage.FindInt32("a_bitrate", &value) == B_OK) {
+		BMenuItem* item = fAudioBitsPopup->ItemAt(value);
+		item->SetMarked(true);
+	}
+	if (jobMessage.FindInt32("samplerate", &value) == B_OK) {
+		BMenuItem* item = fSampleratePopup->ItemAt(value);
+		item->SetMarked(true);
+	}
+	if (jobMessage.FindInt32("channels", &value) == B_OK)
+		fChannelCount->SetValue(value);
 }
 
 
