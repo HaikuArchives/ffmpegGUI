@@ -59,6 +59,9 @@ private:
 	status_t		_LoadSettings(BMessage& settings);
 	status_t		_SaveSettings();
 
+	BMessage		_ArchiveJob();
+	void			_UnarchiveJob(BMessage& jobMessage);
+
 	BMenuBar*		_BuildMenu();
 	BView* 			_BuildFileOptions();
 	BView*  		_BuildMainOptions();

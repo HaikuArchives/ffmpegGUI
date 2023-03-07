@@ -40,7 +40,7 @@ public:
 	virtual void 	MessageReceived(BMessage* message);
 
 			void	AddJob(const char* filename, const char* duration, const char* commandline,
-						int32 statusID = 0);
+						BMessage jobmessage, int32 statusID = 0);
 			bool	IsJobRunning();
 
 	BMessage*		GetColumnState();

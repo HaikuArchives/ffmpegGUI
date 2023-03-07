@@ -28,13 +28,14 @@ JobList::JobList()
 
 // Job list row
 JobRow::JobRow(int32 jobnumber, const char* filename, const char* duration,
-	const char* commandline, int32 statusID)
+	const char* commandline, BMessage jobmessage, int32 statusID)
 	:
 	BRow(),
 	fJobNumber(jobnumber),
 	fFilename(filename),
 	fDuration(duration),
 	fCommandLine(commandline),
+	fJobMessage(jobmessage),
 	fStatusID(statusID)
 {
 	BStringList name;

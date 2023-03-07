@@ -176,11 +176,13 @@ JobWindow::JobWindow(BRect frame, BMessage* settings, BMessenger* target)
 	const char* filename;
 	const char* duration;
 	const char* command;
+	BMessage jobmessage;
 	int32 i = 0;
 	while ((jobs.FindString("filename", i, &filename) == B_OK)
 			&& (jobs.FindString("duration", i, &duration) == B_OK)
-			&& ((jobs.FindString("command", i, &command) == B_OK))) {
-		AddJob(filename, duration, command);
+			&& (jobs.FindString("command", i, &command) == B_OK)
+			&& (jobs.FindMessage("jobmessage", i, &jobmessage) == B_OK)) {
+		AddJob(filename, duration, command, jobmessage);
 		i++;
 	}
 
@@ -578,6 +580,7 @@ JobWindow::_SaveJobs()
 			jobs.AddString("filename", row->GetFilename());
 			jobs.AddString("duration", row->GetDuration());
 			jobs.AddString("command", row->GetCommandLine());
+			jobs.AddMessage("jobmessage", row->GetJobMessage());
 		}
 	}
 
@@ -611,14 +614,15 @@ JobWindow::_ShowLog(JobRow* row)
 
 void
 JobWindow::AddJob(const char* filename, const char* duration, const char* commandline,
-				int32 statusID)
+				BMessage jobmessage, int32 statusID)
 {
 	if (!_IsUniqueJob(commandline))
 		return;
 
 	int32 index = _IndexOfSameFilename(filename);
 	if (index == -1) {
-		JobRow* row = new JobRow(fJobNumber++, filename, duration, commandline, WAITING);
+		JobRow* row = new JobRow(
+			fJobNumber++, filename, duration, commandline, jobmessage, WAITING);
 		fJobList->AddRow(row);
 		_SendJobCount(fJobList->CountRows());
 		_UpdateStates();
