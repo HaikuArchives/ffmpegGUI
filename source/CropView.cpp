@@ -8,10 +8,10 @@
 
 #include "CropView.h"
 
-#include <File.h>
 #include <Bitmap.h>
 #include <TranslationUtils.h>
 #include <TranslatorFormats.h>
+#include <String.h>
 
 
 CropView::CropView()
@@ -27,26 +27,20 @@ CropView::CropView()
 }
 
 
-status_t
-CropView::LoadImage(const BString& filename)
+void
+CropView::SetFilenames(const BStringList& filenames)
 {
-	fBitmap = BTranslationUtils::GetBitmap(filename.String());
+	fImageFilenames = filenames;
+}
 
-	if (fBitmap != nullptr)
-	{
-		if (fBitmap->IsValid())
-		{
-			fImageLoaded = true;
-			fImageSize = fBitmap->Bounds().Size();
 
-			_SetDrawingRect();
-			_SetMarkerRect();
-			Invalidate();
-			return B_OK;
-		}
-	}
+status_t
+CropView::SetCurrentImage(int32 index)
+{
+	if ((index >= fImageFilenames.CountStrings()) or (index < 0))
+		return B_ERROR;
 
-	return B_ERROR;
+	return _LoadImage(fImageFilenames.StringAt(index));
 }
 
 
@@ -56,7 +50,7 @@ CropView::Draw(BRect updateRect)
 	if (fImageLoaded)
 	{
 		SetDrawingMode(B_OP_COPY);
-		DrawBitmap(fBitmap, fBitmap->Bounds(), fDrawingRect);
+		DrawBitmap(fCurrentImage, fCurrentImage->Bounds(), fDrawingRect);
 
 		if ((fTopCrop+fBottomCrop+fLeftCrop+fRightCrop) > 0) // only draw crop marker when
 		{													 // at least on cropping value is set
@@ -161,4 +155,27 @@ CropView::_SetMarkerRect()
 		fMarkerRect.left += fLeftCrop * fResizeFactor;
 		fMarkerRect.right -= fRightCrop * fResizeFactor;
 	}
+}
+
+
+status_t
+CropView::_LoadImage(const BString& filename)
+{
+	fCurrentImage = BTranslationUtils::GetBitmap(filename.String());
+
+	if (fCurrentImage != nullptr)
+	{
+		if (fCurrentImage->IsValid())
+		{
+			fImageLoaded = true;
+			fImageSize = fCurrentImage->Bounds().Size();
+
+			_SetDrawingRect();
+			_SetMarkerRect();
+			Invalidate();
+			return B_OK;
+		}
+	}
+
+	return B_ERROR;
 }

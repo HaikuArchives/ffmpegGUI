@@ -481,7 +481,7 @@ MainWindow::MessageReceived(BMessage* message)
 			_ParseMediaOutput();
 			_UpdateMediaInfo();
 			_AdoptDefaults();
-			_ExtractImage();
+			_ExtractPreviewImages();
 			break;
 		}
 		case M_ENCODE:
@@ -665,7 +665,47 @@ MainWindow::MessageReceived(BMessage* message)
 		}
 		case M_EXTRACTIMAGE_FINISHED:
 		{
-			fCropView->LoadImage(fCropImageFilename);
+			BStringList cropimage_filenames;
+
+			BPath cropimage_path(fSourceTextControl->Text());
+			BString filename_template(cropimage_path.Leaf());
+			filename_template.Prepend("ffmpegGUI_");
+			int32 extension_begin = filename_template.FindLast(".");
+			filename_template.Remove(extension_begin, filename_template.Length()-extension_begin);
+			//printf("filename_template: %s\n", filename_template.String());
+			BPath temp_path;
+			find_directory(B_SYSTEM_TEMP_DIRECTORY, &temp_path);
+			BDirectory temp_dir(temp_path.Path());
+			BEntry current_entry;
+			BPath current_path;
+
+			while (temp_dir.GetNextEntry(&current_entry) == B_OK)
+			{
+				current_entry.GetPath(&current_path);
+				BString current_filename(current_path.Leaf());
+				//printf("current filename: %s\n", current_filename.String());
+				if (current_filename.StartsWith(filename_template))
+				{
+					cropimage_filenames.Add(current_path.Path());
+					//printf("%s\n", current_path.Path());
+				}
+			}
+
+			fCropView->SetFilenames(cropimage_filenames);
+			fCurrentCropImageIndex = 0;
+			fCropView->SetCurrentImage(fCurrentCropImageIndex);
+			break;
+		}
+		case M_CROPIMAGE_SWITCHLEFT:
+		{
+			--fCurrentCropImageIndex;
+			fCropView->SetCurrentImage(fCurrentCropImageIndex);
+			break;
+		}
+		case M_CROPIMAGE_SWITCHRIGHT:
+		{
+			++fCurrentCropImageIndex;
+			fCropView->SetCurrentImage(fCurrentCropImageIndex);
 			break;
 		}
 		case B_REFS_RECEIVED:
@@ -1062,9 +1102,9 @@ MainWindow::_BuildCroppingOptions()
 	fLeftCrop = new Spinner("", B_TRANSLATE("Left:"), new BMessage(M_LEFTCROP));
 	fRightCrop = new Spinner("", B_TRANSLATE("Right:"), new BMessage(M_RIGHTCROP));
 
-	// Cropping preview
 	fCropView = new CropView();
-	//fCropView->LoadImage("/boot/home/Desktop/test2.jpg");
+	fCropImageLeftButton = new BButton("", "⬅", new BMessage(M_CROPIMAGE_SWITCHLEFT));
+	fCropImageRightButton = new BButton("", "➡", new BMessage(M_CROPIMAGE_SWITCHRIGHT));
 
 	BView* croppingoptionsview = new BView("", B_SUPPORTS_LAYOUT);
 	BLayoutBuilder::Group<>(croppingoptionsview, B_VERTICAL)
@@ -1080,7 +1120,11 @@ MainWindow::_BuildCroppingOptions()
 			.Add(fRightCrop->CreateLabelLayoutItem(), 2, 1)
 			.Add(fRightCrop->CreateTextViewLayoutItem(), 3, 1)
 		.End()
-		.Add(fCropView,2)
+		.Add(fCropView)
+		.AddGroup(B_HORIZONTAL)
+			.Add(fCropImageLeftButton)
+			.Add(fCropImageRightButton)
+		.End()
 		.Layout();
 
 	return croppingoptionsview;
@@ -1369,7 +1413,7 @@ MainWindow::_ParseMediaOutput()
 
 
 void
-MainWindow::_ExtractImage()
+MainWindow::_ExtractPreviewImages()
 {
 	BMessage extract_image_message(M_EXTRACTIMAGE_COMMAND);
 	BPath source_path(fSourceTextControl->Text());
@@ -1378,14 +1422,13 @@ MainWindow::_ExtractImage()
 	BString target_filename(source_path.Leaf());
 	int32 extension_start = target_filename.FindLast(".")+1;
 	target_filename.Remove(extension_start, target_filename.Length() - extension_start);
-	target_filename.Append("jpg");
+	target_filename.Append("%04d.jpg");
 	target_filename.Prepend("ffmpegGUI_");
 	target_path.Append(target_filename);
-	fCropImageFilename = target_path.Path();
 
 	BString extract_image_cmd;
-	extract_image_cmd 	<< "ffmpeg -y -i \"" << source_path.Path()
-						<< "\" -frames:v 1 \"" << target_path.Path() << "\"";
+	extract_image_cmd 	<< "ffmpeg -y -skip_frame nokey -i \"" << source_path.Path()
+						<< "\" -qscale:v 2 -r 0.1 \"" << target_path.Path() << "\"";
 	extract_image_message.AddString("cmdline", extract_image_cmd);
 	fCommandLauncher->PostMessage(&extract_image_message);
 }

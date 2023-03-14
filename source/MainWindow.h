@@ -68,7 +68,7 @@ private:
 	void 			_UpdateMediaInfo();
 	void 			_ParseMediaOutput();
 
-	void 			_ExtractImage();
+	void 			_ExtractPreviewImages();
 	void			_DeleteTempFiles();
 
 	void 			_AdoptDefaults();
@@ -97,6 +97,7 @@ private:
 
 	// misc views
 	CropView*		fCropView;
+	int32 			fCurrentCropImageIndex;
 
 	// text controls
 	BTextControl* 	fSourceTextControl;
@@ -109,6 +110,8 @@ private:
 	BButton* 		fSourcePlayButton;
 	BButton*		fOutputPlayButton;
 	BButton* 		fStartAbortButton;
+	BButton*		fCropImageLeftButton;
+	BButton*		fCropImageRightButton;
 
 	// spin buttons
 	Spinner* 	fVideoBitrateSpinner;
@@ -175,7 +178,6 @@ private:
 	// bstrings
 	BString 		fCommand;
 	BString 		fMediainfo;
-	BString			fCropImageFilename;
 
 	// ffprobe stream tags
 	BString 		fVideoCodec;
