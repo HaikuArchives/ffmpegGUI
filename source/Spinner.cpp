@@ -12,9 +12,29 @@
 
 Spinner::Spinner(const char* name, const char* label, BMessage* message)
 	:
-	BSpinner(name, label, message)
+	BSpinner(name, label, message),
+	fInvoke(true)
 {
 	fStep = 1;
+}
+
+
+status_t
+Spinner::Invoke(BMessage* message)
+{
+	if (fInvoke == false) {
+		fInvoke = true;
+		return B_OK;
+	}
+	return (BSpinner::Invoke(message));
+}
+
+
+void
+Spinner::SetWithoutInvoke(int32 value)
+{
+	fInvoke = false;
+	BSpinner::SetValue(value);
 }
 
 
@@ -42,9 +62,37 @@ Spinner::SetStep(int32 step)
 // Spinner for floating point
 DecSpinner::DecSpinner(const char* name, const char* label, BMessage* message)
 	:
-	BDecimalSpinner(name, label, message)
+	BDecimalSpinner(name, label, message),
+	fInvoke(true)
 {
 	SetPrecision(0);
+}
+
+
+status_t
+DecSpinner::Invoke(BMessage* message)
+{
+	if (fInvoke == false) {
+		fInvoke = true;
+		return B_OK;
+	}
+	return (BDecimalSpinner::Invoke(message));
+}
+
+
+void
+DecSpinner::SetWithoutInvoke(double value)
+{
+	fInvoke = false;
+	BDecimalSpinner::SetValue(value);
+}
+
+
+void
+DecSpinner::SetWithoutInvoke(int32 value)
+{
+	fInvoke = false;
+	BDecimalSpinner::SetValue(value);
 }
 
 
