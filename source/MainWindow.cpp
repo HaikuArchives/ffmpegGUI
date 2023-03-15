@@ -188,18 +188,17 @@ MainWindow::MainWindow(BRect r, const char* name, window_type type, ulong mode)
 	fYres->SetMaxValue(4320);
 
 	// set the initial values
-	fVideoBitrateSpinner->SetValue(1000);
-	fFramerate->SetValue(int32(30));
-	fXres->SetValue(1280);
-	fYres->SetValue(720);
-	fChannelCount->SetValue(2);
+	fVideoBitrateSpinner->SetWithoutInvoke(1000);
+	fFramerate->SetWithoutInvoke(int32(30));
+	fXres->SetWithoutInvoke(1280);
+	fYres->SetWithoutInvoke(720);
+	fChannelCount->SetWithoutInvoke(2);
 
 	// set step values for the spinners
 	fVideoBitrateSpinner->SetStep(100);
 
 	// set the initial command line
 	_SetDefaults();
-	_BuildLine();
 }
 
 
@@ -828,7 +827,7 @@ MainWindow::_ArchiveJob()
 	jobMessage.AddInt32("v_box_ticked", fEnableVideoBox->Value());
 	jobMessage.AddInt32("v_codec", fVideoFormatPopup->FindMarkedIndex());
 	jobMessage.AddInt32("v_bitrate", fVideoBitrateSpinner->Value());
-	jobMessage.AddInt32("framerate", fFramerate->Value());
+	jobMessage.AddString("framerate", fFramerate->TextView()->Text());
 
 	jobMessage.AddBool("res_box_enabled", fCustomResolutionBox->IsEnabled());
 	jobMessage.AddInt32("res_box_ticked", fCustomResolutionBox->Value());
@@ -849,7 +848,7 @@ MainWindow::_ArchiveJob()
 	jobMessage.AddInt32("samplerate", fSampleratePopup->FindMarkedIndex());
 	jobMessage.AddInt32("channels", fChannelCount->Value());
 
-	jobMessage.AddString("commandline", fCommand);
+	jobMessage.AddString("commandline", fCommandlineTextControl->Text());
 
 	return jobMessage;
 }
@@ -899,31 +898,35 @@ MainWindow::_UnarchiveJob(BMessage jobMessage)
 			item->SetLabel(fVideoCodecs[value].Shortlabel);
 	}
 	if (jobMessage.FindInt32("v_bitrate", &value) == B_OK)
-		fVideoBitrateSpinner->SetValue(value);
-	if (jobMessage.FindInt32("framerate", &value) == B_OK)
-		fFramerate->SetValue(value);
+		fVideoBitrateSpinner->SetWithoutInvoke(value);
+	if (jobMessage.FindString("framerate", &text) == B_OK) {
+		int precision = _Precision(text);
+		fFramerate->SetPrecision(precision);
+		fFramerate->TextView()->SetText(text);
+		fFramerate->SetFromTextWithoutInvoke();
+	}
 
 	if (jobMessage.FindBool("res_box_enabled", &onoff) == B_OK)
 		fCustomResolutionBox->SetEnabled(onoff);
 	if (jobMessage.FindInt32("res_box_ticked", &value) == B_OK)
 		fCustomResolutionBox->SetValue(value);
 	if (jobMessage.FindInt32("xres", &value) == B_OK)
-		fXres->SetValue(value);
+		fXres->SetWithoutInvoke(value);
 	if (jobMessage.FindInt32("yres", &value) == B_OK)
-		fYres->SetValue(value);
+		fYres->SetWithoutInvoke(value);
 
 	if (jobMessage.FindBool("crop_box_enabled", &onoff) == B_OK)
 		fEnableCropBox->SetEnabled(onoff);
 	if (jobMessage.FindInt32("crop_box_ticked", &value) == B_OK)
 		fEnableCropBox->SetValue(value);
 	if (jobMessage.FindInt32("lcrop", &value) == B_OK)
-		fLeftCrop->SetValue(value);
+		fLeftCrop->SetWithoutInvoke(value);
 	if (jobMessage.FindInt32("rcrop", &value) == B_OK)
-		fRightCrop->SetValue(value);
+		fRightCrop->SetWithoutInvoke(value);
 	if (jobMessage.FindInt32("tcrop", &value) == B_OK)
-		fTopCrop->SetValue(value);
+		fTopCrop->SetWithoutInvoke(value);
 	if (jobMessage.FindInt32("bcrop", &value) == B_OK)
-		fBottomCrop->SetValue(value);
+		fBottomCrop->SetWithoutInvoke(value);
 
 	if (jobMessage.FindBool("a_box_enabled", &onoff) == B_OK)
 		fEnableAudioBox->SetEnabled(onoff);
@@ -945,7 +948,7 @@ MainWindow::_UnarchiveJob(BMessage jobMessage)
 		item->SetMarked(true);
 	}
 	if (jobMessage.FindInt32("channels", &value) == B_OK)
-		fChannelCount->SetValue(value);
+		fChannelCount->SetWithoutInvoke(value);
 
 	if (jobMessage.FindString("commandline", &text) == B_OK)
 		fCommandlineTextControl->SetText(text);
@@ -1375,11 +1378,12 @@ MainWindow::_BuildEncodeProgress()
 void
 MainWindow::_BuildLine() // ask all the views what they hold, reset the command string
 {
+printf("_BuildLine()\n");
 	BString source_filename(fSourceTextControl->Text());
 	BString output_filename(fOutputTextControl->Text());
 	source_filename.Trim();
 	output_filename.Trim();
-	BString fCommand(kFFMpeg);
+	fCommand = kFFMpeg;
 	fCommand << " -i \"" << source_filename << "\""; // append the input file name
 
 	// file format
@@ -1604,14 +1608,13 @@ void
 MainWindow::_AdoptDefaults()
 {
 	if (!fVideoBitrate.IsEmpty() && fVideoBitrate != "N/A")
-		fVideoBitrateSpinner->SetValue(atoi(fVideoBitrate));
+		fVideoBitrateSpinner->SetWithoutInvoke(atoi(fVideoBitrate));
 
 	if (!fVideoFramerate.IsEmpty() && fVideoFramerate != "N/A") {
-		int32 point = fVideoFramerate.FindFirst(".");
-		int32 places = fVideoFramerate.CountChars() - (point + 1);
-		fFramerate->SetPrecision((point == B_ERROR) ? 0 : places);
+		int precision = _Precision(fVideoFramerate);
+		fFramerate->SetPrecision(precision);
 		fFramerate->TextView()->SetText(fVideoFramerate);
-		fFramerate->SetValueFromText();
+		fFramerate->SetFromTextWithoutInvoke();
 	}
 
 	if (!fAudioSamplerate.IsEmpty() && fAudioSamplerate != "N/A") {
@@ -1623,7 +1626,18 @@ MainWindow::_AdoptDefaults()
 	}
 
 	if (!fAudioChannels.IsEmpty() && fAudioChannels != "N/A")
-		fChannelCount->SetValue(atoi(fAudioChannels));
+		fChannelCount->SetWithoutInvoke(atoi(fAudioChannels));
+
+	_BuildLine();
+}
+
+
+int
+MainWindow::_Precision(BString& float_string)
+{
+	int32 point = float_string.FindFirst(".");
+	int32 places = float_string.CountChars() - (point + 1);
+	return ((point == B_ERROR) ? 0 : places);
 }
 
 
@@ -1631,19 +1645,19 @@ void
 MainWindow::_SetDefaults()
 {
 	// set the initial values
-	fVideoBitrateSpinner->SetValue(1000);
-	fFramerate->SetValue(int32(30));
-	fXres->SetValue(1280);
-	fYres->SetValue(720);
+	fVideoBitrateSpinner->SetWithoutInvoke(1000);
+	fFramerate->SetWithoutInvoke(int32(30));
+	fXres->SetWithoutInvoke(1280);
+	fYres->SetWithoutInvoke(720);
 
-	fTopCrop->SetValue(0);
-	fBottomCrop->SetValue(0);
-	fLeftCrop->SetValue(0);
-	fRightCrop->SetValue(0);
+	fTopCrop->SetWithoutInvoke(0);
+	fBottomCrop->SetWithoutInvoke(0);
+	fLeftCrop->SetWithoutInvoke(0);
+	fRightCrop->SetWithoutInvoke(0);
 
 	fAudioBitsPopup->ItemAt(2)->SetMarked(true);
 	fSampleratePopup->ItemAt(1)->SetMarked(true);
-	fChannelCount->SetValue(2);
+	fChannelCount->SetWithoutInvoke(2);
 
 	// set the default status
 	fEnableVideoBox->SetValue(true);
@@ -1660,6 +1674,8 @@ MainWindow::_SetDefaults()
 	_ToggleVideo();
 	_ToggleCropping();
 	_ToggleAudio();
+
+	_BuildLine();
 }
 
 

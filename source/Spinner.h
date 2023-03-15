@@ -41,6 +41,7 @@ public:
 
 	void 	SetWithoutInvoke(int32 value);
 	void 	SetWithoutInvoke(double value);
+	void 	SetFromTextWithoutInvoke();
 	void 	Increment();
 	void 	Decrement();
 
