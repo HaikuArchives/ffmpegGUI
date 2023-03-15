@@ -97,6 +97,14 @@ DecSpinner::SetWithoutInvoke(int32 value)
 
 
 void
+DecSpinner::SetFromTextWithoutInvoke()
+{
+	fInvoke = false;
+	BDecimalSpinner::SetValueFromText();
+}
+
+
+void
 DecSpinner::Increment()
 {
 	double value = Value();

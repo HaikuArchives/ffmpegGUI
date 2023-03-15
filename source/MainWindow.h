@@ -81,14 +81,12 @@ private:
 
 	void 			_AdoptDefaults();
 	void			_SetDefaults();
+	int 			_Precision(BString& float_string);
 	void			_PopulateCodecOptions();
 
 	bool			_FileExists(const char* filepath);
 	void 			_SetFileExtension();
 	void 			_SetFiletype(entry_ref* ref);
-
-	int32 			_GetSeconds(BString& time_string);
-	void 			_RemoveOverPrecision(BString& float_string);
 
 	void 			_ReadyToEncode();
 	void 			_PlayVideo(const char* filepath);
