@@ -90,6 +90,8 @@ private:
 
 	void 			_ReadyToEncode();
 	void 			_PlayVideo(const char* filepath);
+	void 			_OpenHelp();
+	void 			_OpenURL(BString url);
 
 	void 			_SetPlaybuttonsState();
 	void 			_ToggleVideo();

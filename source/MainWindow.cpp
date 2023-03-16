@@ -37,6 +37,7 @@
 #include <NodeInfo.h>
 #include <Notification.h>
 #include <Path.h>
+#include <PathFinder.h>
 #include <PopUpMenu.h>
 #include <Roster.h>
 #include <ScrollView.h>
@@ -693,7 +694,18 @@ MainWindow::MessageReceived(BMessage* message)
 			_ExtractPreviewImage();
 			break;
 		}
-
+		case M_HELP:
+		{
+			_OpenHelp();
+			break;
+		}
+		case M_WEBSITE:
+		{
+			BString url(B_TRANSLATE_COMMENT("https://ffmpeg.org/ffmpeg.html",
+				"You can change to a good localized version of an ffmpeg ressource"));
+			_OpenURL(url);
+			break;
+		}
 		case B_REFS_RECEIVED:
 		{
 			entry_ref file_ref;
@@ -962,6 +974,21 @@ MainWindow::_BuildMenu()
 	BMenu* menu;
 	BMenuItem* item;
 
+	// ffmpegGUI menu
+	menu = new BMenu(B_TRANSLATE_SYSTEM_NAME("ffmpegGUI"));
+	item = new BMenuItem(
+		B_TRANSLATE("Help" B_UTF8_ELLIPSIS), new BMessage(M_HELP), 'H');
+	menu->AddItem(item);
+	item = new BMenuItem(
+		B_TRANSLATE("FFmpeg documentation" B_UTF8_ELLIPSIS), new BMessage(M_WEBSITE), 'F');
+	menu->AddItem(item);
+	menu->AddSeparatorItem();
+	item = new BMenuItem(B_TRANSLATE("About ffmpegGUI"), new BMessage(B_ABOUT_REQUESTED));
+	menu->AddItem(item);
+	item = new BMenuItem(B_TRANSLATE("Quit"), new BMessage(B_QUIT_REQUESTED), 'Q');
+	menu->AddItem(item);
+	menuBar->AddItem(menu);
+
 	// File menu
 	menu = new BMenu(B_TRANSLATE("File"));
 	item = new BMenuItem(
@@ -979,11 +1006,6 @@ MainWindow::_BuildMenu()
 		B_TRANSLATE("Play output file"), new BMessage(M_PLAY_OUTPUT), 'P', B_SHIFT_KEY);
 	fMenuPlayOutput->SetEnabled(false);
 	menu->AddItem(fMenuPlayOutput);
-	menu->AddSeparatorItem();
-	item = new BMenuItem(B_TRANSLATE("About ffmpegGUI"), new BMessage(B_ABOUT_REQUESTED));
-	menu->AddItem(item);
-	item = new BMenuItem(B_TRANSLATE("Quit"), new BMessage(B_QUIT_REQUESTED), 'Q');
-	menu->AddItem(item);
 	menuBar->AddItem(menu);
 
 	// Encoding menu
@@ -1821,6 +1843,38 @@ MainWindow::_PlayVideo(const char* filepath)
 	entry_ref video_ref;
 	video_entry.GetRef(&video_ref);
 	be_roster->Launch(&video_ref);
+}
+
+
+void
+MainWindow::_OpenHelp()
+{
+	BPathFinder pathFinder;
+	BStringList paths;
+	BPath path;
+
+	pathFinder.FindPaths(B_FIND_PATH_DOCUMENTATION_DIRECTORY,
+		"packages/ffmpegGUI", paths);
+	if (!paths.IsEmpty()) {
+		if (path.SetTo(paths.StringAt(0)) == B_OK) {
+			path.Append("ReadMe.html");
+			BMessage message(B_REFS_RECEIVED);
+			message.AddString("url", path.Path());
+			be_roster->Launch("text/html", &message);
+		}
+	}
+}
+
+
+void
+MainWindow::_OpenURL(BString url)
+{
+	if (url.IsEmpty())
+		return;
+
+	BMessage message(B_REFS_RECEIVED);
+	message.AddString("url", url);
+	be_roster->Launch("application/x-vnd.Be.URL.http", &message);
 }
 
 
