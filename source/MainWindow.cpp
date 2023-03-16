@@ -157,7 +157,7 @@ MainWindow::MainWindow(BRect r, const char* name, window_type type, ulong mode)
 	BRect frame = Frame();
 	if (settings.FindRect("main_window", &frame) == B_OK) {
 		MoveTo(frame.LeftTop());
-		ResizeTo(frame.Width(), frame.Height());
+		ResizeTo(frame.Width(), Bounds().Height());
 	}
 	MoveOnScreen();
 
