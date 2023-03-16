@@ -87,6 +87,8 @@ enum {
  	 M_ADD_JOB,
 	 M_JOB_MANAGER,
 	 M_DEFAULTS,
+	 M_HELP,
+	 M_WEBSITE,
 };
 // Job window
 enum {
