@@ -673,6 +673,11 @@ JobWindow::AddJob(const char* filename, const char* duration, const char* comman
 		JobRow* row = new JobRow(
 			fJobNumber++, filename, duration, commandline, jobmessage, WAITING);
 		fJobList->AddRow(row);
+
+		BRow* selected = fJobList->CurrentSelection();
+		if (selected == NULL)
+			fJobList->AddToSelection(row);
+
 		_SendJobCount(fJobList->CountRows());
 		_UpdateStates();
 		return;
