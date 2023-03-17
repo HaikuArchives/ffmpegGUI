@@ -1,0 +1,124 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN"
+	"http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml" lang="en-US" xml:lang="en-US">
+<head>
+	<meta http-equiv="content-type" content="text/html; charset=utf-8" />
+	<meta http-equiv="Content-Style-Type" content="text/css" />
+	<meta name="robots" content="all" />
+	<link rel="stylesheet" type="text/css" href="./_doc.css" />
+	<title>ffmpegGUI</title>
+</head>
+<body>
+<div align = "center">
+<img width="64" height="64" src="./images/ffmpegGUI_icon_64.png" alt="ffmpegGUI icon" />
+<p><span style="font-size: 1.5em; font-weight:bold">ffmpegGUI</span><br />
+for <a href="https://www.haiku-os.org">Haiku</a></p>
+<hr />
+<p id="index"><a href="#options">Options</a> &mdash; <a href="#cropping">Cropping</a> &mdash; <a href="#log">Log</a> &mdash; <a href="#jobmanager">Job manager</a><br />
+<a href="#download">Download</a> &mdash; <a href="#bugs_feedback">Bugreports &amp; Feedback</a> &mdash; <a href="#history">History</a></p>
+</div>
+<hr />
+<div id="content">
+<p>ffmpegGUI is a graphical interface to help constructing the commandline for <span class="path">ffmpeg</span> to encode/convert video files. You can also encode files directly with ffmpegGUI and avoid having to open Terminal to paste the assembled ffmpeg commandline. You can also create encoding jobs to process them all in a batch later.</p>
+
+<div align = "center">
+<img src="./images/mainwindow.png" alt="ffmpegGUI's main window" />
+</div>
+
+<p>You start by selecting the source file, either via drag and drop, a click on <span class="button">Source file</span>, or by opening a video directly with ffmpegGUI from its <span class="button">Open with…</span> context menu in Tracker. Below the file path, you'll see media info about the source: codecs, resolution, framerate, bitrates, duration etc.</p>
+
+<p>Choosing the source automatically sets the output file to the same name with the container format's extension, by default "<span class="path">.avi</span>". You can change the output filename and format, of course.<br />
+In the <span class="menu">Options</span> below, the video bitrate, framerate and resolution and audio bitrate, sampling rate and channel count also get automatically filled with the source file's properties. They are a good basis for the changes you may want to make before converting.</p>
+
+<p>The play buttons "⯈" will open the source - and once created, the output - in your preferred media player.</p>
+
+<p>Once you've configured all options (see below), you either click <span class="button">Start</span> to begin encoding, or choose <span class="menu">Add as new job</span> from the <span class="menu">Jobs</span> menu (see <a href="#jobmanager">Job manager</a> below).</p>
+
+<p>While encoding, the <span class="button">Start</span> button becomes <span class="button">Stop</span>, letting you abort the encoding process. Activate the checkbox <span class="menu">Play when finished</span> to the right of progress bar as an additional finishing notification.</p>
+
+<h2>
+<a href="#"><img src="images/up.png" style="border:none;float:right" alt="index" /></a>
+<a id="options" name="options">Options</a></h2>
+
+<div align = "center">
+<img src="./images/options.png" alt="The options tab" />
+</div>
+
+<p>Deactivating the checkmark <span class="menu">Enable video&nbsp;/&nbsp;audio encoding</span> allows you to completely remove the video or audio track from the encoding.</p>
+
+<p>The <span class="menu">Video&nbsp;/&nbsp;Audio codec</span> menu offers all available codecs. Choosing <span class="menu">1:1 copy</span> will use the same settings as the input file. This is also called "<i>transcoding</i>", as this saves the very CPU intensive and time consuming process of encoding, as it just makes a perfect copy of the track.</p>
+
+<p>You can change <span class="menu">Bitrate (Kbit/s)</span> and <span class="menu">Framerate (fps)</span> and activate the checkbox to <span class="menu">Use custom resolution</span>.</p>
+
+<p>The rest of the options for the audio track work similarly.</p>
+
+<div class="box-info"><p>Every change you make is immediately reflected in the ffmpeg commandline below the options. If, for example, you need an audio bitrate that's not available from the menu, you can look for the corresponding parameter in the commandline and manually change the value.</p>
+
+<p>Note, however, that any further change you make in the options will re-create the commandline and overwrite your manual additions. Manual tweaking should therefore always be the last step before encoding!</p></div>
+
+<h2>
+<a href="#"><img src="images/up.png" style="border:none;float:right" alt="index" /></a>
+<a id="cropping" name="cropping">Cropping</a></h2>
+
+<p>The tab <span class="menu">Cropping</span> is only active if you actually process the video track, so you won't be able to enter any cropping values while the video codec is <span class="menu">1:1 copy</span>. <span class="menu">Cropping</span> shows a frame of the source video:</p>
+<div align = "center">
+<img src="./images/cropping.png" alt="The cropping options" />
+</div>
+<p><span class="menu">New preview</span> fetches another random frame of the video if the one currently displayed isn't suitable.</p>
+
+<p>You can set the amount of pixels to cut off from the <span class="menu">Top</span>, <span class="menu">Bottom</span>, <span class="menu">Left</span> and <span class="menu">Right</span>. An overlayed box illustrates how the picture will be cropped.</p>
+
+<p><span class="button">Reset</span> zeroes the coordinates.</p>
+
+<h2>
+<a href="#"><img src="images/up.png" style="border:none;float:right" alt="index" /></a>
+<a id="log" name="log">Log</a></h2>
+
+<p>You'll find the output of the ffmpeg command in this <span class="menu">Log</span> tab. Mostly, it's just the progress output that's also shown as a bar at the bottom of the window. But if something should go wrong, you'll find the error message here as well.</p>
+
+<h2>
+<a href="#"><img src="images/up.png" style="border:none;float:right" alt="index" /></a>
+<a id="jobmanager" name="jobmanager">Job manager</a></h2>
+
+<p>If you have not just a single video to process, you can opt to configure each encoding first and queue it in a list of jobs, instead of encoding every file separately by clicking <span class="button">Start</span> and waiting for it to finish.</p>
+<p>To create a job from the current settings, you choose <span class="menu">Add as new job</span> from the <span class="menu">Jobs</span> menu. The same menu has an item to <span class="menu">Open job manager…</span> which opens this window:</p>
+
+<div align = "center">
+<img src="./images/jobmanager.png" alt="The job manager" />
+</div>
+
+<p><span class="button">Start all jobs</span> will begin to encode all jobs in the list, from top to bottom. Similar to the main window, it'll change to <span class="button">Abort all jobs</span> when the encoding is in progress.</p>
+
+<p>You can change the order of the jobs by sorting the columns, or move a single job up or down by selecting it and clicking the <span class="button">⏶</span> or <span class="button">⏷</span> buttons at the bottom.</p>
+
+<p><span class="button">Remove</span> deletes the currently selected job and <span class="button">Error log</span> shows its error output (if something went wrong).<br />
+<span class="button">Clear finished</span> removes all successfully encoded jobs.</p>
+
+<p>You can also just encode the currently selected job, easiest with a right-click on a job and selecting <span class="menu">Start this job</span>.</p>
+
+<p>Double-clicking a single job will do the intuitive thing, depending on its status: If it's <i>Waiting</i> it'll start encoding it, if it's <i>Running</i> it aborts it, if it's <i>Error</i> it opens its log, if it's <i>Finished</i> it plays back the output file.</p>
+
+<p>You can send a job back to the main window to change its settings by selecting a job and choosing <span class="menu">Edit this job</span> from the context menu. That will remove the job from the job manager. Once you're done with tweaking the options in the main window, just do an <span class="menu">Add as new job</span> there, and it's back in the list of jobs.</p>
+<p>ffmpegGUI will save all unfinished jobs when it's quit, so you can continue when you're back.</p>
+
+<h2>
+<a href="#"><img src="images/up.png" style="border:none;float:right" alt="index" /></a>
+<a id="download" name="download">Download</a></h2>
+
+<p>ffmpegGUI is directly available through HaikuDepot from the HaikuPorts repository. You can also build it yourself using <a href="https://github.com/haikuports">Haikuporter</a>. The source is hosted at <a href="https://github.com/HaikuArchives/ffmpegGUI">GitHub</a>.</p>
+
+<h2>
+<a href="#"><img src="images/up.png" style="border:none;float:right" alt="index" /></a>
+<a id="bugs_feedback" name="bugs_feedback">Bugreports &amp; Feedback</a></h2>
+
+<p>Please use GitHub's <a href="https://github.com/HaikuArchives/ffmpegGUI/issues">issue tracker</a> if you experience unusual difficulties or have other suggestions. You can help translating ffmpegGUI at <a href="https://i18n.kacperkasper.pl/projects/43">Polyglot</a>.</p>
+
+
+<h2>
+<a href="#"><img src="images/up.png" style="border:none;float:right" alt="index" /></a>
+<a id="history" name="history">History</a></h2>
+
+</div>
+</body>
+</html>
