@@ -1395,7 +1395,6 @@ MainWindow::_BuildEncodeProgress()
 void
 MainWindow::_BuildLine() // ask all the views what they hold, reset the command string
 {
-printf("_BuildLine()\n");
 	BString source_filename(fSourceTextControl->Text());
 	BString output_filename(fOutputTextControl->Text());
 	source_filename.Trim();
