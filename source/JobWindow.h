@@ -53,7 +53,7 @@ private:
 	status_t		_LoadJobs(BMessage& jobs);
 	status_t		_SaveJobs();
 
-	void			_PlayVideo(const char* filepath);
+	void			_Open(const char* filepath);
 	void			_ShowLog(JobRow* row);
 
 	void			_SendJobCount(int32);
