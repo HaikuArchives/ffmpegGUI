@@ -273,6 +273,9 @@ JobWindow::MessageReceived(BMessage* message)
 			fJobList->RemoveRow(row);
 			int32 count = fJobList->CountRows();
 			_SendJobCount(count);
+
+			if (count == 0)
+				fJobNumber = 1;
 			// Did we remove the first or last row?
 			fJobList->AddToSelection(
 				fJobList->RowAt((rowIndex > count - 1) ? count - 1 : rowIndex));
@@ -354,6 +357,9 @@ JobWindow::MessageReceived(BMessage* message)
 
 			int32 count = fJobList->CountRows();
 			_SendJobCount(count);
+
+			if (count == 0)
+				fJobNumber = 1;
 			// Did we remove the first or last row?
 			fJobList->AddToSelection(
 				fJobList->RowAt((rowIndex > count - 1) ? count - 1 : rowIndex));
@@ -424,10 +430,13 @@ JobWindow::MessageReceived(BMessage* message)
 					fJobList->RemoveRow(row);
 			}
 
+			int32 count = fJobList->CountRows();
 			int32 index = fJobList->IndexOf(selectedRow);
-			if (index >= 0) // formerly selected row is still with us?
+			if (count = 0)
+				fJobNumber = 1;
+			else if (index >= 0) // formerly selected row is still with us?
 				fJobList->AddToSelection(selectedRow);
-			else if (fJobList->CountRows() != 0)
+			else if (count != 0)
 				fJobList->AddToSelection(fJobList->RowAt(0));
 
 			_SendJobCount(fJobList->CountRows());
