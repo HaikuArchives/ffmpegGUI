@@ -88,6 +88,9 @@ JobWindow::JobWindow(BRect frame, BMessage* settings, BMessenger* target)
 	fPlayMenu = new BMenuItem(
 		B_TRANSLATE("Play output file"), new BMessage(M_JOB_INVOKED), 'P');
 	menu->AddItem(fPlayMenu);
+	item = new BMenuItem(
+		B_TRANSLATE("Open output folder"), new BMessage(M_OPEN_FOLDER), 'O');
+	menu->AddItem(item);
 	fLogMenu = new BMenuItem(
 		B_TRANSLATE("Show error log"), new BMessage(M_JOB_INVOKED), 'L');
 	menu->AddItem(fLogMenu);
@@ -290,7 +293,7 @@ JobWindow::MessageReceived(BMessage* message)
 
 			int32 status = currentRow->GetStatus();
 			if (status == FINISHED) {
-				_PlayVideo(currentRow->GetFilename());
+				_Open(currentRow->GetFilename());
 				break;
 			} else if (status == ERROR) {
 				_ShowLog(currentRow);
@@ -383,6 +386,14 @@ JobWindow::MessageReceived(BMessage* message)
 		{
 			JobRow* currentRow = dynamic_cast<JobRow*>(fJobList->CurrentSelection());
 			_ShowLog(currentRow);
+			break;
+		}
+		case M_OPEN_FOLDER:
+		{
+			JobRow* currentRow = dynamic_cast<JobRow*>(fJobList->CurrentSelection());
+			BPath path(currentRow->GetFilename());
+			path.GetParent(&path);
+			_Open(path.Path());
 			break;
 		}
 		case M_COPY_COMMAND:
@@ -544,6 +555,10 @@ JobWindow::_ShowPopUpMenu(BPoint where)
 	menu->AddItem(item);
 	item->SetEnabled((status == FINISHED) ? true : false);
 
+	item = new BMenuItem(
+		B_TRANSLATE("Open output folder"), new BMessage(M_OPEN_FOLDER), 'O');
+	menu->AddItem(item);
+
 	item = new BMenuItem(B_TRANSLATE("Show error log"), new BMessage(M_JOB_INVOKED), 'L');
 	menu->AddItem(item);
 	item->SetEnabled((status == ERROR) ? true : false);
@@ -641,12 +656,11 @@ JobWindow::_SaveJobs()
 
 
 void
-JobWindow::_PlayVideo(const char* filepath)
+JobWindow::_Open(const char* filepath)
 {
-	BEntry video_entry(filepath);
-	entry_ref video_ref;
-	video_entry.GetRef(&video_ref);
-	be_roster->Launch(&video_ref);
+	entry_ref ref;
+	get_ref_for_path(filepath, &ref);
+	be_roster->Launch(&ref);
 }
 
 
