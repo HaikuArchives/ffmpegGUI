@@ -64,7 +64,6 @@ CropView::Draw(BRect updateRect)
 			SetDrawingMode(B_OP_BLEND);
 			FillRect(fDrawingRect, B_SOLID_LOW);
 		}
-		Invalidate();
 	}
 }
 
