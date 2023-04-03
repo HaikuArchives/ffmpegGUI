@@ -683,28 +683,36 @@ MainWindow::MessageReceived(BMessage* message)
 			{
 				current_entry.GetPath(&current_path);
 				BString current_filename(current_path.Leaf());
-				//printf("current filename: %s\n", current_filename.String());
+
 				if (current_filename.StartsWith(filename_template))
 				{
 					cropimage_filenames.Add(current_path.Path());
-					//printf("%s\n", current_path.Path());
 				}
 			}
 
 			fCropView->SetFilenames(cropimage_filenames);
 			fCurrentCropImageIndex = 0;
+			fCropImageCount = cropimage_filenames.CountStrings();
 			fCropView->SetCurrentImage(fCurrentCropImageIndex);
 			break;
 		}
 		case M_CROPIMAGE_SWITCHLEFT:
 		{
-			--fCurrentCropImageIndex;
+			if (fCurrentCropImageIndex != 0)
+				--fCurrentCropImageIndex;
+			else
+				fCurrentCropImageIndex = fCropImageCount -1;
+
 			fCropView->SetCurrentImage(fCurrentCropImageIndex);
 			break;
 		}
 		case M_CROPIMAGE_SWITCHRIGHT:
 		{
-			++fCurrentCropImageIndex;
+			if (fCurrentCropImageIndex < (fCropImageCount - 1))
+				++fCurrentCropImageIndex;
+			else
+				fCurrentCropImageIndex = 0;
+
 			fCropView->SetCurrentImage(fCurrentCropImageIndex);
 			break;
 		}

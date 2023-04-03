@@ -98,6 +98,7 @@ private:
 	// misc views
 	CropView*		fCropView;
 	int32 			fCurrentCropImageIndex;
+	int32 			fCropImageCount;
 
 	// text controls
 	BTextControl* 	fSourceTextControl;
