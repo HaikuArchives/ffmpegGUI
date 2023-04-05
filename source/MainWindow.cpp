@@ -107,21 +107,21 @@ MainWindow::MainWindow(BRect r, const char* name, window_type type, ulong mode)
 
 	// _Building tab view
 	fTabView = new BTabView("");
-	BTab* mainoptionstab = new BTab();
-	BTab* croppingoptionstab = new BTab();
-	BTab* advancedoptionstab = new BTab();
-	BTab* logtab = new BTab();
+	fOptionsTab = new BTab();
+	fCroppingTab = new BTab();
+	fAdvancedTab = new BTab();
+	fLogTab = new BTab();
 
-	fTabView->AddTab(mainoptionsview, mainoptionstab);
-	fTabView->AddTab(croppingoptionsview, croppingoptionstab);
+	fTabView->AddTab(mainoptionsview, fOptionsTab);
+	fTabView->AddTab(croppingoptionsview, fCroppingTab);
 	// fTabView->AddTab(advancedoptionsview, advancedoptionstab); //don´t remove,
 	// will be needed later
-	fTabView->AddTab(logview, logtab);
+	fTabView->AddTab(logview, fLogTab);
 
-	mainoptionstab->SetLabel(B_TRANSLATE("Options"));
-	croppingoptionstab->SetLabel(B_TRANSLATE("Cropping"));
+	fOptionsTab->SetLabel(B_TRANSLATE("Options"));
+	fCroppingTab->SetLabel(B_TRANSLATE("Cropping"));
 	// advancedoptionstab->SetLabel(B_TRANSLATE("Advanced options"));
-	logtab->SetLabel(B_TRANSLATE("Log"));
+	fLogTab->SetLabel(B_TRANSLATE("Log"));
 
 	fPlayFinishedBox = new BCheckBox("play_finished", B_TRANSLATE("Play when finished"), NULL);
 	fPlayFinishedBox->SetValue(B_CONTROL_OFF);
@@ -1746,6 +1746,11 @@ MainWindow::_ToggleCropping()
 	fLeftCrop->SetEnabled(cropping_options_enabled);
 	fRightCrop->SetEnabled(cropping_options_enabled);
 	fCropView->SetEnabled(cropping_options_enabled);
+	fResetCroppingButton->SetEnabled(cropping_options_enabled);
+	fCropImageLeftButton->SetEnabled(cropping_options_enabled);
+	fCropImageRightButton->SetEnabled(cropping_options_enabled);
+	fCroppingTab->SetEnabled(cropping_options_enabled);
+	fTabView->Invalidate();
 }
 
 

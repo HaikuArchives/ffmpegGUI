@@ -30,9 +30,11 @@ class BStatusBar;
 class BString;
 class BStringView;
 class BTabView;
+class BTab;
 class BTextControl;
 class BTextView;
 class BView;
+
 
 class CodecOption;
 class ContainerOption;
@@ -159,8 +161,12 @@ private:
 	BPopUpMenu* 	fSampleratePopup;
 	BMenuField* 	fSamplerate;
 
-	// tab view
+	// tab view and tabs
 	BTabView*		fTabView;
+	BTab*			fOptionsTab;
+	BTab*			fCroppingTab;
+	BTab*			fAdvancedTab;
+	BTab*			fLogTab;
 
 	// progress bar
 	int32 			fEncodeDuration;
