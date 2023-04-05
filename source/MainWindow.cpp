@@ -1118,6 +1118,11 @@ MainWindow::_BuildCroppingOptions()
 	fLeftCrop = new Spinner("", B_TRANSLATE("Left:"), new BMessage(M_LEFTCROP));
 	fRightCrop = new Spinner("", B_TRANSLATE("Right:"), new BMessage(M_RIGHTCROP));
 
+	fTopCrop->SetMinValue(0);
+	fBottomCrop->SetMinValue(0);
+	fLeftCrop->SetMinValue(0);
+	fRightCrop->SetMinValue(0);
+
 	fCropView = new CropView();
 	fCropImageLeftButton = new BButton("", "⬅", new BMessage(M_CROPIMAGE_SWITCHLEFT));
 	fCropImageRightButton = new BButton("", "➡", new BMessage(M_CROPIMAGE_SWITCHRIGHT));
