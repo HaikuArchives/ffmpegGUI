@@ -693,8 +693,7 @@ MainWindow::MessageReceived(BMessage* message)
 				current_entry.GetPath(&current_path);
 				BString current_filename(current_path.Leaf());
 
-				if (current_filename.StartsWith(filename_template))
-				{
+				if (current_filename.StartsWith(filename_template)) {
 					cropimage_filenames.Add(current_path.Path());
 				}
 			}
@@ -1465,8 +1464,7 @@ MainWindow::_DeleteTempFiles()
 	{
 		current_entry.GetPath(&current_path);
 		BString current_filename(current_path.Leaf());
-		if (current_filename.StartsWith("ffmpegGUI_"))
-		{
+		if (current_filename.StartsWith("ffmpegGUI_")) {
 			current_entry.Remove();
 		}
 	}

@@ -52,14 +52,12 @@ CropView::Draw(BRect updateRect)
 		SetDrawingMode(B_OP_COPY);
 		DrawBitmap(fCurrentImage, fCurrentImage->Bounds(), fDrawingRect);
 
-		if ((fTopCrop+fBottomCrop+fLeftCrop+fRightCrop) > 0) // only draw crop marker when
-		{													 // at least on cropping value is set
-			SetHighColor(255,0,0);
+		if ((fTopCrop+fBottomCrop+fLeftCrop+fRightCrop) > 0) { // only draw crop marker when
+			SetHighColor(255,0,0);							 // at least on cropping value is set
 			StrokeRect(fMarkerRect, B_SOLID_HIGH);
 		}
 
-		if (!fEnabled) // grey out the view if it is not enabled
-		{
+		if (!fEnabled) { // grey out the view if it is not enabled
 			SetLowColor(0,0,0);
 			SetDrawingMode(B_OP_BLEND);
 			FillRect(fDrawingRect, B_SOLID_LOW);
@@ -71,8 +69,7 @@ CropView::Draw(BRect updateRect)
 void
 CropView::LayoutChanged()
 {
-	if (fImageLoaded)
-	{
+	if (fImageLoaded) {
 		_SetDrawingRect();
 		_SetMarkerRect();
 	}
@@ -146,8 +143,7 @@ CropView::_SetDrawingRect()
 void
 CropView::_SetMarkerRect()
 {
-	if (fImageLoaded)
-	{
+	if (fImageLoaded) {
 		fMarkerRect = fDrawingRect;
 		fMarkerRect.top += fTopCrop * fResizeFactor;
 		fMarkerRect.bottom -= fBottomCrop * fResizeFactor;
@@ -164,10 +160,8 @@ CropView::_LoadImage(const BString& filename)
 {
 	fCurrentImage = BTranslationUtils::GetBitmap(filename.String());
 
-	if (fCurrentImage != nullptr)
-	{
-		if (fCurrentImage->IsValid())
-		{
+	if (fCurrentImage != nullptr) {
+		if (fCurrentImage->IsValid()) {
 			fImageLoaded = true;
 			fImageSize = fCurrentImage->Bounds().Size();
 
