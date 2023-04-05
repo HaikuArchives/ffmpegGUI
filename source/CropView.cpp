@@ -154,6 +154,8 @@ CropView::_SetMarkerRect()
 		fMarkerRect.left += fLeftCrop * fResizeFactor;
 		fMarkerRect.right -= fRightCrop * fResizeFactor;
 	}
+
+	Invalidate();
 }
 
 
