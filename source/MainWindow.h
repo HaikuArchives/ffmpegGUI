@@ -113,6 +113,7 @@ private:
 	BButton* 		fStartAbortButton;
 	BButton*		fCropImageLeftButton;
 	BButton*		fCropImageRightButton;
+	BButton* 		fResetCroppingButton;
 
 	// spin buttons
 	Spinner* 	fVideoBitrateSpinner;

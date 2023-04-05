@@ -394,6 +394,15 @@ MainWindow::MessageReceived(BMessage* message)
 			_BuildLine();
 			break;
 		}
+		case M_RESET_CROPPING:
+		{
+			fTopCrop->SetValue(0);
+			fBottomCrop->SetValue(0);
+			fLeftCrop->SetValue(0);
+			fRightCrop->SetValue(0);
+
+			break;
+		}
 		case M_VBITRATE:
 		case M_FRAMERATE:
 		case M_XRES:
@@ -1113,6 +1122,7 @@ MainWindow::_BuildCroppingOptions()
 	fCropView = new CropView();
 	fCropImageLeftButton = new BButton("", "⬅", new BMessage(M_CROPIMAGE_SWITCHLEFT));
 	fCropImageRightButton = new BButton("", "➡", new BMessage(M_CROPIMAGE_SWITCHRIGHT));
+	fResetCroppingButton = new BButton("", B_TRANSLATE("Reset"), new BMessage(M_RESET_CROPPING));
 
 	BView* croppingoptionsview = new BView("", B_SUPPORTS_LAYOUT);
 	BLayoutBuilder::Group<>(croppingoptionsview, B_VERTICAL)
@@ -1127,6 +1137,7 @@ MainWindow::_BuildCroppingOptions()
 			.Add(fLeftCrop->CreateTextViewLayoutItem(), 1, 1)
 			.Add(fRightCrop->CreateLabelLayoutItem(), 2, 1)
 			.Add(fRightCrop->CreateTextViewLayoutItem(), 3, 1)
+			.Add(fResetCroppingButton, 0,2)
 		.End()
 		.Add(fCropView)
 		.AddGroup(B_HORIZONTAL)
