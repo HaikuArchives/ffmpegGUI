@@ -118,8 +118,8 @@ MainWindow::MainWindow(BRect r, const char* name, window_type type, ulong mode)
 	// will be needed later
 	fTabView->AddTab(logview, logtab);
 
-	mainoptionstab->SetLabel(B_TRANSLATE("Main options"));
-	croppingoptionstab->SetLabel(B_TRANSLATE("Cropping options"));
+	mainoptionstab->SetLabel(B_TRANSLATE("Options"));
+	croppingoptionstab->SetLabel(B_TRANSLATE("Cropping"));
 	// advancedoptionstab->SetLabel(B_TRANSLATE("Advanced options"));
 	logtab->SetLabel(B_TRANSLATE("Log"));
 
