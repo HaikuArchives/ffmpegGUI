@@ -53,8 +53,9 @@ CropView::Draw(BRect updateRect)
 		DrawBitmap(fCurrentImage, fCurrentImage->Bounds(), fDrawingRect);
 
 		if ((fTopCrop+fBottomCrop+fLeftCrop+fRightCrop) > 0) { // only draw crop marker when
-			SetHighColor(255,0,0);							 // at least on cropping value is set
-			StrokeRect(fMarkerRect, B_SOLID_HIGH);
+			SetHighColor(0,0,0);							 // at least on cropping value is set
+			SetLowColor(255,255,255);
+			StrokeRect(fMarkerRect, B_MIXED_COLORS);
 		}
 
 		if (!fEnabled) { // grey out the view if it is not enabled
