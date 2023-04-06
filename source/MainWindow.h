@@ -30,9 +30,11 @@ class BStatusBar;
 class BString;
 class BStringView;
 class BTabView;
+class BTab;
 class BTextControl;
 class BTextView;
 class BView;
+
 
 class CodecOption;
 class ContainerOption;
@@ -40,6 +42,7 @@ class CommandLauncher;
 class Spinner;
 class DecSpinner;
 class JobWindow;
+class CropView;
 
 
 class MainWindow : public BWindow {
@@ -56,6 +59,7 @@ private:
 	BMenuBar*		_BuildMenu();
 	BView* 			_BuildFileOptions();
 	BView*  		_BuildMainOptions();
+	BView*			_BuildCroppingOptions();
 	BView*  		_BuildAdvancedOptions();
 	void	 		_BuildLogView();
 	BView*  		_BuildEncodeProgress();
@@ -65,6 +69,9 @@ private:
 	void 			_GetMediaInfo();
 	void 			_UpdateMediaInfo();
 	void 			_ParseMediaOutput();
+
+	void 			_ExtractPreviewImages();
+	void			_DeleteTempFiles();
 
 	void 			_AdoptDefaults();
 	void			_SetDefaults();
@@ -90,6 +97,11 @@ private:
 	BStringView*	fMediaInfoView;
 	BStringView* 	fOutputCheckView;
 
+	// misc views
+	CropView*		fCropView;
+	int32 			fCurrentCropImageIndex;
+	int32 			fCropImageCount;
+
 	// text controls
 	BTextControl* 	fSourceTextControl;
 	BTextControl* 	fOutputTextControl;
@@ -101,6 +113,9 @@ private:
 	BButton* 		fSourcePlayButton;
 	BButton*		fOutputPlayButton;
 	BButton* 		fStartAbortButton;
+	BButton*		fCropImageLeftButton;
+	BButton*		fCropImageRightButton;
+	BButton* 		fResetCroppingButton;
 
 	// spin buttons
 	Spinner* 	fVideoBitrateSpinner;
@@ -132,7 +147,6 @@ private:
 	// checkboxes
 	BCheckBox* 		fEnableVideoBox;
 	BCheckBox* 		fEnableAudioBox;
-	BCheckBox* 		fEnableCropBox;
 	BCheckBox* 		fCustomResolutionBox;
 
 	// popup menus
@@ -147,8 +161,12 @@ private:
 	BPopUpMenu* 	fSampleratePopup;
 	BMenuField* 	fSamplerate;
 
-	// tab view
+	// tab view and tabs
 	BTabView*		fTabView;
+	BTab*			fOptionsTab;
+	BTab*			fCroppingTab;
+	BTab*			fAdvancedTab;
+	BTab*			fLogTab;
 
 	// progress bar
 	int32 			fEncodeDuration;

@@ -18,7 +18,8 @@
 
 enum {
 	ENCODING = 0,
-	INFO
+	INFO,
+	EXTRACTIMAGE
 };
 
 enum {

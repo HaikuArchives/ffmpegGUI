@@ -16,6 +16,7 @@
 #include "Messages.h"
 #include "Spinner.h"
 #include "Utilities.h"
+#include "CropView.h"
 
 #include <Alert.h>
 #include <Box.h>
@@ -97,6 +98,7 @@ MainWindow::MainWindow(BRect r, const char* name, window_type type, ulong mode)
 	BMenuBar* menuBar = _BuildMenu();
 	BView* fileoptionsview = _BuildFileOptions();
 	BView* mainoptionsview = _BuildMainOptions();
+	BView* croppingoptionsview = _BuildCroppingOptions();
 //	BView* advancedoptionsview = _BuildAdvancedOptions();
 	_BuildLogView();
 	BView* encodeprogressview = _BuildEncodeProgress();
@@ -105,18 +107,21 @@ MainWindow::MainWindow(BRect r, const char* name, window_type type, ulong mode)
 
 	// _Building tab view
 	fTabView = new BTabView("");
-	BTab* mainoptionstab = new BTab();
-	BTab* advancedoptionstab = new BTab();
-	BTab* logtab = new BTab();
+	fOptionsTab = new BTab();
+	fCroppingTab = new BTab();
+	fAdvancedTab = new BTab();
+	fLogTab = new BTab();
 
-	fTabView->AddTab(mainoptionsview, mainoptionstab);
+	fTabView->AddTab(mainoptionsview, fOptionsTab);
+	fTabView->AddTab(croppingoptionsview, fCroppingTab);
 	// fTabView->AddTab(advancedoptionsview, advancedoptionstab); //don´t remove,
 	// will be needed later
-	fTabView->AddTab(logview, logtab);
+	fTabView->AddTab(logview, fLogTab);
 
-	mainoptionstab->SetLabel(B_TRANSLATE("Main options"));
+	fOptionsTab->SetLabel(B_TRANSLATE("Options"));
+	fCroppingTab->SetLabel(B_TRANSLATE("Cropping"));
 	// advancedoptionstab->SetLabel(B_TRANSLATE("Advanced options"));
-	logtab->SetLabel(B_TRANSLATE("Log"));
+	fLogTab->SetLabel(B_TRANSLATE("Log"));
 
 	fPlayFinishedBox = new BCheckBox("play_finished", B_TRANSLATE("Play when finished"), NULL);
 	fPlayFinishedBox->SetValue(B_CONTROL_OFF);
@@ -226,6 +231,7 @@ MainWindow::QuitRequested()
 		}
 	}
 	_SaveSettings();
+	_DeleteTempFiles();
 
 	fJobWindow->LockLooper();
 	fJobWindow->Quit();
@@ -364,14 +370,43 @@ MainWindow::MessageReceived(BMessage* message)
 			_BuildLine();
 			break;
 		}
+		case M_TOPCROP:
+		{
+			fCropView->SetTopCrop(fTopCrop->Value());
+			_BuildLine();
+			break;
+		}
+		case M_BOTTOMCROP:
+		{
+			fCropView->SetBottomCrop(fBottomCrop->Value());
+			_BuildLine();
+			break;
+		}
+		case M_LEFTCROP:
+		{
+			fCropView->SetLeftCrop(fLeftCrop->Value());
+			_BuildLine();
+			break;
+		}
+		case M_RIGHTCROP:
+		{
+			fCropView->SetRightCrop(fRightCrop->Value());
+			_BuildLine();
+			break;
+		}
+		case M_RESET_CROPPING:
+		{
+			fTopCrop->SetValue(0);
+			fBottomCrop->SetValue(0);
+			fLeftCrop->SetValue(0);
+			fRightCrop->SetValue(0);
+
+			break;
+		}
 		case M_VBITRATE:
 		case M_FRAMERATE:
 		case M_XRES:
 		case M_YRES:
-		case M_TOPCROP:
-		case M_BOTTOMCROP:
-		case M_LEFTCROP:
-		case M_RIGHTCROP:
 		case M_AUDIOBITRATE:
 		case M_SAMPLERATE:
 		case M_CHANNELS:
@@ -394,14 +429,6 @@ MainWindow::MessageReceived(BMessage* message)
 			_BuildLine();
 			break;
 		}
-
-		case M_ENABLECROPPING:
-		{
-			_ToggleCropping();
-			_BuildLine();
-			break;
-		}
-
 		case M_ENABLEAUDIO:
 		{
 			_ToggleAudio();
@@ -463,6 +490,7 @@ MainWindow::MessageReceived(BMessage* message)
 			_ParseMediaOutput();
 			_UpdateMediaInfo();
 			_AdoptDefaults();
+			_ExtractPreviewImages();
 			break;
 		}
 		case M_ENCODE:
@@ -642,6 +670,58 @@ MainWindow::MessageReceived(BMessage* message)
 		case M_PLAY_OUTPUT:
 		{
 			_PlayVideo(fOutputTextControl->Text());
+			break;
+		}
+		case M_EXTRACTIMAGE_FINISHED:
+		{
+			BStringList cropimage_filenames;
+
+			BPath cropimage_path(fSourceTextControl->Text());
+			BString filename_template(cropimage_path.Leaf());
+			filename_template.Prepend("ffmpegGUI_");
+			int32 extension_begin = filename_template.FindLast(".");
+			filename_template.Remove(extension_begin, filename_template.Length()-extension_begin);
+			//printf("filename_template: %s\n", filename_template.String());
+			BPath temp_path;
+			find_directory(B_SYSTEM_TEMP_DIRECTORY, &temp_path);
+			BDirectory temp_dir(temp_path.Path());
+			BEntry current_entry;
+			BPath current_path;
+
+			while (temp_dir.GetNextEntry(&current_entry) == B_OK)
+			{
+				current_entry.GetPath(&current_path);
+				BString current_filename(current_path.Leaf());
+
+				if (current_filename.StartsWith(filename_template)) {
+					cropimage_filenames.Add(current_path.Path());
+				}
+			}
+
+			fCropView->SetFilenames(cropimage_filenames);
+			fCurrentCropImageIndex = 0;
+			fCropImageCount = cropimage_filenames.CountStrings();
+			fCropView->SetCurrentImage(fCurrentCropImageIndex);
+			break;
+		}
+		case M_CROPIMAGE_SWITCHLEFT:
+		{
+			if (fCurrentCropImageIndex != 0)
+				--fCurrentCropImageIndex;
+			else
+				fCurrentCropImageIndex = fCropImageCount -1;
+
+			fCropView->SetCurrentImage(fCurrentCropImageIndex);
+			break;
+		}
+		case M_CROPIMAGE_SWITCHRIGHT:
+		{
+			if (fCurrentCropImageIndex < (fCropImageCount - 1))
+				++fCurrentCropImageIndex;
+			else
+				fCurrentCropImageIndex = 0;
+
+			fCropView->SetCurrentImage(fCurrentCropImageIndex);
 			break;
 		}
 		case B_REFS_RECEIVED:
@@ -955,37 +1035,9 @@ MainWindow::_BuildMainOptions()
 			.Add(fXres->CreateTextViewLayoutItem(), 1, 0)
 			.Add(fYres->CreateLabelLayoutItem(), 0, 1)
 			.Add(fYres->CreateTextViewLayoutItem(), 1, 1)
-		.End();
-	videobox->AddChild(videolayout->View());
-
-	// Cropping options
-	fEnableCropBox
-		= new BCheckBox("", B_TRANSLATE("Enable video cropping"), new BMessage(M_ENABLECROPPING));
-	fEnableCropBox->SetValue(B_CONTROL_OFF);
-	fTopCrop = new Spinner("", B_TRANSLATE("Top:"), new BMessage(M_TOPCROP));
-	fBottomCrop = new Spinner("", B_TRANSLATE("Bottom:"), new BMessage(M_BOTTOMCROP));
-	fLeftCrop = new Spinner("", B_TRANSLATE("Left:"), new BMessage(M_LEFTCROP));
-	fRightCrop = new Spinner("", B_TRANSLATE("Right:"), new BMessage(M_RIGHTCROP));
-
-	// Build Cropping Options layout
-	BBox* croppingoptionsbox = new BBox("");
-	croppingoptionsbox->SetLabel(B_TRANSLATE("Cropping options"));
-	BGroupLayout* croppingoptionslayout = BLayoutBuilder::Group<>(B_VERTICAL)
-		.SetInsets(B_USE_DEFAULT_SPACING, B_USE_DEFAULT_SPACING, B_USE_DEFAULT_SPACING,
-		  B_USE_DEFAULT_SPACING)
-		.Add(fEnableCropBox)
-		.AddGrid(B_USE_SMALL_SPACING, B_USE_SMALL_SPACING)
-			.Add(fTopCrop->CreateLabelLayoutItem(), 0, 0)
-			.Add(fTopCrop->CreateTextViewLayoutItem(), 1, 0)
-			.Add(fBottomCrop->CreateLabelLayoutItem(), 0, 1)
-			.Add(fBottomCrop->CreateTextViewLayoutItem(), 1, 1)
-			.Add(fLeftCrop->CreateLabelLayoutItem(), 0, 2)
-			.Add(fLeftCrop->CreateTextViewLayoutItem(), 1, 2)
-			.Add(fRightCrop->CreateLabelLayoutItem(), 0, 3)
-			.Add(fRightCrop->CreateTextViewLayoutItem(), 1, 3)
 		.End()
 		.AddGlue();
-	croppingoptionsbox->AddChild(croppingoptionslayout->View());
+	videobox->AddChild(videolayout->View());
 
 	// Audio codec pop-up menu
 	codec_iter=fAudioCodecs.begin();
@@ -1051,11 +1103,54 @@ MainWindow::_BuildMainOptions()
 		.SetInsets(B_USE_DEFAULT_SPACING, B_USE_DEFAULT_SPACING, B_USE_DEFAULT_SPACING,
 			B_USE_DEFAULT_SPACING)
 		.Add(videobox)
-		.Add(croppingoptionsbox)
 		.Add(audiobox)
 		.Layout();
 
 	return mainoptionsview;
+}
+
+
+BView*
+MainWindow::_BuildCroppingOptions()
+{
+	fTopCrop = new Spinner("", B_TRANSLATE("Top:"), new BMessage(M_TOPCROP));
+	fBottomCrop = new Spinner("", B_TRANSLATE("Bottom:"), new BMessage(M_BOTTOMCROP));
+	fLeftCrop = new Spinner("", B_TRANSLATE("Left:"), new BMessage(M_LEFTCROP));
+	fRightCrop = new Spinner("", B_TRANSLATE("Right:"), new BMessage(M_RIGHTCROP));
+
+	fTopCrop->SetMinValue(0);
+	fBottomCrop->SetMinValue(0);
+	fLeftCrop->SetMinValue(0);
+	fRightCrop->SetMinValue(0);
+
+	fCropView = new CropView();
+	fCropImageLeftButton = new BButton("", "⬅", new BMessage(M_CROPIMAGE_SWITCHLEFT));
+	fCropImageRightButton = new BButton("", "➡", new BMessage(M_CROPIMAGE_SWITCHRIGHT));
+	fResetCroppingButton = new BButton("", B_TRANSLATE("Reset"), new BMessage(M_RESET_CROPPING));
+
+	BView* croppingoptionsview = new BView("", B_SUPPORTS_LAYOUT);
+	BLayoutBuilder::Group<>(croppingoptionsview, B_VERTICAL)
+		.SetInsets(B_USE_DEFAULT_SPACING, B_USE_DEFAULT_SPACING, B_USE_DEFAULT_SPACING,
+			B_USE_DEFAULT_SPACING)
+		.AddGrid(B_USE_SMALL_SPACING, B_USE_SMALL_SPACING)
+			.Add(fTopCrop->CreateLabelLayoutItem(), 0, 0)
+			.Add(fTopCrop->CreateTextViewLayoutItem(), 1, 0)
+			.Add(fBottomCrop->CreateLabelLayoutItem(), 2, 0)
+			.Add(fBottomCrop->CreateTextViewLayoutItem(), 3, 0)
+			.Add(fLeftCrop->CreateLabelLayoutItem(), 0, 1)
+			.Add(fLeftCrop->CreateTextViewLayoutItem(), 1, 1)
+			.Add(fRightCrop->CreateLabelLayoutItem(), 2, 1)
+			.Add(fRightCrop->CreateTextViewLayoutItem(), 3, 1)
+			.Add(fResetCroppingButton, 0,2)
+		.End()
+		.Add(fCropView)
+		.AddGroup(B_HORIZONTAL)
+			.Add(fCropImageLeftButton)
+			.Add(fCropImageRightButton)
+		.End()
+		.Layout();
+
+	return croppingoptionsview;
 }
 
 
@@ -1182,10 +1277,16 @@ MainWindow::_BuildLine() // ask all the views what they hold, reset the command 
 				fCommand << " -s " << fXres->Value() << "x" << fYres->Value();
 
 			// cropping options
-			if (fEnableCropBox->IsEnabled() && fEnableCropBox->Value()) {
-				fCommand << " -vf crop=iw-" << fLeftCrop->Value() + fRightCrop->Value() << ":ih-"
-							<< fTopCrop->Value() + fBottomCrop->Value() << ":" << fLeftCrop->Value()
-							<< ":" << fTopCrop->Value();
+			int32 topcrop = fTopCrop->Value();
+			int32 bottomcrop = fBottomCrop->Value();
+			int32 leftcrop = fLeftCrop->Value();
+			int32 rightcrop = fRightCrop->Value();
+
+			if ((topcrop + bottomcrop + leftcrop + rightcrop) > 0)
+			{
+				fCommand << " -vf crop=iw-" << leftcrop + rightcrop << ":ih-"
+						<< topcrop + bottomcrop << ":" << leftcrop
+						<< ":" << topcrop;
 			}
 		}
 	} else
@@ -1335,6 +1436,47 @@ MainWindow::_ParseMediaOutput()
 
 
 void
+MainWindow::_ExtractPreviewImages()
+{
+	BMessage extract_image_message(M_EXTRACTIMAGE_COMMAND);
+	BPath source_path(fSourceTextControl->Text());
+	BPath target_path;
+	find_directory(B_SYSTEM_TEMP_DIRECTORY, &target_path);
+	BString target_filename(source_path.Leaf());
+	int32 extension_start = target_filename.FindLast(".")+1;
+	target_filename.Remove(extension_start, target_filename.Length() - extension_start);
+	target_filename.Append("%04d.jpg");
+	target_filename.Prepend("ffmpegGUI_");
+	target_path.Append(target_filename);
+
+	BString extract_image_cmd;
+	extract_image_cmd 	<< "ffmpeg -y -skip_frame nokey -i \"" << source_path.Path()
+						<< "\" -qscale:v 2 -r 0.1 \"" << target_path.Path() << "\"";
+	extract_image_message.AddString("cmdline", extract_image_cmd);
+	fCommandLauncher->PostMessage(&extract_image_message);
+}
+
+
+void
+MainWindow::_DeleteTempFiles()
+{
+	BPath temp_path;
+	find_directory(B_SYSTEM_TEMP_DIRECTORY, &temp_path);
+	BDirectory temp_dir(temp_path.Path());
+	BEntry current_entry;
+	BPath current_path;
+	while (temp_dir.GetNextEntry(&current_entry) == B_OK)
+	{
+		current_entry.GetPath(&current_path);
+		BString current_filename(current_path.Leaf());
+		if (current_filename.StartsWith("ffmpegGUI_")) {
+			current_entry.Remove();
+		}
+	}
+}
+
+
+void
 MainWindow::_AdoptDefaults()
 {
 	if (!fVideoBitrate.IsEmpty() && fVideoBitrate != "N/A")
@@ -1385,8 +1527,6 @@ MainWindow::_SetDefaults()
 	fEnableAudioBox->SetValue(true);
 	fEnableAudioBox->SetEnabled(B_CONTROL_ON);
 
-	fEnableCropBox->SetValue(false);
-	fEnableCropBox->SetEnabled(B_CONTROL_OFF);
 	fCustomResolutionBox->SetValue(false);
 	fCustomResolutionBox->SetEnabled(B_CONTROL_OFF);
 	fXres->SetEnabled(B_CONTROL_OFF);
@@ -1597,14 +1737,9 @@ void
 MainWindow::_ToggleCropping()
 {
 	// disable cropping if video options are not enabled;
+	bool cropping_options_enabled;
 	if ((fEnableVideoBox->IsEnabled()) and (fEnableVideoBox->Value() == B_CONTROL_ON)
 		and (fVideoFormatPopup->FindMarkedIndex() != 0))
-			fEnableCropBox->SetEnabled(true);
-	else
-		fEnableCropBox->SetEnabled(false);
-
-	bool cropping_options_enabled;
-	if ((fEnableCropBox->IsEnabled()) and (fEnableCropBox->Value() == B_CONTROL_ON))
 		cropping_options_enabled = true;
 	else
 		cropping_options_enabled = false;
@@ -1613,6 +1748,12 @@ MainWindow::_ToggleCropping()
 	fBottomCrop->SetEnabled(cropping_options_enabled);
 	fLeftCrop->SetEnabled(cropping_options_enabled);
 	fRightCrop->SetEnabled(cropping_options_enabled);
+	fCropView->SetEnabled(cropping_options_enabled);
+	fResetCroppingButton->SetEnabled(cropping_options_enabled);
+	fCropImageLeftButton->SetEnabled(cropping_options_enabled);
+	fCropImageRightButton->SetEnabled(cropping_options_enabled);
+	fCroppingTab->SetEnabled(cropping_options_enabled);
+	fTabView->Invalidate();
 }
 
 
