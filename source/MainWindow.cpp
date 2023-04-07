@@ -834,8 +834,6 @@ MainWindow::_ArchiveJob()
 	jobMessage.AddInt32("xres", fXres->Value());
 	jobMessage.AddInt32("yres", fYres->Value());
 
-	jobMessage.AddBool("crop_box_enabled", fEnableCropBox->IsEnabled());
-	jobMessage.AddInt32("crop_box_ticked", fEnableCropBox->Value());
 	jobMessage.AddInt32("lcrop", fLeftCrop->Value());
 	jobMessage.AddInt32("rcrop", fRightCrop->Value());
 	jobMessage.AddInt32("tcrop", fTopCrop->Value());
@@ -915,10 +913,6 @@ MainWindow::_UnarchiveJob(BMessage jobMessage)
 	if (jobMessage.FindInt32("yres", &value) == B_OK)
 		fYres->SetWithoutInvoke(value);
 
-	if (jobMessage.FindBool("crop_box_enabled", &onoff) == B_OK)
-		fEnableCropBox->SetEnabled(onoff);
-	if (jobMessage.FindInt32("crop_box_ticked", &value) == B_OK)
-		fEnableCropBox->SetValue(value);
 	if (jobMessage.FindInt32("lcrop", &value) == B_OK)
 		fLeftCrop->SetWithoutInvoke(value);
 	if (jobMessage.FindInt32("rcrop", &value) == B_OK)
