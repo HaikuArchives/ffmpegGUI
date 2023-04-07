@@ -13,7 +13,9 @@
 
 
 #include <Invoker.h>
+#include <Path.h>
 #include <Window.h>
+
 #include <vector>
 
 
@@ -24,6 +26,7 @@ class BDecimalSpinner;
 class BFilePanel;
 class BMenuBar;
 class BMenuField;
+class BPath;
 class BPopUpMenu;
 class BSpinner;
 class BStatusBar;
@@ -70,7 +73,7 @@ private:
 	void 			_UpdateMediaInfo();
 	void 			_ParseMediaOutput();
 
-	void 			_ExtractPreviewImages();
+	void 			_ExtractPreviewImage();
 	void			_DeleteTempFiles();
 
 	void 			_AdoptDefaults();
@@ -113,9 +116,8 @@ private:
 	BButton* 		fSourcePlayButton;
 	BButton*		fOutputPlayButton;
 	BButton* 		fStartAbortButton;
-	BButton*		fCropImageLeftButton;
-	BButton*		fCropImageRightButton;
 	BButton* 		fResetCroppingButton;
+	BButton* 		fNewPreviewButton;
 
 	// spin buttons
 	Spinner* 	fVideoBitrateSpinner;
@@ -204,6 +206,7 @@ private:
 	BFilePanel* 	fSourceFilePanel;
 	BFilePanel* 	fOutputFilePanel;
 
+	BPath			fPreviewPath;
 	// alerts
 	BAlert* 		fStopAlert;
 	BInvoker 		fAlertInvoker;

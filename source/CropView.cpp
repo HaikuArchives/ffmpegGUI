@@ -27,20 +27,24 @@ CropView::CropView()
 }
 
 
-void
-CropView::SetFilenames(const BStringList& filenames)
-{
-	fImageFilenames = filenames;
-}
-
-
 status_t
-CropView::SetCurrentImage(int32 index)
+CropView::LoadImage(const char* path)
 {
-	if ((index >= fImageFilenames.CountStrings()) or (index < 0))
-		return B_ERROR;
+	fCurrentImage = BTranslationUtils::GetBitmap(path);
 
-	return _LoadImage(fImageFilenames.StringAt(index));
+	if (fCurrentImage != nullptr) {
+		if (fCurrentImage->IsValid()) {
+			fImageLoaded = true;
+			fImageSize = fCurrentImage->Bounds().Size();
+
+			_SetDrawingRect();
+			_SetMarkerRect();
+			Invalidate();
+			return B_OK;
+		}
+	}
+
+	return B_ERROR;
 }
 
 
@@ -153,25 +157,4 @@ CropView::_SetMarkerRect()
 	}
 
 	Invalidate();
-}
-
-
-status_t
-CropView::_LoadImage(const BString& filename)
-{
-	fCurrentImage = BTranslationUtils::GetBitmap(filename.String());
-
-	if (fCurrentImage != nullptr) {
-		if (fCurrentImage->IsValid()) {
-			fImageLoaded = true;
-			fImageSize = fCurrentImage->Bounds().Size();
-
-			_SetDrawingRect();
-			_SetMarkerRect();
-			Invalidate();
-			return B_OK;
-		}
-	}
-
-	return B_ERROR;
 }
