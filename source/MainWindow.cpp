@@ -1128,26 +1128,40 @@ MainWindow::_BuildCroppingOptions()
 	fCropImageRightButton = new BButton("", "➡", new BMessage(M_CROPIMAGE_SWITCHRIGHT));
 	fResetCroppingButton = new BButton("", B_TRANSLATE("Reset"), new BMessage(M_RESET_CROPPING));
 
+	float width = be_plain_font->StringWidth("XXXX");
+	BSize size(width, width);
+	fCropImageLeftButton->SetExplicitSize(size);
+	fCropImageRightButton->SetExplicitSize(size);
+
+	BStringView* previewLabel = new BStringView("label",
+		B_TRANSLATE_COMMENT("Preview\nimages", "Short as possible"));
+
 	BView* croppingoptionsview = new BView("", B_SUPPORTS_LAYOUT);
-	BLayoutBuilder::Group<>(croppingoptionsview, B_VERTICAL)
-		.SetInsets(B_USE_DEFAULT_SPACING, B_USE_DEFAULT_SPACING, B_USE_DEFAULT_SPACING,
-			B_USE_DEFAULT_SPACING)
-		.AddGrid(B_USE_SMALL_SPACING, B_USE_SMALL_SPACING)
-			.Add(fTopCrop->CreateLabelLayoutItem(), 0, 0)
-			.Add(fTopCrop->CreateTextViewLayoutItem(), 1, 0)
-			.Add(fBottomCrop->CreateLabelLayoutItem(), 2, 0)
-			.Add(fBottomCrop->CreateTextViewLayoutItem(), 3, 0)
-			.Add(fLeftCrop->CreateLabelLayoutItem(), 0, 1)
-			.Add(fLeftCrop->CreateTextViewLayoutItem(), 1, 1)
-			.Add(fRightCrop->CreateLabelLayoutItem(), 2, 1)
-			.Add(fRightCrop->CreateTextViewLayoutItem(), 3, 1)
-			.Add(fResetCroppingButton, 0,2)
+	BLayoutBuilder::Group<>(croppingoptionsview, B_HORIZONTAL)
+		.AddGroup(B_VERTICAL)
+			.SetInsets(B_USE_DEFAULT_SPACING, B_USE_DEFAULT_SPACING, B_USE_DEFAULT_SPACING, 0)
+			.AddGlue()
+			.AddGrid(B_USE_SMALL_SPACING, B_USE_SMALL_SPACING)
+				.Add(fTopCrop->CreateLabelLayoutItem(), 0, 0)
+				.Add(fTopCrop->CreateTextViewLayoutItem(), 1, 0)
+				.Add(fBottomCrop->CreateLabelLayoutItem(), 0, 1)
+				.Add(fBottomCrop->CreateTextViewLayoutItem(), 1, 1)
+				.Add(fLeftCrop->CreateLabelLayoutItem(), 0, 2)
+				.Add(fLeftCrop->CreateTextViewLayoutItem(), 1, 2)
+				.Add(fRightCrop->CreateLabelLayoutItem(), 0, 3)
+				.Add(fRightCrop->CreateTextViewLayoutItem(), 1, 3)
+			.End()
+			.Add(fResetCroppingButton)
+			.AddGlue()
+			.AddGroup(B_HORIZONTAL)
+				.SetInsets(0, 0, 0, B_USE_DEFAULT_SPACING)
+				.Add(fCropImageLeftButton)
+				.Add(previewLabel)
+				.Add(fCropImageRightButton)
+			.End()
+			.AddGlue()
 		.End()
 		.Add(fCropView)
-		.AddGroup(B_HORIZONTAL)
-			.Add(fCropImageLeftButton)
-			.Add(fCropImageRightButton)
-		.End()
 		.Layout();
 
 	return croppingoptionsview;
