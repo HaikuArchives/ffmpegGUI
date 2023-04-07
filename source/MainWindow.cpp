@@ -950,6 +950,7 @@ MainWindow::_UnarchiveJob(BMessage jobMessage)
 	_ToggleVideo();
 	_ToggleCropping();
 	_ToggleAudio();
+	_ExtractPreviewImage();
 }
 
 
