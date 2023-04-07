@@ -490,7 +490,7 @@ MainWindow::MessageReceived(BMessage* message)
 			_ParseMediaOutput();
 			_UpdateMediaInfo();
 			_AdoptDefaults();
-			_ExtractPreviewImages();
+			_ExtractPreviewImage();
 			break;
 		}
 		case M_ENCODE:
@@ -674,56 +674,15 @@ MainWindow::MessageReceived(BMessage* message)
 		}
 		case M_EXTRACTIMAGE_FINISHED:
 		{
-			BStringList cropimage_filenames;
-
-			BPath cropimage_path(fSourceTextControl->Text());
-			BString filename_template(cropimage_path.Leaf());
-			filename_template.Prepend("ffmpegGUI_");
-			int32 extension_begin = filename_template.FindLast(".");
-			filename_template.Remove(extension_begin, filename_template.Length()-extension_begin);
-			//printf("filename_template: %s\n", filename_template.String());
-			BPath temp_path;
-			find_directory(B_SYSTEM_TEMP_DIRECTORY, &temp_path);
-			BDirectory temp_dir(temp_path.Path());
-			BEntry current_entry;
-			BPath current_path;
-
-			while (temp_dir.GetNextEntry(&current_entry) == B_OK)
-			{
-				current_entry.GetPath(&current_path);
-				BString current_filename(current_path.Leaf());
-
-				if (current_filename.StartsWith(filename_template)) {
-					cropimage_filenames.Add(current_path.Path());
-				}
-			}
-
-			fCropView->SetFilenames(cropimage_filenames);
-			fCurrentCropImageIndex = 0;
-			fCropImageCount = cropimage_filenames.CountStrings();
-			fCropView->SetCurrentImage(fCurrentCropImageIndex);
+			fCropView->LoadImage(fPreviewPath.Path());
 			break;
 		}
-		case M_CROPIMAGE_SWITCHLEFT:
+		case M_NEW_PREVIEW:
 		{
-			if (fCurrentCropImageIndex != 0)
-				--fCurrentCropImageIndex;
-			else
-				fCurrentCropImageIndex = fCropImageCount -1;
-
-			fCropView->SetCurrentImage(fCurrentCropImageIndex);
+			_ExtractPreviewImage();
 			break;
 		}
-		case M_CROPIMAGE_SWITCHRIGHT:
-		{
-			if (fCurrentCropImageIndex < (fCropImageCount - 1))
-				++fCurrentCropImageIndex;
-			else
-				fCurrentCropImageIndex = 0;
 
-			fCropView->SetCurrentImage(fCurrentCropImageIndex);
-			break;
-		}
 		case B_REFS_RECEIVED:
 		{
 			entry_ref file_ref;
@@ -1124,22 +1083,15 @@ MainWindow::_BuildCroppingOptions()
 	fRightCrop->SetMinValue(0);
 
 	fCropView = new CropView();
-	fCropImageLeftButton = new BButton("", "⬅", new BMessage(M_CROPIMAGE_SWITCHLEFT));
-	fCropImageRightButton = new BButton("", "➡", new BMessage(M_CROPIMAGE_SWITCHRIGHT));
 	fResetCroppingButton = new BButton("", B_TRANSLATE("Reset"), new BMessage(M_RESET_CROPPING));
-
-	float width = be_plain_font->StringWidth("XXXX");
-	BSize size(width, width);
-	fCropImageLeftButton->SetExplicitSize(size);
-	fCropImageRightButton->SetExplicitSize(size);
-
-	BStringView* previewLabel = new BStringView("label",
-		B_TRANSLATE_COMMENT("Preview\nimages", "Short as possible"));
+	fNewPreviewButton = new BButton("", B_TRANSLATE("New preview"), new BMessage(M_NEW_PREVIEW));
 
 	BView* croppingoptionsview = new BView("", B_SUPPORTS_LAYOUT);
 	BLayoutBuilder::Group<>(croppingoptionsview, B_HORIZONTAL)
 		.AddGroup(B_VERTICAL)
 			.SetInsets(B_USE_DEFAULT_SPACING, B_USE_DEFAULT_SPACING, B_USE_DEFAULT_SPACING, 0)
+			.AddGlue()
+			.Add(fNewPreviewButton)
 			.AddGlue()
 			.AddGrid(B_USE_SMALL_SPACING, B_USE_SMALL_SPACING)
 				.Add(fTopCrop->CreateLabelLayoutItem(), 0, 0)
@@ -1152,13 +1104,6 @@ MainWindow::_BuildCroppingOptions()
 				.Add(fRightCrop->CreateTextViewLayoutItem(), 1, 3)
 			.End()
 			.Add(fResetCroppingButton)
-			.AddGlue()
-			.AddGroup(B_HORIZONTAL)
-				.SetInsets(0, 0, 0, B_USE_DEFAULT_SPACING)
-				.Add(fCropImageLeftButton)
-				.Add(previewLabel)
-				.Add(fCropImageRightButton)
-			.End()
 			.AddGlue()
 		.End()
 		.Add(fCropView)
@@ -1450,22 +1395,30 @@ MainWindow::_ParseMediaOutput()
 
 
 void
-MainWindow::_ExtractPreviewImages()
+MainWindow::_ExtractPreviewImage()
 {
 	BMessage extract_image_message(M_EXTRACTIMAGE_COMMAND);
 	BPath source_path(fSourceTextControl->Text());
-	BPath target_path;
-	find_directory(B_SYSTEM_TEMP_DIRECTORY, &target_path);
-	BString target_filename(source_path.Leaf());
-	int32 extension_start = target_filename.FindLast(".")+1;
-	target_filename.Remove(extension_start, target_filename.Length() - extension_start);
-	target_filename.Append("%04d.jpg");
-	target_filename.Prepend("ffmpegGUI_");
-	target_path.Append(target_filename);
+	find_directory(B_SYSTEM_TEMP_DIRECTORY, &fPreviewPath);
+	BString preview_filename(source_path.Leaf());
+	int32 extension_start = preview_filename.FindLast(".")+1;
+	preview_filename.Remove(extension_start, preview_filename.Length() - extension_start);
+	preview_filename.Append("_preview.jpg");
+	preview_filename.Prepend("ffmpegGUI_");
+	fPreviewPath.Append(preview_filename);
+
+	// skip first and last second of the clip (often black)
+	int32 min = 1;
+	int32 max = fEncodeDuration - 1;
+	// Generate random time
+	int32 randomSecond = min + (rand() % static_cast<int>(max - min + 1));
+	// Convert seconds to HH:MM:SS
+	char randomTime[64];
+	seconds_to_string(randomSecond, randomTime, sizeof(randomTime));
 
 	BString extract_image_cmd;
-	extract_image_cmd 	<< "ffmpeg -y -skip_frame nokey -i \"" << source_path.Path()
-						<< "\" -qscale:v 2 -r 0.1 \"" << target_path.Path() << "\"";
+	extract_image_cmd 	<< "ffmpeg -y -ss " << randomTime << " -i \"" << source_path.Path()
+						<< "\" -qscale:v 2 -vframes 1 \"" << fPreviewPath.Path() << "\"";
 	extract_image_message.AddString("cmdline", extract_image_cmd);
 	fCommandLauncher->PostMessage(&extract_image_message);
 }
@@ -1479,13 +1432,11 @@ MainWindow::_DeleteTempFiles()
 	BDirectory temp_dir(temp_path.Path());
 	BEntry current_entry;
 	BPath current_path;
-	while (temp_dir.GetNextEntry(&current_entry) == B_OK)
-	{
+	while (temp_dir.GetNextEntry(&current_entry) == B_OK) {
 		current_entry.GetPath(&current_path);
 		BString current_filename(current_path.Leaf());
-		if (current_filename.StartsWith("ffmpegGUI_")) {
+		if (current_filename.StartsWith("ffmpegGUI_"))
 			current_entry.Remove();
-		}
 	}
 }
 
@@ -1764,8 +1715,7 @@ MainWindow::_ToggleCropping()
 	fRightCrop->SetEnabled(cropping_options_enabled);
 	fCropView->SetEnabled(cropping_options_enabled);
 	fResetCroppingButton->SetEnabled(cropping_options_enabled);
-	fCropImageLeftButton->SetEnabled(cropping_options_enabled);
-	fCropImageRightButton->SetEnabled(cropping_options_enabled);
+	fNewPreviewButton->SetEnabled(cropping_options_enabled);
 	fCroppingTab->SetEnabled(cropping_options_enabled);
 	fTabView->Invalidate();
 }
