@@ -8,20 +8,21 @@
 */
 
 
+#include "MainWindow.h"
+
 #include "App.h"
+#include "CropView.h"
 #include "CodecContainerOptions.h"
 #include "CommandLauncher.h"
 #include "JobWindow.h"
-#include "MainWindow.h"
 #include "Messages.h"
 #include "Spinner.h"
 #include "Utilities.h"
-#include "CropView.h"
 
 #include <Alert.h>
+#include <BeBuild.h>
 #include <Box.h>
 #include <Button.h>
-#include <BeBuild.h>
 #include <Catalog.h>
 #include <CheckBox.h>
 #include <Clipboard.h>
@@ -504,7 +505,7 @@ MainWindow::MessageReceived(BMessage* message)
 			fLogView->SelectAll();
 			fLogView->Clear();
 			fCommand.SetTo(fCommandlineTextControl->Text());
-			fCommand.Append(" -y");  // Overwrite output files without asking
+			fCommand.Append(" -y"); // Overwrite output files without asking
 
 			BString files_string(B_TRANSLATE("Encoding: %source%   →   %output%"));
 			BString name;
@@ -999,7 +1000,7 @@ MainWindow::_BuildMainOptions()
 	videobox->AddChild(videolayout->View());
 
 	// Audio codec pop-up menu
-	codec_iter=fAudioCodecs.begin();
+	codec_iter = fAudioCodecs.begin();
 	fAudioFormatPopup = new BPopUpMenu(codec_iter->Shortlabel.String(), false, false);
 	fAudioFormatPopup->SetRadioMode(true);
 	for (codec_iter = fAudioCodecs.begin(); codec_iter != fAudioCodecs.end(); ++codec_iter) {
@@ -1241,8 +1242,7 @@ MainWindow::_BuildLine() // ask all the views what they hold, reset the command 
 			int32 leftcrop = fLeftCrop->Value();
 			int32 rightcrop = fRightCrop->Value();
 
-			if ((topcrop + bottomcrop + leftcrop + rightcrop) > 0)
-			{
+			if ((topcrop + bottomcrop + leftcrop + rightcrop) > 0) {
 				fCommand << " -vf crop=iw-" << leftcrop + rightcrop << ":ih-"
 						<< topcrop + bottomcrop << ":" << leftcrop
 						<< ":" << topcrop;
@@ -1401,8 +1401,6 @@ MainWindow::_ExtractPreviewImage()
 	BPath source_path(fSourceTextControl->Text());
 	find_directory(B_SYSTEM_TEMP_DIRECTORY, &fPreviewPath);
 	BString preview_filename(source_path.Leaf());
-	int32 extension_start = preview_filename.FindLast(".")+1;
-	preview_filename.Remove(extension_start, preview_filename.Length() - extension_start);
 	preview_filename.Append("_preview.jpg");
 	preview_filename.Prepend("ffmpegGUI_");
 	fPreviewPath.Append(preview_filename);
@@ -1417,7 +1415,7 @@ MainWindow::_ExtractPreviewImage()
 	seconds_to_string(randomSecond, randomTime, sizeof(randomTime));
 
 	BString extract_image_cmd;
-	extract_image_cmd 	<< "ffmpeg -y -ss " << randomTime << " -i \"" << source_path.Path()
+	extract_image_cmd	<< "ffmpeg -y -ss " << randomTime << " -i \"" << source_path.Path()
 						<< "\" -qscale:v 2 -vframes 1 \"" << fPreviewPath.Path() << "\"";
 	extract_image_message.AddString("cmdline", extract_image_cmd);
 	fCommandLauncher->PostMessage(&extract_image_message);
@@ -1539,7 +1537,7 @@ MainWindow::_PopulateCodecOptions()
 	fVideoCodecs.push_back(CodecOption("wmv1", "wmv1", "wmv1 - Windows Media Video 7"));
 	fVideoCodecs.push_back(CodecOption("wmv2", "wmv2", "wmv2 - Windows Media Video 8"));
 
-	//audio codecs (ffmpeg option, short label, description)
+	// audio codecs (ffmpeg option, short label, description)
 	fAudioCodecs.push_back(CodecOption("copy", B_TRANSLATE("1:1 copy"), B_TRANSLATE("1:1 copy")));
 	fAudioCodecs.push_back(CodecOption("aac", "aac", "aac - AAC (Advanced Audio Coding)"));
 	fAudioCodecs.push_back(CodecOption("ac3", "ac3", "ac3 - ATSC A/52A (AC-3)"));
@@ -1616,7 +1614,7 @@ MainWindow::_ReadyToEncode()
 		fOutputTextControl->SetText("");
 		fOutputCheckView->SetText("");
 		ready = false;
-	} else	if (!_FileExists(source_filename)) {
+	} else if (!_FileExists(source_filename)) {
 		fMediaInfoView->SetText(B_TRANSLATE_NOCOLLECT(kSourceDoesntExist));
 		fSourceTextControl->MarkAsInvalid(true);
 		fOutputCheckView->SetText("");
