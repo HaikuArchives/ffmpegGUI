@@ -676,10 +676,12 @@ MainWindow::MessageReceived(BMessage* message)
 		case M_EXTRACTIMAGE_FINISHED:
 		{
 			fCropView->LoadImage(fPreviewPath.Path());
+			fNewPreviewButton->SetEnabled(true);
 			break;
 		}
 		case M_NEW_PREVIEW:
 		{
+			fNewPreviewButton->SetEnabled(false);
 			_ExtractPreviewImage();
 			break;
 		}
