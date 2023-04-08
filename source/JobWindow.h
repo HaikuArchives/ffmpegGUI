@@ -79,6 +79,7 @@ private:
 	BMenuItem*		fClearMenu;
 	BMenuItem*		fEditMenu;
 	BMenuItem*		fPlayMenu;
+	BMenuItem*		fOpenFolder;
 	BMenuItem*		fLogMenu;
 	BMenuItem*		fCopyCommand;
 	BMenuItem*		fRemoveMenu;

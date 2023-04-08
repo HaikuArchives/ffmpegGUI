@@ -88,9 +88,9 @@ JobWindow::JobWindow(BRect frame, BMessage* settings, BMessenger* target)
 	fPlayMenu = new BMenuItem(
 		B_TRANSLATE("Play output file"), new BMessage(M_JOB_INVOKED), 'P');
 	menu->AddItem(fPlayMenu);
-	item = new BMenuItem(
+	fOpenFolder = new BMenuItem(
 		B_TRANSLATE("Open output folder"), new BMessage(M_OPEN_FOLDER), 'O');
-	menu->AddItem(item);
+	menu->AddItem(fOpenFolder);
 	fLogMenu = new BMenuItem(
 		B_TRANSLATE("Show error log"), new BMessage(M_JOB_INVOKED), 'L');
 	menu->AddItem(fLogMenu);
@@ -837,6 +837,7 @@ JobWindow::_UpdateStates()
 		fStartAbortMenu->SetEnabled(false);
 		fStartAbortSingleMenu->SetEnabled(false);
 		fPlayMenu->SetEnabled(false);
+		fOpenFolder->SetEnabled(false);
 		fRemoveMenu->SetEnabled(false);
 		fRemoveAllMenu->SetEnabled(false);
 		fLogMenu->SetEnabled(false);
