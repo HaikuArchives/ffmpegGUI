@@ -1,10 +1,11 @@
-1	English	application/x-vnd.HaikuArchives-ffmpegGUI	3074278812
+1	English	application/x-vnd.HaikuArchives-ffmpegGUI	3612114065
 Add as new job	Window		Add as new job
-Start	Window		Start
 Use four motion vector	Window		Use four motion vector
+Start	Window		Start
 {0, plural,one{Start job}other{Start all jobs}}	JobWindow		{0, plural,one{Start job}other{Start all jobs}}
 Job name	JobWindow		Job name
 Running:	JobWindow		Running:
+Edit this job	JobWindow		Edit this job
 Selected job	JobWindow		Selected job
 Cannot overwrite the source file. Please choose another output file name.	Window		Cannot overwrite the source file. Please choose another output file name.
 Start jobs	JobWindow		Start jobs
@@ -19,15 +20,14 @@ Video quantizer scale compression:	Window		Video quantizer scale compression:
 OK	JobWindow		OK
 Job manager	JobWindow		Job manager
 Select output file…	Window		Select output file…
-Main options	Window		Main options
 Video	Window		Video
 N°	JobWindow	'Number' abbreviation	N°
 Enable audio encoding	Window		Enable audio encoding
 Remove all	JobWindow		Remove all
 {0, plural,one{Encoding job finished.}other{Encoding jobs finished.}}	JobWindow		{0, plural,one{Encoding job finished.}other{Encoding jobs finished.}}
 File	Window		File
-Enable video cropping	Window		Enable video cropping
 Enable video encoding	Window		Enable video encoding
+Open output folder	JobWindow		Open output folder
 Status	JobWindow		Status
 Are you sure, that you want to remove all jobs?\n\n	JobWindow		Are you sure, that you want to remove all jobs?\n\n
 Show error log	JobWindow		Show error log
@@ -41,8 +41,8 @@ Close	JobWindow		Close
 Encoding: %source%   →   %output%	Window		Encoding: %source%   →   %output%
 Waiting	JobList		Waiting
 Right:	Window		Right:
-Finished	JobList		Finished
 Remove	JobWindow		Remove
+Finished	JobList		Finished
 {0, plural,one{(# Job)}other{(# Jobs)}}	Window		{0, plural,one{(# Job)}other{(# Jobs)}}
 Job	JobWindow		Job
 Waiting to start encoding…	Window		Waiting to start encoding…
@@ -62,6 +62,7 @@ There's no file with that name.	Window		There's no file with that name.
 Thanks to:\nHandMaus (Icon)\nmmu_man, Jeremy, DeadYak, Marco, etc.\nmd@geekport.com\nreds <reds@sakamoto.pl> for making it more or less usable.\nHave fun!	Application		Thanks to:\nHandMaus (Icon)\nmmu_man, Jeremy, DeadYak, Marco, etc.\nmd@geekport.com\nreds <reds@sakamoto.pl> for making it more or less usable.\nHave fun!
 Left:	Window		Left:
 This file already exists. It will be overwritten!	Window		This file already exists. It will be overwritten!
+Reset	Window		Reset
 ffmpegGUI	System name		ffmpegGUI
 GOP size:	Window		GOP size:
 Duration	JobWindow		Duration
@@ -75,8 +76,8 @@ About ffmpegGUI	Window		About ffmpegGUI
 Framerate (fps):	Window		Framerate (fps):
 Duh!	Window	Button label of stop-encoding-alert if you're too late...	Duh!
 Use high quality settings	Window		Use high quality settings
+Edit job	JobWindow		Edit job
 No audio track	Window		No audio track
-Cropping options	Window		Cropping options
 Audio	Window		Audio
 ffmpeg GUI	System name		ffmpeg GUI
 Running: 100%	JobWindow		Running: 100%
@@ -88,12 +89,14 @@ Output file	Window		Output file
 A GUI frontend for ffmpeg	Application		A GUI frontend for ffmpeg
 Play output file	Window		Play output file
 'B' frames:	Window		'B' frames:
+Copy commandline	JobWindow		Copy commandline
 Log	Window		Log
 Remove all jobs	JobWindow		Remove all jobs
 There's already a job with that same output file:\n%filename%\n\nBetter choose another output file, or remove the existing job.\n	JobWindow		There's already a job with that same output file:\n%filename%\n\nBetter choose another output file, or remove the existing job.\n
 Cancel	JobWindow		Cancel
 Start encoding	Window		Start encoding
 Top:	Window		Top:
+Cropping	Window		Cropping
 Encoding	Window		Encoding
 Default options	Window		Default options
 Max difference between quantizer scale:	Window		Max difference between quantizer scale:
@@ -103,6 +106,7 @@ Error	JobList		Error
 Show job manager	JobWindow		Show job manager
 Open source file…	Window		Open source file…
 Start this job	JobWindow		Start this job
+New preview	Window		New preview
 Abort	Window		Abort
 Bottom:	Window		Bottom:
 Abort this job	JobWindow		Abort this job
