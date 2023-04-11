@@ -1737,7 +1737,7 @@ MainWindow::_PopulateCodecOptions()
 	fAudioCodecs.push_back(CodecOption("dts", "dts", "dts - DCA (DTS Coherent Acoustics)"));
 	fAudioCodecs.push_back(CodecOption("flac", "flac", "flac (Free Lossless Audio Codec)"));
 	fAudioCodecs.push_back(CodecOption("mp3", "mp3", "mp3 - MPEG audio layer 3"));
-	fAudioCodecs.push_back(CodecOption("pcm_s16le", "pcm16", "pcm - signed 16-bit"));
+	fAudioCodecs.push_back(CodecOption("pcm_s16be", "pcm16", "pcm - signed 16-bit"));
 	fAudioCodecs.push_back(CodecOption("libvorbis", "vorbis", "vorbis"));
 }
 
