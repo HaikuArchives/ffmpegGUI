@@ -977,10 +977,10 @@ MainWindow::_BuildMenu()
 	// ffmpegGUI menu
 	menu = new BMenu(B_TRANSLATE_SYSTEM_NAME("ffmpegGUI"));
 	item = new BMenuItem(
-		B_TRANSLATE("Help" B_UTF8_ELLIPSIS), new BMessage(M_HELP), 'H');
+		B_TRANSLATE("Help"), new BMessage(M_HELP), 'H');
 	menu->AddItem(item);
 	item = new BMenuItem(
-		B_TRANSLATE("FFmpeg documentation" B_UTF8_ELLIPSIS), new BMessage(M_WEBSITE), 'F');
+		B_TRANSLATE("FFmpeg documentation"), new BMessage(M_WEBSITE), 'F');
 	menu->AddItem(item);
 	menu->AddSeparatorItem();
 	item = new BMenuItem(B_TRANSLATE("About ffmpegGUI"), new BMessage(B_ABOUT_REQUESTED));
@@ -1027,7 +1027,7 @@ MainWindow::_BuildMenu()
 	fMenuAddJob = new BMenuItem(B_TRANSLATE("Add as new job"), new BMessage(M_ADD_JOB), 'J');
 	fMenuAddJob->SetEnabled(false);
 	menu->AddItem(fMenuAddJob);
-	item = new BMenuItem(B_TRANSLATE("Open job manager" B_UTF8_ELLIPSIS),
+	item = new BMenuItem(B_TRANSLATE("Open job manager"),
 		new BMessage(M_JOB_MANAGER), 'M');
 	menu->AddItem(item);
 	menuBar->AddItem(menu);

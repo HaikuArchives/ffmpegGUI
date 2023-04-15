@@ -1,4 +1,4 @@
-1	English	application/x-vnd.HaikuArchives-ffmpegGUI	3612114065
+1	English	application/x-vnd.HaikuArchives-ffmpegGUI	1298402210
 Add as new job	Window		Add as new job
 Use four motion vector	Window		Use four motion vector
 Start	Window		Start
@@ -19,6 +19,7 @@ Are you sure, that you want to abort the encoding?\n	Window		Are you sure, that 
 Video quantizer scale compression:	Window		Video quantizer scale compression:
 OK	JobWindow		OK
 Job manager	JobWindow		Job manager
+FFmpeg documentation	Window		FFmpeg documentation
 Select output file…	Window		Select output file…
 Video	Window		Video
 N°	JobWindow	'Number' abbreviation	N°
@@ -31,7 +32,6 @@ Open output folder	JobWindow		Open output folder
 Status	JobWindow		Status
 Are you sure, that you want to remove all jobs?\n\n	JobWindow		Are you sure, that you want to remove all jobs?\n\n
 Show error log	JobWindow		Show error log
-Open job manager…	Window		Open job manager…
 Source file	Window		Source file
 Play source file	Window		Play source file
 Video quantizer scale blur:	Window		Video quantizer scale blur:
@@ -65,6 +65,7 @@ This file already exists. It will be overwritten!	Window		This file already exis
 Reset	Window		Reset
 ffmpegGUI	System name		ffmpegGUI
 GOP size:	Window		GOP size:
+https://ffmpeg.org/ffmpeg.html	Window	You can change to a good localized version of an ffmpeg ressource	https://ffmpeg.org/ffmpeg.html
 Duration	JobWindow		Duration
 All jobs	JobWindow		All jobs
 Bitrate (Kbit/s):	Window		Bitrate (Kbit/s):
@@ -84,12 +85,14 @@ Running: 100%	JobWindow		Running: 100%
 Play when finished	Window		Play when finished
 Width:	Window		Width:
 Running	JobList		Running
+Open job manager	Window		Open job manager
 Calculate PSNR of compressed frames	Window		Calculate PSNR of compressed frames
 Output file	Window		Output file
 A GUI frontend for ffmpeg	Application		A GUI frontend for ffmpeg
 Play output file	Window		Play output file
 'B' frames:	Window		'B' frames:
 Copy commandline	JobWindow		Copy commandline
+Help	Window		Help
 Log	Window		Log
 Remove all jobs	JobWindow		Remove all jobs
 There's already a job with that same output file:\n%filename%\n\nBetter choose another output file, or remove the existing job.\n	JobWindow		There's already a job with that same output file:\n%filename%\n\nBetter choose another output file, or remove the existing job.\n
@@ -105,8 +108,8 @@ Too late! Encoding has already finished.\n	Window		Too late! Encoding has alread
 Error	JobList		Error
 Show job manager	JobWindow		Show job manager
 Open source file…	Window		Open source file…
-Start this job	JobWindow		Start this job
 New preview	Window		New preview
+Start this job	JobWindow		Start this job
 Abort	Window		Abort
 Bottom:	Window		Bottom:
 Abort this job	JobWindow		Abort this job
