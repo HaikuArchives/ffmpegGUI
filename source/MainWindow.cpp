@@ -1851,12 +1851,17 @@ MainWindow::_OpenHelp()
 	BPathFinder pathFinder;
 	BStringList paths;
 	BPath path;
+	BEntry entry;
 
-	pathFinder.FindPaths(B_FIND_PATH_DOCUMENTATION_DIRECTORY,
+	status_t error = pathFinder.FindPaths(B_FIND_PATH_DOCUMENTATION_DIRECTORY,
 		"packages/ffmpegGUI", paths);
-	if (!paths.IsEmpty()) {
-		if (path.SetTo(paths.StringAt(0)) == B_OK) {
-			path.Append("ReadMe.html");
+
+	for (int i = 0; i < paths.CountStrings(); ++i) {
+		if (error == B_OK && path.SetTo(paths.StringAt(i)) == B_OK
+			&& path.Append("ReadMe.html") == B_OK) {
+			entry = path.Path();
+			if (!entry.Exists())
+				continue;
 			BMessage message(B_REFS_RECEIVED);
 			message.AddString("url", path.Path());
 			be_roster->Launch("text/html", &message);
