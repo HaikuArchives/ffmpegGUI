@@ -1,4 +1,4 @@
-1	English	application/x-vnd.HaikuArchives-ffmpegGUI	1298402210
+1	English	application/x-vnd.HaikuArchives-ffmpegGUI	254735170
 Add as new job	Window		Add as new job
 Use four motion vector	Window		Use four motion vector
 Start	Window		Start
@@ -16,6 +16,7 @@ Start job	JobWindow		Start job
 Abort encoding	Window		Abort encoding
 Cancel	Window		Cancel
 Are you sure, that you want to abort the encoding?\n	Window		Are you sure, that you want to abort the encoding?\n
+Thanks to:\nHandmaus (Icon)\nmmu_man, Jeremy, DeadYak, Marco, etc.\nmd@geekport.com\nreds <reds@sakamoto.pl> for making it more or less usable.\nHave fun!	Application		Thanks to:\nHandmaus (Icon)\nmmu_man, Jeremy, DeadYak, Marco, etc.\nmd@geekport.com\nreds <reds@sakamoto.pl> for making it more or less usable.\nHave fun!
 Video quantizer scale compression:	Window		Video quantizer scale compression:
 OK	JobWindow		OK
 Job manager	JobWindow		Job manager
@@ -59,7 +60,6 @@ Clear finished	JobWindow		Clear finished
 Jobs	Window		Jobs
 1:1 copy	Window		1:1 copy
 There's no file with that name.	Window		There's no file with that name.
-Thanks to:\nHandMaus (Icon)\nmmu_man, Jeremy, DeadYak, Marco, etc.\nmd@geekport.com\nreds <reds@sakamoto.pl> for making it more or less usable.\nHave fun!	Application		Thanks to:\nHandMaus (Icon)\nmmu_man, Jeremy, DeadYak, Marco, etc.\nmd@geekport.com\nreds <reds@sakamoto.pl> for making it more or less usable.\nHave fun!
 Left:	Window		Left:
 This file already exists. It will be overwritten!	Window		This file already exists. It will be overwritten!
 Reset	Window		Reset
