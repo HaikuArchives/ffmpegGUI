@@ -82,7 +82,8 @@ static const char* kFFProbe = "ffprobe";
 MainWindow::MainWindow(BRect r, const char* name, window_type type, ulong mode)
 	:
 	BWindow(r, name, type, mode),
-	fStopAlert(NULL)
+	fStopAlert(NULL),
+	fLastRandomSecond(0)
 {
 	// Invoker for the Alerts to use to send their messages to the timer
 	fAlertInvoker.SetMessage(new BMessage(M_STOP_ALERT_BUTTON));
@@ -1590,7 +1591,10 @@ MainWindow::_ExtractPreviewImage()
 	int32 min = 1;
 	int32 max = fEncodeDuration - 1;
 	// Generate random time
-	int32 randomSecond = min + (rand() % static_cast<int>(max - min + 1));
+	srand(system_time());
+	int32 randomSecond;
+	while ((randomSecond = min + (rand() % static_cast<int>(max - min + 1))) == fLastRandomSecond);
+	fLastRandomSecond = randomSecond;
 	// Convert seconds to HH:MM:SS
 	char randomTime[64];
 	seconds_to_string(randomSecond, randomTime, sizeof(randomTime));
