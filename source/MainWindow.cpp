@@ -926,13 +926,13 @@ MainWindow::_UnarchiveJob(BMessage jobMessage)
 		fYres->SetWithoutInvoke(value);
 
 	if (jobMessage.FindInt32("lcrop", &value) == B_OK)
-		fLeftCrop->SetWithoutInvoke(value);
+		fLeftCrop->SetValue(value);
 	if (jobMessage.FindInt32("rcrop", &value) == B_OK)
-		fRightCrop->SetWithoutInvoke(value);
+		fRightCrop->SetValue(value);
 	if (jobMessage.FindInt32("tcrop", &value) == B_OK)
-		fTopCrop->SetWithoutInvoke(value);
+		fTopCrop->SetValue(value);
 	if (jobMessage.FindInt32("bcrop", &value) == B_OK)
-		fBottomCrop->SetWithoutInvoke(value);
+		fBottomCrop->SetValue(value);
 
 	if (jobMessage.FindBool("a_box_enabled", &onoff) == B_OK)
 		fEnableAudioBox->SetEnabled(onoff);
@@ -1666,10 +1666,10 @@ MainWindow::_SetDefaults()
 	fXres->SetWithoutInvoke(1280);
 	fYres->SetWithoutInvoke(720);
 
-	fTopCrop->SetWithoutInvoke(0);
-	fBottomCrop->SetWithoutInvoke(0);
-	fLeftCrop->SetWithoutInvoke(0);
-	fRightCrop->SetWithoutInvoke(0);
+	fTopCrop->SetValue(0);
+	fBottomCrop->SetValue(0);
+	fLeftCrop->SetValue(0);
+	fRightCrop->SetValue(0);
 
 	fAudioBitsPopup->ItemAt(2)->SetMarked(true);
 	fSampleratePopup->ItemAt(1)->SetMarked(true);
