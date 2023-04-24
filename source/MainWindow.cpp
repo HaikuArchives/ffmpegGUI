@@ -1395,6 +1395,38 @@ MainWindow::_BuildEncodeProgress()
 void
 MainWindow::_BuildLine() // ask all the views what they hold, reset the command string
 {
+
+	fCommand = fCommandlineTextControl->Text();
+	fCommand.Trim();
+	BStringList tokens_raw;
+	fCommand.Split(" ", true, tokens_raw);
+
+	// Consolidate parts of quoted strings into single tokens
+	BStringList tokens_processed;
+	for (int32 token_idx=0; token_idx<tokens_raw.CountStrings(); ++token_idx) {
+		BString token = tokens_raw.StringAt(token_idx);
+		if (token.StartsWith("\"")) {
+			if (!token.EndsWith("\"")) {
+				for (int32 part_idx=token_idx+1; part_idx<tokens_raw.CountStrings(); ++part_idx) {
+					BString token_part = tokens_raw.StringAt(part_idx);
+					token << " " << token_part;
+					if (token_part.EndsWith("\"")) {
+						token_idx = part_idx;
+						break;
+					}
+				}
+			}
+		}
+
+		tokens_processed.Add(token);
+	}
+
+	for (int32 i=0; i<tokens_processed.CountStrings(); ++i)
+	{
+		printf("%d: %s\n", i, tokens_processed.StringAt(i).String());
+	}
+
+	/*
 	BString source_filename(fSourceTextControl->Text());
 	BString output_filename(fOutputTextControl->Text());
 	source_filename.Trim();
@@ -1447,6 +1479,8 @@ MainWindow::_BuildLine() // ask all the views what they hold, reset the command 
 
 	fCommand << " \"" << output_filename << "\"";
 	fCommand << " -loglevel error -stats";
+	*/
+
 	fCommandlineTextControl->SetText(fCommand.String());
 }
 
