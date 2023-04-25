@@ -1,10 +1,11 @@
-1	English (British)	application/x-vnd.HaikuArchives-ffmpegGUI	3097994486
+1	English (British)	application/x-vnd.HaikuArchives-ffmpegGUI	254735170
 'B' frames:	Window		'B' frames:
+{0, plural,one{(# Job)}other{(# Jobs)}}	Window		{0, plural,one{(# Job)}other{(# Jobs)}}
 1:1 copy	Window		1:1 copy
 Abort	Window		Abort
 Abort encoding	Window		Abort encoding
 About ffmpegGUI	Window		About ffmpegGUI
-Advanced options	Window		Advanced options
+Add as new job	Window		Add as new job
 Are you sure, that you want to abort the encoding?\n	Window		Are you sure, that you want to abort the encoding?\n
 Audio	Window		Audio
 Audio channels:	Window		Audio channels:
@@ -15,30 +16,34 @@ Calculate PSNR of compressed frames	Window		Calculate PSNR of compressed frames
 Cancel	Window		Cancel
 Cannot overwrite the source file. Please choose another output file name.	Window		Cannot overwrite the source file. Please choose another output file name.
 Copy commandline	Window		Copy commandline
-Cropping options	Window		Cropping options
+Cropping	Window		Cropping
 Default options	Window		Default options
 Deinterlace pictures	Window		Deinterlace pictures
 Duh!	Window	Button label of stop-encoding-alert if you're too late...	Duh!
 Enable audio encoding	Window		Enable audio encoding
-Enable video cropping	Window		Enable video cropping
 Enable video encoding	Window		Enable video encoding
 Encoding	Window		Encoding
 Encoding failed.	Window		Encoding failed.
 Encoding finished successfully!	Window		Encoding finished successfully!
 Encoding: %source%   →   %output%	Window		Encoding: %source%   →   %output%
+FFmpeg documentation	Window		FFmpeg documentation
 File	Window		File
 fps	Window		fps
 Framerate (fps):	Window		Framerate (fps):
 GOP size:	Window		GOP size:
 Height:	Window		Height:
+Help	Window		Help
+https://ffmpeg.org/ffmpeg.html	Window	You can change to a good localized version of an ffmpeg ressource	https://ffmpeg.org/ffmpeg.html
+Jobs	Window		Jobs
 Left:	Window		Left:
 Log	Window		Log
-Main options	Window		Main options
 Max difference between quantizer scale:	Window		Max difference between quantiser scale:
 Max video quantizer scale:	Window		Max video quantiser scale:
 Min video quantizer scale:	Window		Min video quantiser scale:
+New preview	Window		New preview
 No audio track	Window		No audio track
 No video track	Window		No video track
+Open job manager	Window		Open job manager
 Open source file…	Window		Open source file…
 Options	Window		Options
 Output file	Window		Output file
@@ -47,6 +52,7 @@ Play source file	Window		Play source file
 Play when finished	Window		Play when finished
 Please select a source file.	Window		Please select a source file.
 Quit	Window		Quit
+Reset	Window		Reset
 Right:	Window		Right:
 Sampling rate (Hz):	Window		Sampling rate (Hz):
 Select output file…	Window		Select output file…
@@ -68,7 +74,47 @@ Video quantizer scale blur:	Window		Video quantiser scale blur:
 Video quantizer scale compression:	Window		Video quantiser scale compression:
 Waiting to start encoding…	Window		Waiting to start encoding…
 Width:	Window		Width:
+{0, plural,one{Abort job}other{Abort all jobs}}	JobWindow		{0, plural,one{Abort job}other{Abort all jobs}}
+{0, plural,one{Encoding job finished.}other{Encoding jobs finished.}}	JobWindow		{0, plural,one{Encoding job finished.}other{Encoding jobs finished.}}
+{0, plural,one{Start job}other{Start all jobs}}	JobWindow		{0, plural,one{Start job}other{Start all jobs}}
+Abort this job	JobWindow		Abort this job
+All jobs	JobWindow		All jobs
+Are you sure, that you want to remove all jobs?\n\n	JobWindow		Are you sure, that you want to remove all jobs?\n\n
+Cancel	JobWindow		Cancel
+Clear finished	JobWindow		Clear finished
+Close	JobWindow		Close
+Copy commandline	JobWindow		Copy commandline
+Duration	JobWindow		Duration
+Edit job	JobWindow		Edit job
+Edit this job	JobWindow		Edit this job
+Error log	JobWindow		Error log
+Job	JobWindow		Job
+Job manager	JobWindow		Job manager
+Job name	JobWindow		Job name
+N°	JobWindow	'Number' abbreviation	N°
+OK	JobWindow		Alright
+Open output folder	JobWindow		Open output folder
+Play output file	JobWindow		Play output file
+Remove	JobWindow		Remove
+Remove all	JobWindow		Remove all
+Remove all jobs	JobWindow		Remove all jobs
+Remove this job	JobWindow		Remove this job
+Running:	JobWindow		Running:
+Running: 100%	JobWindow		Running: 100%
+Selected job	JobWindow		Selected job
+Show error log	JobWindow		Show error log
+Show job manager	JobWindow		Show job manager
+Start all jobs	JobWindow		Start all jobs
+Start job	JobWindow		Start job
+Start jobs	JobWindow		Start jobs
+Start this job	JobWindow		Start this job
+Status	JobWindow		Status
+There's already a job with that same output file:\n%filename%\n\nBetter choose another output file, or remove the existing job.\n	JobWindow		There's already a job with that same output file:\n%filename%\n\nBetter choose another output file, or remove the existing job.\n
 A GUI frontend for ffmpeg	Application		A GUI frontend for ffmpeg
-Thanks to:\nHandMaus (Icon)\nmmu_man, Jeremy, DeadYak, Marco, etc.\nmd@geekport.com\nreds <reds@sakamoto.pl> for making it more or less usable.\nHave fun!	Application		Thanks to:\nHandMaus (Icon)\nmmu_man, Jeremy, DeadYak, Marco, etc.\nmd@geekport.com\nreds <reds@sakamoto.pl> for making it more or less usable.\nHave fun!
+Thanks to:\nHandmaus (Icon)\nmmu_man, Jeremy, DeadYak, Marco, etc.\nmd@geekport.com\nreds <reds@sakamoto.pl> for making it more or less usable.\nHave fun!	Application		Thanks to:\nHandmaus (Icon)\nmmu_man, Jeremy, DeadYak, Marco, etc.\nmd@geekport.com\nreds <reds@sakamoto.pl> for making it more or less usable.\nHave fun!
+Error	JobList		Error
+Finished	JobList		Finished
+Running	JobList		Running
+Waiting	JobList		Waiting
 ffmpeg GUI	System name		ffmpeg GUI
 ffmpegGUI	System name		ffmpegGUI

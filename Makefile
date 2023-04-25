@@ -32,12 +32,12 @@ SRCS = \
 	 source/App.cpp  \
 	 source/CodecContainerOptions.cpp \
 	 source/CommandLauncher.cpp  \
+	 source/CropView.cpp \
 	 source/JobList.cpp \
 	 source/JobWindow.cpp \
 	 source/MainWindow.cpp  \
 	 source/Spinner.cpp \
 	 source/Utilities.cpp  \
-	 source/CropView.cpp \
 
 #	Specify the resource definition files to use. Full or relative paths can be
 #	used.
@@ -95,7 +95,7 @@ OPTIMIZE :=
 # 	will recreate only the "locales/en.catkeys" file. Use it as a template
 # 	for creating catkeys for other languages. All localization files must be
 # 	placed in the "locales" subdirectory.
-LOCALES = ca de en_AU en_GB en es-419 es fr fur id pt_BR ru sv tr
+LOCALES = de en_AU en_GB en es fr fur sv tr
 
 #	Specify all the preprocessor symbols to be defined. The symbols will not
 #	have their values set automatically; you must supply the value (if any) to

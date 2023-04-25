@@ -1,10 +1,11 @@
-1	Swedish	application/x-vnd.HaikuArchives-ffmpegGUI	3097994486
+1	Swedish	application/x-vnd.HaikuArchives-ffmpegGUI	254735170
 'B' frames:	Window		'B'-ramar:
+{0, plural,one{(# Job)}other{(# Jobs)}}	Window		{0, plural,one{(# Jobb)}other{(# Jobb)}}
 1:1 copy	Window		1:1 kopia
 Abort	Window		Avbryta
 Abort encoding	Window		Avbryt kodning
 About ffmpegGUI	Window		Om ffmpegGUI
-Advanced options	Window		Avancerade alternativ
+Add as new job	Window		Lägg till som nytt jobb
 Are you sure, that you want to abort the encoding?\n	Window		Är du säker på att du vill avbryta kodningen?\n
 Audio	Window		Ljud
 Audio channels:	Window		Ljudkanaler:
@@ -15,30 +16,34 @@ Calculate PSNR of compressed frames	Window		Beräkna PSNR för komprimerade rama
 Cancel	Window		Avbryt
 Cannot overwrite the source file. Please choose another output file name.	Window		Kan inte skriva över källfilen. Välj ett annat utdatafilnamn.
 Copy commandline	Window		Kopiera kommandoraden
-Cropping options	Window		Beskärningsalternativ
+Cropping	Window		Beskärning
 Default options	Window		Standardalternativ
 Deinterlace pictures	Window		Deinterlace bilder
 Duh!	Window	Button label of stop-encoding-alert if you're too late...	Duh!
 Enable audio encoding	Window		Aktivera ljudkodning
-Enable video cropping	Window		Aktivera videobeskärning
 Enable video encoding	Window		Aktivera videokodning
 Encoding	Window		Kodning
 Encoding failed.	Window		Kodningen misslyckades.
 Encoding finished successfully!	Window		Kodningen slutfördes framgångsrikt!
 Encoding: %source%   →   %output%	Window		Kodning: %source% → %output%
+FFmpeg documentation	Window		FFmpeg dokumentation
 File	Window		Fil
 fps	Window		bps
 Framerate (fps):	Window		Bildhastighet (fps):
 GOP size:	Window		GOP storlek:
 Height:	Window		Höjd:
+Help	Window		Hjälp
+https://ffmpeg.org/ffmpeg.html	Window	You can change to a good localized version of an ffmpeg ressource	https://ffmpeg.org/ffmpeg.html
+Jobs	Window		Jobb
 Left:	Window		Vänster:
 Log	Window		Logg
-Main options	Window		Huvudalternativ
 Max difference between quantizer scale:	Window		Max skillnad mellan kvantiseringsskala:
 Max video quantizer scale:	Window		Max videokvantiserare skala:
 Min video quantizer scale:	Window		Min videokvantiserare skala:
+New preview	Window		Ny förhandsvisning
 No audio track	Window		Inget ljudspår
 No video track	Window		Inget videospår
+Open job manager	Window		Öppet jobb admin
 Open source file…	Window		Öppna källfilen...
 Options	Window		Alternativ
 Output file	Window		Utdatafil
@@ -47,6 +52,7 @@ Play source file	Window		Spela upp källfilen
 Play when finished	Window		Spela när du är klar
 Please select a source file.	Window		Välj en källfil.
 Quit	Window		Avsluta
+Reset	Window		Återställa
 Right:	Window		Höger:
 Sampling rate (Hz):	Window		Samplingshastighet (Hz):
 Select output file…	Window		Välj utdatafil...
@@ -68,7 +74,47 @@ Video quantizer scale blur:	Window		Videokvantiserarens skaloskärpa:
 Video quantizer scale compression:	Window		Videokvantiserare skala komprimering:
 Waiting to start encoding…	Window		Väntar på att börja koda...
 Width:	Window		Bredd:
+{0, plural,one{Abort job}other{Abort all jobs}}	JobWindow		{0, plural,one{Avbryt jobbet}other{Avbryt alla jobb}}
+{0, plural,one{Encoding job finished.}other{Encoding jobs finished.}}	JobWindow		{0, plural,one{Kodningsjobbet avslutat.}other{Kodningsjobb avslutade.}}
+{0, plural,one{Start job}other{Start all jobs}}	JobWindow		{0, plural,one{Starta jobbet}other{Starta alla jobb}}
+Abort this job	JobWindow		Avbryt det här jobbet
+All jobs	JobWindow		Alla jobb
+Are you sure, that you want to remove all jobs?\n\n	JobWindow		Är du säker på att du vill ta bort alla jobb?\n\n
+Cancel	JobWindow		Avbryt
+Clear finished	JobWindow		Klar klar
+Close	JobWindow		Stänga
+Copy commandline	JobWindow		Kopiera kommandoraden
+Duration	JobWindow		varaktighet
+Edit job	JobWindow		Redigera jobb
+Edit this job	JobWindow		Redigera det här jobbet
+Error log	JobWindow		Felloggen
+Job	JobWindow		Jobb
+Job manager	JobWindow		Jobbchef
+Job name	JobWindow		Jobb namn
+N°	JobWindow	'Number' abbreviation	N°
+OK	JobWindow		OK
+Open output folder	JobWindow		Öppna utdatamappen
+Play output file	JobWindow		Spela utdatafil
+Remove	JobWindow		Avlägsna
+Remove all	JobWindow		Ta bort alla
+Remove all jobs	JobWindow		Ta bort alla jobb
+Remove this job	JobWindow		Ta bort det här jobbet
+Running:	JobWindow		Kör:
+Running: 100%	JobWindow		Kör: 100%
+Selected job	JobWindow		Valt jobb
+Show error log	JobWindow		Visa fellogg
+Show job manager	JobWindow		Visa jobbansvarig
+Start all jobs	JobWindow		Starta alla jobb
+Start job	JobWindow		Starta jobbet
+Start jobs	JobWindow		Starta jobb
+Start this job	JobWindow		Börja det här jobbet
+Status	JobWindow		Status
+There's already a job with that same output file:\n%filename%\n\nBetter choose another output file, or remove the existing job.\n	JobWindow		Det finns redan ett jobb med samma utdatafil:\n%filnamn%\n\nBättre att välja en annan utdatafil eller ta bort det befintliga jobbet.\n
 A GUI frontend for ffmpeg	Application		En GUI-gränssnitt för ffmpeg
-Thanks to:\nHandMaus (Icon)\nmmu_man, Jeremy, DeadYak, Marco, etc.\nmd@geekport.com\nreds <reds@sakamoto.pl> for making it more or less usable.\nHave fun!	Application		Tack till:\nHandMaus (Icon)\nmmu_man, Jeremy, DeadYak, Marco, etc.\nmd@geekport.com\nreds <reds@sakamoto.pl> för att du gjorde den mer eller mindre användbar.\nHa kul!
+Thanks to:\nHandmaus (Icon)\nmmu_man, Jeremy, DeadYak, Marco, etc.\nmd@geekport.com\nreds <reds@sakamoto.pl> for making it more or less usable.\nHave fun!	Application		Tack till:\nHandmaus (Icon)\nmmu_man, Jeremy, DeadYak, Marco, etc.\nmd@geekport.com\nreds <reds@sakamoto.pl> för att du gjorde den mer eller mindre användbar.\nHa kul!
+Error	JobList		Fel
+Finished	JobList		Färdiga
+Running	JobList		Kör
+Waiting	JobList		Väntar
 ffmpeg GUI	System name		ffmpeg GUI
 ffmpegGUI	System name		ffmpegGUI

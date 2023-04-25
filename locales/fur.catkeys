@@ -1,10 +1,11 @@
-1	Friulian	application/x-vnd.HaikuArchives-ffmpegGUI	3097994486
+1	Friulian	application/x-vnd.HaikuArchives-ffmpegGUI	254735170
 'B' frames:	Window		Fotograms 'B':
+{0, plural,one{(# Job)}other{(# Jobs)}}	Window		{0, plural,one{(# lavôr)}other{(# lavôrs)}}
 1:1 copy	Window		Copie 1:1
 Abort	Window		Interomp
 Abort encoding	Window		Interomp la codifiche
 About ffmpegGUI	Window		Informazions su ffmpegGUI
-Advanced options	Window		Opzions avanzadis
+Add as new job	Window		Zonte come gnûf lavôr
 Are you sure, that you want to abort the encoding?\n	Window		Interompi pardabon la ccodifiche?\n
 Audio	Window		Audio
 Audio channels:	Window		Canâi audio:
@@ -15,30 +16,34 @@ Calculate PSNR of compressed frames	Window		Calcole il PSNR dai fotograms compri
 Cancel	Window		Anule
 Cannot overwrite the source file. Please choose another output file name.	Window		Impuasibil sorescrivi il file sorzint. Sielç un altri non pal file di jessude.
 Copy commandline	Window		Copie rie di comant
-Cropping options	Window		Opzions di ritai
+Cropping	Window		Daûr a ritaiâ
 Default options	Window		Opzions predefinidis
 Deinterlace pictures	Window		Disinterlace lis imagjins
 Duh!	Window	Button label of stop-encoding-alert if you're too late...	Orpo!
 Enable audio encoding	Window		Abilite la codifiche audio
-Enable video cropping	Window		Abilite il ritai dal video
 Enable video encoding	Window		Abilite la codifiche video
 Encoding	Window		Codifiche
 Encoding failed.	Window		Codifiche lade strucje.
 Encoding finished successfully!	Window		Codifiche completade cun sucès!
 Encoding: %source%   →   %output%	Window		Codifiche: %source%   →   %output%
+FFmpeg documentation	Window		Documentazion di FFmpeg
 File	Window		File
 fps	Window		fps
 Framerate (fps):	Window		Frec. fotograms (fps):
 GOP size:	Window		Dimension GOP:
 Height:	Window		Altece:
+Help	Window		Jutori
+https://ffmpeg.org/ffmpeg.html	Window	You can change to a good localized version of an ffmpeg ressource	https://ffmpeg.org/ffmpeg.html
+Jobs	Window		Lavôrs
 Left:	Window		Çampe:
 Log	Window		Regjistri
-Main options	Window		Opzions principâls
-Max difference between quantizer scale:	Window		Max difference between quantizer scale:
-Max video quantizer scale:	Window		Max video quantizer scale:
-Min video quantizer scale:	Window		Min video quantizer scale:
+Max difference between quantizer scale:	Window		Diference massime te scjale dal cuantizadôr:
+Max video quantizer scale:	Window		Scjale massime dal cuantizadôr video:
+Min video quantizer scale:	Window		Scjale minime dal cuantizadôr video:
+New preview	Window		Gnove anteprime
 No audio track	Window		Nissune linie audio
 No video track	Window		Nissune linie video
+Open job manager	Window		Vierç gjestôr lavôrs
 Open source file…	Window		Vierç file sorzint…
 Options	Window		Opzions
 Output file	Window		File di jessude
@@ -47,6 +52,7 @@ Play source file	Window		Riprodûs file sorzint
 Play when finished	Window		Riprodûs al completament
 Please select a source file.	Window		Selezione un file sorzint.
 Quit	Window		Jes
+Reset	Window		Ripristine
 Right:	Window		Diestre:
 Sampling rate (Hz):	Window		Frecuence di campionament (Hz):
 Select output file…	Window		Selezione file di jessude…
@@ -59,16 +65,56 @@ This file already exists. It will be overwritten!	Window		Chest file al esist bi
 Too late! Encoding has already finished.\n	Window		Masse tart! La codifiche e je za finide.\n
 Top:	Window		Superiôr:
 Use custom resolution	Window		Dopre risoluzion personalizade
-Use fixed video quantizer scale:	Window		Use fixed video quantizer scale:
+Use fixed video quantizer scale:	Window		Dopre la scjale fisse dal cuantizadôr video:
 Use four motion vector	Window		Dopre cuatri vetôrs di moviment
 Use high quality settings	Window		Dopre lis impostazions di cualitât elevade
 Video	Window		Video
 Video codec:	Window		Codec video:
-Video quantizer scale blur:	Window		Video quantizer scale blur:
-Video quantizer scale compression:	Window		Video quantizer scale compression:
+Video quantizer scale blur:	Window		Fûr fûc de scjale dal cuantizadôr video:
+Video quantizer scale compression:	Window		Compression de scjale dal cuantizadôr video:
 Waiting to start encoding…	Window		In spiete di scomençâ la codifiche…
 Width:	Window		Largjece:
+{0, plural,one{Abort job}other{Abort all jobs}}	JobWindow		{0, plural,one{Interomp lavôr}other{Interomp ducj i lavôrs}}
+{0, plural,one{Encoding job finished.}other{Encoding jobs finished.}}	JobWindow		{0, plural,one{Lavôr di codifiche completât.}other{Lavôrs di codifiche completâts.}}
+{0, plural,one{Start job}other{Start all jobs}}	JobWindow		{0, plural,one{Invie il lavôr}other{Invie ducj i lavôrs}}
+Abort this job	JobWindow		Interomp chest lavôr
+All jobs	JobWindow		Ducj i lavôrs
+Are you sure, that you want to remove all jobs?\n\n	JobWindow		Gjavâ pardabon ducj i lavôrs?\n\n
+Cancel	JobWindow		Anule
+Clear finished	JobWindow		Nete completâts
+Close	JobWindow		Siere
+Copy commandline	JobWindow		Copie rie di comant
+Duration	JobWindow		Durade
+Edit job	JobWindow		Modifiche lavôr
+Edit this job	JobWindow		Modifiche chest lavôr
+Error log	JobWindow		Regjistri erôrs
+Job	JobWindow		Lavôr
+Job manager	JobWindow		Gjestôr lavôrs
+Job name	JobWindow		Non dal lavôr
+N°	JobWindow	'Number' abbreviation	N°
+OK	JobWindow		Va ben
+Open output folder	JobWindow		Vierç cartele di jessude
+Play output file	JobWindow		Riprodûs file di jessude
+Remove	JobWindow		Gjave
+Remove all	JobWindow		Gjave dut
+Remove all jobs	JobWindow		Gjave ducj i lavôrs
+Remove this job	JobWindow		Gjave chest lavôr
+Running:	JobWindow		In esecuzion:
+Running: 100%	JobWindow		In esecuzion: 100%
+Selected job	JobWindow		Lavôr selezionât
+Show error log	JobWindow		Mostre regjistri erôrs
+Show job manager	JobWindow		Mostre gjestôr dai lavôrs
+Start all jobs	JobWindow		Invie ducj i lavôrs
+Start job	JobWindow		Invie lavôr
+Start jobs	JobWindow		Invie lavôrs
+Start this job	JobWindow		Invie chest lavôr
+Status	JobWindow		Stât
+There's already a job with that same output file:\n%filename%\n\nBetter choose another output file, or remove the existing job.\n	JobWindow		Al esist za un lavôr cun chel stes file di jessude:\n%filename%\n\nAl è miôr sielzi un altri file di jessude o gjavâ il lavôr esistent.\n
 A GUI frontend for ffmpeg	Application		Une interface grafiche par comandâ ffmpeg
-Thanks to:\nHandMaus (Icon)\nmmu_man, Jeremy, DeadYak, Marco, etc.\nmd@geekport.com\nreds <reds@sakamoto.pl> for making it more or less usable.\nHave fun!	Application		Graciis a:\nHandMaus (Icon)\nmmu_man, Jeremy, DeadYak, Marco e v.i.\nmd@geekport.com\nreds <reds@sakamoto.pl> par vêlu rindût plui o mancul doprabil.\nDivertissiti!
+Thanks to:\nHandmaus (Icon)\nmmu_man, Jeremy, DeadYak, Marco, etc.\nmd@geekport.com\nreds <reds@sakamoto.pl> for making it more or less usable.\nHave fun!	Application		Graciis a:\nHandmaus (Icon)\nmmu_man, Jeremy, DeadYak, Marco e v.i.\nmd@geekport.com\nreds <reds@sakamoto.pl> par vêlu rindût plui o mancul doprabil.\nDivertissiti!
+Error	JobList		Erôr
+Finished	JobList		Completât
+Running	JobList		In esecuzion
+Waiting	JobList		In spiete
 ffmpeg GUI	System name		GUI di ffmpeg
 ffmpegGUI	System name		ffmpegGUI

@@ -1,10 +1,11 @@
-1	French	application/x-vnd.HaikuArchives-ffmpegGUI	3097994486
+1	French	application/x-vnd.HaikuArchives-ffmpegGUI	254735170
 'B' frames:	Window		Images 'B' :
+{0, plural,one{(# Job)}other{(# Jobs)}}	Window		{0, plural,one{(# Tâche)}other{(# Tâches)}}
 1:1 copy	Window		Copie 1:1
 Abort	Window		Abandon
 Abort encoding	Window		Abandon de l’encodage
 About ffmpegGUI	Window		À propos de ffmpegGUI
-Advanced options	Window		Options avancées
+Add as new job	Window		Ajouter comme nouvelle tâche
 Are you sure, that you want to abort the encoding?\n	Window		Êtes-vous certain de vouloir abandonner l’encodage ?\n
 Audio	Window		Audio
 Audio channels:	Window		Canaux audio :
@@ -15,30 +16,34 @@ Calculate PSNR of compressed frames	Window		Calculer le rapport signal sur bruit
 Cancel	Window		Annuler
 Cannot overwrite the source file. Please choose another output file name.	Window		Impossible d’écraser le fichier source. Veuillez choisir un nom de fichier différent.
 Copy commandline	Window		Copier la ligne de commande
-Cropping options	Window		Options de recadrage
+Cropping	Window		Recadrage
 Default options	Window		Options par défaut
 Deinterlace pictures	Window		Désentrelacer les images
 Duh!	Window	Button label of stop-encoding-alert if you're too late...	Loupé !
 Enable audio encoding	Window		Activer l’encodage audio
-Enable video cropping	Window		Activer le recadrage vidéo
 Enable video encoding	Window		Activer l’encodage vidéo
 Encoding	Window		Encodage
 Encoding failed.	Window		L’encodage a échoué.
 Encoding finished successfully!	Window		L’encodage est réussi !
 Encoding: %source%   →   %output%	Window		Encode : %source%   →   %output%
+FFmpeg documentation	Window		Documentation de FFmpeg
 File	Window		Fichier
 fps	Window		fps
 Framerate (fps):	Window		Cadence d'images (fps) :
 GOP size:	Window		Dimension du groupe d'images (GOP) :
 Height:	Window		Hauteur :
+Help	Window		Aide
+https://ffmpeg.org/ffmpeg.html	Window	You can change to a good localized version of an ffmpeg ressource	https://ffmpeg.org/ffmpeg.html
+Jobs	Window		Tâches
 Left:	Window		Gauche :
 Log	Window		Journal
-Main options	Window		Options principales
 Max difference between quantizer scale:	Window		Écart maximum de quantificateur scalaire :
 Max video quantizer scale:	Window		Quantificateur scalaire vidéo maximum :
 Min video quantizer scale:	Window		Quantificateur scalaire vidéo minimum :
+New preview	Window		Nouvelle prévisualisation
 No audio track	Window		Aucune piste audio
 No video track	Window		Aucune piste vidéo
+Open job manager	Window		Ouvrir le gestionnaire de tâches
 Open source file…	Window		Ouvrir un fichier source…
 Options	Window		Options
 Output file	Window		Fichier de sortie
@@ -47,6 +52,7 @@ Play source file	Window		Jouer le fichier source
 Play when finished	Window		Jouer quand fini
 Please select a source file.	Window		Veuillez sélectionner un fichier source.
 Quit	Window		Quitter
+Reset	Window		Réinitialiser
 Right:	Window		Droite :
 Sampling rate (Hz):	Window		Fréquence d’échantillonnage (Hz) :
 Select output file…	Window		Sélectionner un fichier de sortie...
@@ -68,7 +74,47 @@ Video quantizer scale blur:	Window		Quantificateur scalaire du flou vidéo :
 Video quantizer scale compression:	Window		Quantificateur scalaire de compression vidéo :
 Waiting to start encoding…	Window		En attente de lancer l'encodage…
 Width:	Window		Largeur :
+{0, plural,one{Abort job}other{Abort all jobs}}	JobWindow		{0, plural,one{Annuler la tâche}other{Annuler toutes les tâches}}
+{0, plural,one{Encoding job finished.}other{Encoding jobs finished.}}	JobWindow		{0, plural,one{Encodage terminé.}other{Encodages terminés.}}
+{0, plural,one{Start job}other{Start all jobs}}	JobWindow		{0, plural,one{Démarrer la tâche}other{Démarrer toutes les tâches}}
+Abort this job	JobWindow		Annuler cette tâche
+All jobs	JobWindow		Toutes les tâches
+Are you sure, that you want to remove all jobs?\n\n	JobWindow		Êtes vous sûrs de vouloir retirer toutes les tâches ?\n\n
+Cancel	JobWindow		Annuler
+Clear finished	JobWindow		Supprimer les tâches terminées
+Close	JobWindow		Fermer
+Copy commandline	JobWindow		Copier la ligne de commande
+Duration	JobWindow		Durée
+Edit job	JobWindow		Éditer une tâche
+Edit this job	JobWindow		Éditer cette tâche
+Error log	JobWindow		Rapport d'erreur
+Job	JobWindow		Tâche
+Job manager	JobWindow		Gestionnaire de tâche
+Job name	JobWindow		Nom de la tâche
+N°	JobWindow	'Number' abbreviation	N°
+OK	JobWindow		D’accord
+Open output folder	JobWindow		Ouvrier le dossier de sortie
+Play output file	JobWindow		Jouer le fichier de sortie
+Remove	JobWindow		Retirer
+Remove all	JobWindow		Retirer tous
+Remove all jobs	JobWindow		Retirer toutes les tâches
+Remove this job	JobWindow		Retirer cette tâche
+Running:	JobWindow		En cours :
+Running: 100%	JobWindow		En cours : 100%
+Selected job	JobWindow		Tâche sélectionnée
+Show error log	JobWindow		Afficher le journal d'erreurs
+Show job manager	JobWindow		Afficher le gestionnaire de tâches
+Start all jobs	JobWindow		Démarrer toutes les tâches
+Start job	JobWindow		Démarrer la tâche
+Start jobs	JobWindow		Démarrer les tâches
+Start this job	JobWindow		Démarrer cette tâche
+Status	JobWindow		Status
+There's already a job with that same output file:\n%filename%\n\nBetter choose another output file, or remove the existing job.\n	JobWindow		Il existe déjà une tache avec le même fichier de sortie:\n%filename%\n\nIl vaudrait mieux choisir un autre fichier de sortie, ou supprimer la tâche existante.\n
 A GUI frontend for ffmpeg	Application		Une interface graphique pour ffmpeg
-Thanks to:\nHandMaus (Icon)\nmmu_man, Jeremy, DeadYak, Marco, etc.\nmd@geekport.com\nreds <reds@sakamoto.pl> for making it more or less usable.\nHave fun!	Application		Merci à :\nHandMaus (Icon)\nmmu_man, Jeremy, DeadYak, Marco, etc.\nmd@geekport.com\nreds <reds@sakamoto.pl> pour l'avoir rendue plus ou moins utilisable.\nAmusez vous !
+Thanks to:\nHandmaus (Icon)\nmmu_man, Jeremy, DeadYak, Marco, etc.\nmd@geekport.com\nreds <reds@sakamoto.pl> for making it more or less usable.\nHave fun!	Application		Merci à :\nHandmaus (Icon)\nmmu_man, Jeremy, DeadYak, Marco, etc.\nmd@geekport.com\nreds <reds@sakamoto.pl> pour l'avoir rendue plus ou moins utilisable.\nAmusez vous !
+Error	JobList		Erreur
+Finished	JobList		Terminé
+Running	JobList		En cours
+Waiting	JobList		En attente
 ffmpeg GUI	System name		ffmpeg GUI
 ffmpegGUI	System name		ffmpegGUI

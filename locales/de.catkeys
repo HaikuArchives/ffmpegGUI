@@ -1,44 +1,49 @@
-1	German	application/x-vnd.HaikuArchives-ffmpegGUI	3097994486
+1	German	application/x-vnd.HaikuArchives-ffmpegGUI	254735170
 'B' frames:	Window		'B' Frames:
+{0, plural,one{(# Job)}other{(# Jobs)}}	Window		{0, plural,one{(# Job)}other{(# Jobs)}}
 1:1 copy	Window		1:1 Kopie
 Abort	Window		Stopp
 Abort encoding	Window		Stoppen
 About ffmpegGUI	Window		Über ffmpegGUI
-Advanced options	Window		Erweiterte Optionen
+Add as new job	Window		Als neuen Job hinzufügen
 Are you sure, that you want to abort the encoding?\n	Window		Soll die Konvertierung wirklich abgebrochen werden??\n
 Audio	Window		Audio
 Audio channels:	Window		Audiokanäle:
-Audio codec:	Window		Audio codec:
+Audio codec:	Window		Audio-Codec:
 Bitrate (Kbit/s):	Window		Bitrate (Kbit/s):
 Bottom:	Window		Unten:
 Calculate PSNR of compressed frames	Window		PSNR der komprimierten Frames berechnen
 Cancel	Window		Abbrechen
 Cannot overwrite the source file. Please choose another output file name.	Window		Die Quelldatei kann nicht überschrieben werden. Bitte eine andere Ausgabedatei wählen.
 Copy commandline	Window		Befehlszeile kopieren
-Cropping options	Window		Zuschneide-Optionen
+Cropping	Window		Beschneiden
 Default options	Window		Optionen zurücksetzen
 Deinterlace pictures	Window		Bilder deinterlacen
 Duh!	Window	Button label of stop-encoding-alert if you're too late...	Achso!
 Enable audio encoding	Window		Audio kodieren
-Enable video cropping	Window		Video zuschneiden
 Enable video encoding	Window		Video kodieren
 Encoding	Window		Konvertierung
 Encoding failed.	Window		Konvertierung fehlgeschlagen.
 Encoding finished successfully!	Window		Konvertierung erfolgreich!
 Encoding: %source%   →   %output%	Window		Konvertiere: %source%   →   %output%
+FFmpeg documentation	Window		FFmpeg Dokumentation
 File	Window		Datei
 fps	Window		Bilder/s
 Framerate (fps):	Window		Framerate (Bilder/s):
 GOP size:	Window		GOP Größe:
 Height:	Window		Höhe:
+Help	Window		Hilfe
+https://ffmpeg.org/ffmpeg.html	Window	You can change to a good localized version of an ffmpeg ressource	https://ffmpeg.org/ffmpeg.html
+Jobs	Window		Jobs
 Left:	Window		Links:
 Log	Window		Log
-Main options	Window		Optionen
 Max difference between quantizer scale:	Window		Max. Unterschied in Quantiser Scale:
 Max video quantizer scale:	Window		Max. Video Quantiser Scale:
 Min video quantizer scale:	Window		Min. Video Quantiser Scale:
+New preview	Window		Neue Vorschau
 No audio track	Window		Keine Audiospur
 No video track	Window		Keine Videospur
+Open job manager	Window		Job-Manager öffnen
 Open source file…	Window		Quelldatei öffnen
 Options	Window		Optionen
 Output file	Window		Ausgabedatei
@@ -47,6 +52,7 @@ Play source file	Window		Quelldatei abspielen
 Play when finished	Window		Abspielen wenn fertig
 Please select a source file.	Window		Bitte Quelldatei wählen.
 Quit	Window		Beenden
+Reset	Window		Reset
 Right:	Window		Rechts:
 Sampling rate (Hz):	Window		Samplingrate (Hz):
 Select output file…	Window		Ausgabedatei wählen…
@@ -63,12 +69,52 @@ Use fixed video quantizer scale:	Window		Fester Video Quantiser Scale:
 Use four motion vector	Window		Vier Bewegungsvektoren
 Use high quality settings	Window		Einstellungen für hohe Qualität
 Video	Window		Video
-Video codec:	Window		Video codec:
+Video codec:	Window		Video-Codec:
 Video quantizer scale blur:	Window		Video Quantiser Scale Blur
 Video quantizer scale compression:	Window		Video Quantiser Scale Kompression:
 Waiting to start encoding…	Window		Warte auf Start der Konvertierung…
 Width:	Window		Breite:
+{0, plural,one{Abort job}other{Abort all jobs}}	JobWindow		{0, plural,one{Job abbrechen}other{Alle Jobs abbrechen}}
+{0, plural,one{Encoding job finished.}other{Encoding jobs finished.}}	JobWindow		{0, plural,one{Konvertierung fertig.}other{Konvertierungen fertig.}}
+{0, plural,one{Start job}other{Start all jobs}}	JobWindow		{0, plural,one{Job starten}other{Alle Jobs starten}}
+Abort this job	JobWindow		Diesen Job abbrechen
+All jobs	JobWindow		Alle Jobs
+Are you sure, that you want to remove all jobs?\n\n	JobWindow		Sicher, dass alle Jobs entfernt werden sollen?\n\n
+Cancel	JobWindow		Abbrechen
+Clear finished	JobWindow		Fertige entfernen
+Close	JobWindow		Schließen
+Copy commandline	JobWindow		Befehlszeile kopieren
+Duration	JobWindow		Dauer
+Edit job	JobWindow		Job bearbeiten
+Edit this job	JobWindow		Diesen Job bearbeiten
+Error log	JobWindow		Fehler-Log
+Job	JobWindow		Job
+Job manager	JobWindow		Job-Manager
+Job name	JobWindow		Job-Name
+N°	JobWindow	'Number' abbreviation	N°
+OK	JobWindow		OK
+Open output folder	JobWindow		Ausgabeordner öffnen
+Play output file	JobWindow		Ausgabedatei abspielen
+Remove	JobWindow		Entfernen
+Remove all	JobWindow		Alle entfernen
+Remove all jobs	JobWindow		Alle Jobs entfernen
+Remove this job	JobWindow		Diesen Job entfernen
+Running:	JobWindow		Läuft:
+Running: 100%	JobWindow		Läuft: 100%
+Selected job	JobWindow		Ausgewählter Job
+Show error log	JobWindow		Fehler-Log anzeigen
+Show job manager	JobWindow		Job-Manager anzeigen
+Start all jobs	JobWindow		Alle Jobs starten
+Start job	JobWindow		Job starten
+Start jobs	JobWindow		Jobs starten
+Start this job	JobWindow		Diesen Job starten
+Status	JobWindow		Status
+There's already a job with that same output file:\n%filename%\n\nBetter choose another output file, or remove the existing job.\n	JobWindow		Es gibt bereits einen Job mit derselben Ausgabedatei:\n%filename%\n\nBitte eine andere Ausgabedatei wählen oder den schon existierenden Job entfernen.\n
 A GUI frontend for ffmpeg	Application		Eine grafische Oberfläche für ffmpeg
-Thanks to:\nHandMaus (Icon)\nmmu_man, Jeremy, DeadYak, Marco, etc.\nmd@geekport.com\nreds <reds@sakamoto.pl> for making it more or less usable.\nHave fun!	Application		Dank an:\nHandMaus (Icon)\nmmu_man, Jeremy, DeadYak, Marco, etc.\nmd@geekport.com\nreds <reds@sakamoto.pl>, der das Ganze mehr oder weniger benutzbar gemacht hat.\nViel Spaß!
+Thanks to:\nHandmaus (Icon)\nmmu_man, Jeremy, DeadYak, Marco, etc.\nmd@geekport.com\nreds <reds@sakamoto.pl> for making it more or less usable.\nHave fun!	Application		Dank an:\nHandmaus (Icon)\nmmu_man, Jeremy, DeadYak, Marco, etc.\nmd@geekport.com\nreds <reds@sakamoto.pl>, der das Ganze mehr oder weniger benutzbar gemacht hat.\nViel Spaß!
+Error	JobList		Fehler
+Finished	JobList		Fertig
+Running	JobList		Läuft
+Waiting	JobList		Wartet
 ffmpeg GUI	System name		ffmpeg GUI
 ffmpegGUI	System name		ffmpegGUI

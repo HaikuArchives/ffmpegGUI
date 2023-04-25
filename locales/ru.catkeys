@@ -1,10 +1,11 @@
-1	Russian	application/x-vnd.HaikuArchives-ffmpegGUI	3097994486
+1	Russian	application/x-vnd.HaikuArchives-ffmpegGUI	254735170
 'B' frames:	Window		Кадры 'B':
+{0, plural,one{(# Job)}other{(# Jobs)}}	Window		{0, plural,one{(# Job)}other{(# Jobs)}}
 1:1 copy	Window		Точная копия
 Abort	Window		О приложении
 Abort encoding	Window		Прервать кодирование
 About ffmpegGUI	Window		О ffmpegGUI
-Advanced options	Window		Расширенные параметры
+Add as new job	Window		Add as new job
 Are you sure, that you want to abort the encoding?\n	Window		Вы уверены, что хотите прервать кодирование?\n
 Audio	Window		Звук
 Audio channels:	Window		Звуковые каналы:
@@ -15,30 +16,34 @@ Calculate PSNR of compressed frames	Window		Вычислить PSNR сжатых
 Cancel	Window		Прервать
 Cannot overwrite the source file. Please choose another output file name.	Window		Невозможно перезаписать исходный файл. Пожалуйста, выберите другое имя файла результата.
 Copy commandline	Window		Скопировать командную строку
-Cropping options	Window		Параметры обрезания
+Cropping	Window		Cropping
 Default options	Window		Параметры по умолчанию
 Deinterlace pictures	Window		Устранить черезстрочность картинки
 Duh!	Window	Button label of stop-encoding-alert if you're too late...	Ох!
 Enable audio encoding	Window		Включить кодирование аудио
-Enable video cropping	Window		Включить обрезание видео
 Enable video encoding	Window		Включить кодирование видео
 Encoding	Window		Кодирование
 Encoding failed.	Window		Кодирование не удалось.
 Encoding finished successfully!	Window		Кодирование успешно завершено!
 Encoding: %source%   →   %output%	Window		Кодирование: %source%   →   %output%
+FFmpeg documentation	Window		FFmpeg documentation
 File	Window		Файл
 fps	Window		Кадров в секунду
 Framerate (fps):	Window		Частота кадров:
 GOP size:	Window		Размер GOP:
 Height:	Window		Высота:
+Help	Window		Help
+https://ffmpeg.org/ffmpeg.html	Window	You can change to a good localized version of an ffmpeg ressource	https://ffmpeg.org/ffmpeg.html
+Jobs	Window		Jobs
 Left:	Window		Слева:
 Log	Window		Лог
-Main options	Window		Основные параметры
 Max difference between quantizer scale:	Window		Максимальная разница между масштабами квантизатора:
 Max video quantizer scale:	Window		Максимальный масштаб квантизатора видео:
 Min video quantizer scale:	Window		Минимальный масштаб квантизатора видео:
+New preview	Window		New preview
 No audio track	Window		Без звуковой дорожки
 No video track	Window		Без видео дорожки
+Open job manager	Window		Open job manager
 Open source file…	Window		Открыть исходный файл…
 Options	Window		Параметры
 Output file	Window		Файл результата
@@ -47,6 +52,7 @@ Play source file	Window		Проиграть исходный файл
 Play when finished	Window		Проиграть после завершения
 Please select a source file.	Window		Пожалуйста, выберите исходный файл.
 Quit	Window		Заверщить
+Reset	Window		Reset
 Right:	Window		Справа:
 Sampling rate (Hz):	Window		Дискретизация (Гц):
 Select output file…	Window		Выбрать файл результата…
@@ -68,7 +74,47 @@ Video quantizer scale blur:	Window		Масштаб квантизатора ви
 Video quantizer scale compression:	Window		Масштаб квантизатора видео сжатие:
 Waiting to start encoding…	Window		Ожидаю начала кодирования…
 Width:	Window		Ширина:
+{0, plural,one{Abort job}other{Abort all jobs}}	JobWindow		{0, plural,one{Abort job}other{Abort all jobs}}
+{0, plural,one{Encoding job finished.}other{Encoding jobs finished.}}	JobWindow		{0, plural,one{Encoding job finished.}other{Encoding jobs finished.}}
+{0, plural,one{Start job}other{Start all jobs}}	JobWindow		{0, plural,one{Start job}other{Start all jobs}}
+Abort this job	JobWindow		Abort this job
+All jobs	JobWindow		All jobs
+Are you sure, that you want to remove all jobs?\n\n	JobWindow		Are you sure, that you want to remove all jobs?\n\n
+Cancel	JobWindow		Cancel
+Clear finished	JobWindow		Clear finished
+Close	JobWindow		Close
+Copy commandline	JobWindow		Copy commandline
+Duration	JobWindow		Duration
+Edit job	JobWindow		Edit job
+Edit this job	JobWindow		Edit this job
+Error log	JobWindow		Error log
+Job	JobWindow		Job
+Job manager	JobWindow		Job manager
+Job name	JobWindow		Job name
+N°	JobWindow	'Number' abbreviation	N°
+OK	JobWindow		OK
+Open output folder	JobWindow		Open output folder
+Play output file	JobWindow		Play output file
+Remove	JobWindow		Remove
+Remove all	JobWindow		Remove all
+Remove all jobs	JobWindow		Remove all jobs
+Remove this job	JobWindow		Remove this job
+Running:	JobWindow		Running:
+Running: 100%	JobWindow		Running: 100%
+Selected job	JobWindow		Selected job
+Show error log	JobWindow		Show error log
+Show job manager	JobWindow		Show job manager
+Start all jobs	JobWindow		Start all jobs
+Start job	JobWindow		Start job
+Start jobs	JobWindow		Start jobs
+Start this job	JobWindow		Start this job
+Status	JobWindow		Status
+There's already a job with that same output file:\n%filename%\n\nBetter choose another output file, or remove the existing job.\n	JobWindow		There's already a job with that same output file:\n%filename%\n\nBetter choose another output file, or remove the existing job.\n
 A GUI frontend for ffmpeg	Application		Графический фронтенд для ffmpeg
-Thanks to:\nHandMaus (Icon)\nmmu_man, Jeremy, DeadYak, Marco, etc.\nmd@geekport.com\nreds <reds@sakamoto.pl> for making it more or less usable.\nHave fun!	Application		Благодарим \nHandMaus (Icon)\nmmu_man, Jeremy, DeadYak, Marco, etc.\nmd@geekport.com\nreds <reds@sakamoto.pl> за доведение до более-менее рабочего\nсостояния. Приятного использования!
+Thanks to:\nHandmaus (Icon)\nmmu_man, Jeremy, DeadYak, Marco, etc.\nmd@geekport.com\nreds <reds@sakamoto.pl> for making it more or less usable.\nHave fun!	Application		Благодарим \nHandmaus (Icon)\nmmu_man, Jeremy, DeadYak, Marco, etc.\nmd@geekport.com\nreds <reds@sakamoto.pl> за доведение до более-менее рабочего\nсостояния. Приятного использования!
+Error	JobList		Ошибка
+Finished	JobList		Завершено
+Running	JobList		В процессе
+Waiting	JobList		В ожидании
 ffmpeg GUI	System name		ffmpeg GUI
 ffmpegGUI	System name		ffmpegGUI

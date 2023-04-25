@@ -1,10 +1,11 @@
-1	Turkish	application/x-vnd.HaikuArchives-ffmpegGUI	3097994486
+1	Turkish	application/x-vnd.HaikuArchives-ffmpegGUI	254735170
 'B' frames:	Window		'B' kareler:
+{0, plural,one{(# Job)}other{(# Jobs)}}	Window		{0, plural,one{(# iş)}other{(# iş)}}
 1:1 copy	Window		1:1 kopya
 Abort	Window		İptal et
 Abort encoding	Window		Kodlamayı iptal et
 About ffmpegGUI	Window		ffmpegGUI hakkında
-Advanced options	Window		Gelişmiş seçenekler
+Add as new job	Window		Yeni iş olarak ekle
 Are you sure, that you want to abort the encoding?\n	Window		Kodlamayı iptal etmek istediğinize emin misiniz?\n
 Audio	Window		Ses
 Audio channels:	Window		Ses kanalları:
@@ -15,30 +16,34 @@ Calculate PSNR of compressed frames	Window		Sıkıştırılmış karelerin PSNR'
 Cancel	Window		Vazgeç
 Cannot overwrite the source file. Please choose another output file name.	Window		Kaynak dosyanın üzerine yazılamaz. Lütfen başka bir çıktı dosyası adı seçin.
 Copy commandline	Window		Komut satırını kopyala
-Cropping options	Window		Kırpma seçenekleri
+Cropping	Window		Kırpılıyor
 Default options	Window		Öntanımlı seçenekler
 Deinterlace pictures	Window		Resim görüntülerini ayrıştır
 Duh!	Window	Button label of stop-encoding-alert if you're too late...	Uuf!
 Enable audio encoding	Window		Ses kodlamayı etkinleştir
-Enable video cropping	Window		Video kırpmayı etkinleştir
 Enable video encoding	Window		Video kodlamayı etkinleştir
-Encoding	Window		Kodlanıyor
+Encoding	Window		Kodlama
 Encoding failed.	Window		Kodlama başarısız.
 Encoding finished successfully!	Window		Kodlama başarıyla tamamlandı!
 Encoding: %source%   →   %output%	Window		Kodlanıyor: %source%   →   %output%
+FFmpeg documentation	Window		FFmpeg belgelendirmesi
 File	Window		Dosya
 fps	Window		fps
 Framerate (fps):	Window		Kare hızı (fps):
 GOP size:	Window		GOP boyutu:
 Height:	Window		Boy:
+Help	Window		Yardım
+https://ffmpeg.org/ffmpeg.html	Window	You can change to a good localized version of an ffmpeg ressource	https://ffmpeg.org/ffmpeg.html
+Jobs	Window		İşler
 Left:	Window		Sol:
 Log	Window		Günlük
-Main options	Window		Ana seçenekler
 Max difference between quantizer scale:	Window		Nicemleyici ölçeği arasındaki en büyük fark:
 Max video quantizer scale:	Window		En büyük video nicemleyici ölçeği:
 Min video quantizer scale:	Window		En küçük video nicemleyici ölçeği:
+New preview	Window		Yeni önizleme
 No audio track	Window		Ses izi yok
 No video track	Window		Video izi yok
+Open job manager	Window		İş yöneticisini aç
 Open source file…	Window		Kaynak dosyayı aç…
 Options	Window		Seçenekler
 Output file	Window		Çıktı dosyası
@@ -47,11 +52,12 @@ Play source file	Window		Kaynak dosyasını çal/oynat
 Play when finished	Window		Bittiğinde oynat
 Please select a source file.	Window		Lütfen bir kaynak dosyası seçin.
 Quit	Window		Çık
+Reset	Window		Sıfırla
 Right:	Window		Sağ:
 Sampling rate (Hz):	Window		Örnekleme hızı (Hz):
 Select output file…	Window		Çıktı dosyası seç…
 Source file	Window		Kaynak dosyası
-Start	Window		Başlangıç
+Start	Window		Başlat
 Start encoding	Window		Kodlamayı başlat
 Stop encoding	Window		Kodlamayı durdur
 There's no file with that name.	Window		Bu adla bir dosya yok.
@@ -68,7 +74,47 @@ Video quantizer scale blur:	Window		Video nicemleyici ölçeği bulanıklığı:
 Video quantizer scale compression:	Window		Video nicemleyici ölçeği sıkıştırması:
 Waiting to start encoding…	Window		Kodlamanın başlatılması bekleniyor…
 Width:	Window		En:
+{0, plural,one{Abort job}other{Abort all jobs}}	JobWindow		{0, plural,one{İşi iptal et}other{Tüm işleri iptal et}}
+{0, plural,one{Encoding job finished.}other{Encoding jobs finished.}}	JobWindow		{0, plural,one{Kodlama işi bitti.}other{Kodlama işleri bitti.}}
+{0, plural,one{Start job}other{Start all jobs}}	JobWindow		{0, plural,one{İşi başlat}other{Tüm işleri başlat}}
+Abort this job	JobWindow		Bu işi iptal et
+All jobs	JobWindow		Tüm işler
+Are you sure, that you want to remove all jobs?\n\n	JobWindow		Tüm işleri kaldırmak istediğinizden emin misiniz?\n\n
+Cancel	JobWindow		Vazgeç
+Clear finished	JobWindow		Temizleme bitti
+Close	JobWindow		Kapat
+Copy commandline	JobWindow		Komut satırını kopyala
+Duration	JobWindow		Süre
+Edit job	JobWindow		İşi düzenle
+Edit this job	JobWindow		Bu işi düzenle
+Error log	JobWindow		Hata günlüğü
+Job	JobWindow		İş
+Job manager	JobWindow		İş yöneticisi
+Job name	JobWindow		İş adı
+N°	JobWindow	'Number' abbreviation	N°
+OK	JobWindow		Tamam
+Open output folder	JobWindow		Çıktı klasörünü aç
+Play output file	JobWindow		Çıktı dosyasını çal/oynat
+Remove	JobWindow		Kaldır
+Remove all	JobWindow		Tümünü kaldır
+Remove all jobs	JobWindow		Tüm işleri kaldır
+Remove this job	JobWindow		Bu işi kaldır
+Running:	JobWindow		Çalışıyor:
+Running: 100%	JobWindow		Çalışıyor: %100
+Selected job	JobWindow		Seçili iş
+Show error log	JobWindow		Hata günlüğünü göster
+Show job manager	JobWindow		İş yöneticisini göster
+Start all jobs	JobWindow		Tüm işleri başlat
+Start job	JobWindow		İşi başlat
+Start jobs	JobWindow		İşleri başlat
+Start this job	JobWindow		Bu işi başlat
+Status	JobWindow		Durum
+There's already a job with that same output file:\n%filename%\n\nBetter choose another output file, or remove the existing job.\n	JobWindow		Aynı çıktı dosyasıyla başka bir iş halihazırda var:\n%filename%\n\nBaşka bir çıktı dosyası seçin veya bu işi kaldırın.\n
 A GUI frontend for ffmpeg	Application		FFmpeg için bir grafik kullanıcı ön yüzü
-Thanks to:\nHandMaus (Icon)\nmmu_man, Jeremy, DeadYak, Marco, etc.\nmd@geekport.com\nreds <reds@sakamoto.pl> for making it more or less usable.\nHave fun!	Application		Teşekkürler:\nHandMaus (Icon)\nmmu_man, Jeremy, DeadYak, Marco, etc.\nmd@geekport.com\nreds <reds@sakamoto.pl>; az çok kullanılabilir duruma getirdiğiniz için.\nKeyfini çıkarın!
+Thanks to:\nHandmaus (Icon)\nmmu_man, Jeremy, DeadYak, Marco, etc.\nmd@geekport.com\nreds <reds@sakamoto.pl> for making it more or less usable.\nHave fun!	Application		Teşekkürlerimizle:\nHandmaus (Icon)\nmmu_man, Jeremy, DeadYak, Marco ve diğerleri.\nmd@geekport.com\nreds <reds@sakamoto.pl>, az çok kullanılabilir duruma getirdiği için.\nKeyfini çıkarın!
+Error	JobList		Hata
+Finished	JobList		Bitti
+Running	JobList		Çalışıyor
+Waiting	JobList		Bekliyor
 ffmpeg GUI	System name		FFmpeg Grafik Kullanıcı Arayüzü
 ffmpegGUI	System name		ffmpegGUI
