@@ -1402,7 +1402,7 @@ MainWindow::_BuildLine() // ask all the views what they hold, reset the command 
 	fCommand.Split(" ", true, tokens_raw);
 
 	// Consolidate parts of quoted strings into single tokens
-	BStringList tokens_processed;
+	BStringList tokens;
 	for (int32 token_idx=0; token_idx<tokens_raw.CountStrings(); ++token_idx) {
 		BString token = tokens_raw.StringAt(token_idx);
 		if (token.StartsWith("\"")) {
@@ -1418,12 +1418,14 @@ MainWindow::_BuildLine() // ask all the views what they hold, reset the command 
 			}
 		}
 
-		tokens_processed.Add(token);
+		tokens.Add(token);
 	}
 
-	for (int32 i=0; i<tokens_processed.CountStrings(); ++i)
+	_SetParameter(tokens, "-f", "ogg");
+
+	for (int32 i=0; i<tokens.CountStrings(); ++i)
 	{
-		printf("%d: %s\n", i, tokens_processed.StringAt(i).String());
+		printf("%d: %s\n", i, tokens.StringAt(i).String());
 	}
 
 	/*
@@ -1482,6 +1484,31 @@ MainWindow::_BuildLine() // ask all the views what they hold, reset the command 
 	*/
 
 	fCommandlineTextControl->SetText(fCommand.String());
+}
+
+
+void
+MainWindow::_SetParameter(BStringList& param_list, const BString& name, const BString& value)
+{
+	int32 param_index;
+	if (param_list.HasString(name)) {
+		param_index = param_list.IndexOf(name);
+	}
+
+	if (param_list.StringAt(param_index + 1).StartsWith("-")) { // no parameter value
+
+	}
+	else {
+		param_list.Replace(param_index+1, value);
+	}
+}
+
+
+bool
+MainWindow::_RemoveParameter(BStringList& param_list, const BString& name)
+{
+
+	return true;
 }
 
 

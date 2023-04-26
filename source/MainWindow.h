@@ -71,6 +71,9 @@ private:
 	BView*  		_BuildEncodeProgress();
 
 	void 			_BuildLine();
+	void			_SetParameter(BStringList& param_list, const BString& name, const BString& value);
+	bool 			_RemoveParameter(BStringList& param_list, const BString& name);
+
 
 	void 			_GetMediaInfo();
 	void 			_UpdateMediaInfo();
