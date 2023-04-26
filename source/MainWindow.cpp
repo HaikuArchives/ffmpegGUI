@@ -1431,11 +1431,16 @@ MainWindow::_BuildLine() // ask all the views what they hold, reset the command 
 
 	_SetParameter(tokens, "-f", "ogg");
 
+	fCommand.SetTo("");
+
 	for (int32 i=0; i<tokens.CountStrings(); ++i)
 	{
 		printf("%d: %s\n", i, tokens.StringAt(i).String());
+		fCommand << tokens.StringAt(i) << " ";
 	}
 
+	fCommand.Trim();
+	fCommandlineTextControl->SetText(fCommand);
 	/*
 	BString source_filename(fSourceTextControl->Text());
 	BString output_filename(fOutputTextControl->Text());
