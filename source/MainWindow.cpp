@@ -1429,8 +1429,8 @@ MainWindow::_BuildLine() // ask all the views what they hold, reset the command 
 		tokens.Add(token);
 	}
 
-	_SetParameter(tokens, "-f", "ogg");
-
+	//_SetParameter(tokens, "-f", "ogg");
+	_RemoveParameter(tokens, "-f");
 	fCommand.SetTo("");
 
 	for (int32 i=0; i<tokens.CountStrings(); ++i)
@@ -1517,11 +1517,16 @@ MainWindow::_SetParameter(BStringList& param_list, const BString& name, const BS
 }
 
 
-bool
+void
 MainWindow::_RemoveParameter(BStringList& param_list, const BString& name)
 {
-
-	return true;
+	if (param_list.HasString(name)) {
+		int32 param_index = param_list.IndexOf(name);
+		if (!param_list.StringAt(param_index+1).StartsWith("-")) {
+			param_list.Remove(param_index+1);
+		}
+		param_list.Remove(param_index);
+	}
 }
 
 
