@@ -1401,15 +1401,15 @@ MainWindow::_BuildEncodeProgress()
 
 
 void
-MainWindow::_BuildLine() // ask all the views what they hold, reset the command string
+MainWindow::_BuildLine() // update the ffmpeg commandline
 {
-
+	// split existing commandline into tokens
 	fCommand = fCommandlineTextControl->Text();
 	fCommand.Trim();
 	BStringList tokens_raw;
 	fCommand.Split(" ", true, tokens_raw);
 
-	// Consolidate parts of quoted strings into single tokens
+	// consolidate parts of quoted strings into single tokens
 	BStringList tokens;
 	for (int32 token_idx=0; token_idx<tokens_raw.CountStrings(); ++token_idx) {
 		BString token = tokens_raw.StringAt(token_idx);
@@ -1429,8 +1429,83 @@ MainWindow::_BuildLine() // ask all the views what they hold, reset the command 
 		tokens.Add(token);
 	}
 
-	//_SetParameter(tokens, "-f", "ogg");
-	_RemoveParameter(tokens, "-f");
+	BString value;
+
+	// make sure ffmpeg is at the start of the command
+	if (tokens.StringAt(0) != kFFMpeg) {
+		tokens.Add(kFFMpeg, 0);
+	}
+
+	// input file
+	value = (fSourceTextControl->Text());
+	value.Trim();
+	value.Prepend("\"");
+	value.Append("\"");
+	_SetParameter(tokens, "-i", value);
+
+	// container format
+	int32 option_index = fFileFormatPopup->FindMarkedIndex();
+	_SetParameter(tokens, "-f", fContainerFormats[option_index].Option);
+
+	// video options
+	if ((fEnableVideoBox->Value() == B_CONTROL_ON) and (fEnableVideoBox->IsEnabled())) {
+		option_index = fVideoFormatPopup->FindMarkedIndex();
+		_RemoveParameter(tokens, "-vn");
+		_SetParameter(tokens, "-vcodec", fVideoCodecs[option_index].Option);
+
+		if (option_index != 0) {
+			value = "";
+			value << fVideoBitrateSpinner->Value() << "k";
+			_SetParameter(tokens, "-b:v", value);
+			value = "";
+			value << fFramerate->Value();
+			_SetParameter(tokens, "-r", value);
+			if (fCustomResolutionBox->IsEnabled() && fCustomResolutionBox->Value()) {
+				value = "";
+				value << fXres->Value() << "x" << fYres->Value();
+				_SetParameter(tokens, "-s", value);
+			}
+			else {
+				_RemoveParameter(tokens, "-s");
+			}
+
+			// cropping options
+			int32 topcrop = fTopCrop->Value();
+			int32 bottomcrop = fBottomCrop->Value();
+			int32 leftcrop = fLeftCrop->Value();
+			int32 rightcrop = fRightCrop->Value();
+
+			if ((topcrop + bottomcrop + leftcrop + rightcrop) > 0) {
+				value = "";
+				value << "crop=iw-" << leftcrop + rightcrop << ":ih-"
+						<< topcrop + bottomcrop << ":" << leftcrop
+						<< ":" << topcrop;
+				_SetParameter(tokens, "-vf", value);
+			}
+			else {
+				_RemoveParameter(tokens, "-vf");
+			}
+		}
+		else {
+			_RemoveParameter(tokens, "-b:v");
+			_RemoveParameter(tokens, "-r");
+			_RemoveParameter(tokens, "-s");
+			_RemoveParameter(tokens, "-vf");
+		}
+	}
+	else {
+		_RemoveParameter(tokens, "-vcodec");
+		_SetParameter(tokens, "-vn", "");
+	}
+
+	//audio options
+
+	//logging and output formatting
+
+	// output file
+
+
+	// assemble the commandline from the token list and put it in the textcontrol
 	fCommand.SetTo("");
 
 	for (int32 i=0; i<tokens.CountStrings(); ++i)
@@ -1441,7 +1516,9 @@ MainWindow::_BuildLine() // ask all the views what they hold, reset the command 
 
 	fCommand.Trim();
 	fCommandlineTextControl->SetText(fCommand);
-	/*
+
+
+/*
 	BString source_filename(fSourceTextControl->Text());
 	BString output_filename(fOutputTextControl->Text());
 	source_filename.Trim();
@@ -1507,12 +1584,17 @@ MainWindow::_SetParameter(BStringList& param_list, const BString& name, const BS
 	if (param_list.HasString(name)) {
 		param_index = param_list.IndexOf(name);
 	}
+	else {
+		param_index = param_list.CountStrings() - 1;
+		param_list.Add(name, param_index);
+	}
 
 	if (param_list.StringAt(param_index + 1).StartsWith("-")) { // no parameter value
-
+		param_list.Add(value, param_index+1);
 	}
 	else {
-		param_list.Replace(param_index+1, value);
+		if (!param_list.Replace(param_index+1, value))
+			param_list.Add(value, param_index+1);
 	}
 }
 
