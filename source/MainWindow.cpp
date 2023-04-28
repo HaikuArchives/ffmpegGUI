@@ -1499,6 +1499,38 @@ MainWindow::_BuildLine() // update the ffmpeg commandline
 	}
 
 	//audio options
+	if (fEnableAudioBox->Value() == B_CONTROL_ON) {
+		option_index = fAudioFormatPopup->FindMarkedIndex();
+		_RemoveParameter(tokens, "-an");
+		value = fAudioCodecs[option_index].Option;
+		_SetParameter(tokens, "-acodec", value);
+
+		if (option_index != 0) {
+			value = fAudioBitsPopup->FindMarked()->Label();
+			value << "k";
+			_SetParameter(tokens, "-b:a", value);
+			value = fSampleratePopup->FindMarked()->Label();
+			_SetParameter(tokens, "-ar", value);
+			value = (fChannelCount->Value());
+			_SetParameter(tokens, "-ac", value);
+			_SetParameter(tokens, "-strict", "-2"); // enable 'experimental codecs' needed for dca (DTS)
+		}
+		else {
+			_RemoveParameter(tokens, "-b:a");
+			_RemoveParameter(tokens, "-ar");
+			_RemoveParameter(tokens, "-ac");
+		}
+	}
+	else {
+		_RemoveParameter(tokens, "-acodec");
+		_RemoveParameter(tokens, "-b:a");
+		_RemoveParameter(tokens, "-ar");
+		_RemoveParameter(tokens, "-ac");
+		_SetParameter(tokens, "-an", "");
+
+		fCommand << (" -an");
+
+	}
 
 	//logging and output formatting
 
