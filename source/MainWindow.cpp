@@ -1596,11 +1596,13 @@ MainWindow::_ExtractPreviewImage()
 	// skip first and last second of the clip (often black)
 	int32 min = 1;
 	int32 max = fEncodeDuration - 1;
-	// Generate random time
-	srand(system_time());
-	int32 randomSecond;
-	while ((randomSecond = min + (rand() % static_cast<int>(max - min + 1))) == fLastRandomSecond);
-	fLastRandomSecond = randomSecond;
+	// Generate random time for clips > 1 second
+	int32 randomSecond = 0;
+	if (max > 0) {
+		srand(system_time());
+		while ((randomSecond = min + (rand() % static_cast<int>(max - min + 1))) == fLastRandomSecond);
+		fLastRandomSecond = randomSecond;
+	}
 	// Convert seconds to HH:MM:SS
 	char randomTime[64];
 	seconds_to_string(randomSecond, randomTime, sizeof(randomTime));
