@@ -1667,8 +1667,8 @@ MainWindow::_SetDefaults()
 	// set the initial values
 	fVideoBitrateSpinner->SetWithoutInvoke(1000);
 	fFramerate->SetWithoutInvoke(int32(30));
-	fXres->SetWithoutInvoke(1280);
-	fYres->SetWithoutInvoke(720);
+	fXres->SetValue(1280);
+	fYres->SetValue(720);
 
 	fTopCrop->SetValue(0);
 	fBottomCrop->SetValue(0);
