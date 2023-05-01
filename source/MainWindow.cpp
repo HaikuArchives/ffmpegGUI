@@ -78,6 +78,12 @@ static const char* kFFMpeg = "ffmpeg";
 static const char* kFFProbe = "ffprobe";
 #endif
 
+// Tab order
+enum {
+	OPTIONS = 0,
+	CROPPING,
+	LOG
+};
 
 MainWindow::MainWindow(BRect r, const char* name, window_type type, ulong mode)
 	:
@@ -655,7 +661,7 @@ MainWindow::MessageReceived(BMessage* message)
 				_SetPlaybuttonsState();
 			} else {
 				encodeFinished.SetContent(B_TRANSLATE("Encoding failed."));
-				fTabView->Select(1);
+				fTabView->Select(LOG);
 				fLogView->ScrollTo(0.0, 1000000.0);
 			}
 			encodeFinished.SetTitle(title);
