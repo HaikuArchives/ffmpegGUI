@@ -73,7 +73,7 @@ private:
 	void 			_BuildLine();
 	void			_SetParameter(const BString& name, const BString& value);
 	void 			_RemoveParameter(const BString& name);
-
+	bool			_IsDigit(char c);
 
 	void 			_GetMediaInfo();
 	void 			_UpdateMediaInfo();
