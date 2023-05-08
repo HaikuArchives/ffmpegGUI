@@ -1574,7 +1574,8 @@ MainWindow::_SetParameter(const BString& name, const BString& value)
 		fCommandLineTokens.Add(name, param_index);
 	}
 
-	if (fCommandLineTokens.StringAt(param_index + 1).StartsWith("-")) { // no parameter value
+	BString next_token = fCommandLineTokens.StringAt(param_index + 1);
+	if (next_token.StartsWith("-") and !_IsDigit(next_token.ByteAt(1))) { // no parameter value
 		fCommandLineTokens.Add(value, param_index+1);
 	}
 	else {
@@ -1594,6 +1595,13 @@ MainWindow::_RemoveParameter(const BString& name)
 		}
 		fCommandLineTokens.Remove(param_index);
 	}
+}
+
+
+bool
+MainWindow::_IsDigit(char c)
+{
+	return (('0' <= c ) && ( c <= '9'));
 }
 
 
