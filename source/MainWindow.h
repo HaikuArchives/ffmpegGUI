@@ -15,6 +15,7 @@
 #include <Invoker.h>
 #include <Path.h>
 #include <Window.h>
+#include <StringList.h>
 
 #include <vector>
 
@@ -37,7 +38,6 @@ class BTab;
 class BTextControl;
 class BTextView;
 class BView;
-
 
 class CodecOption;
 class ContainerOption;
@@ -71,8 +71,8 @@ private:
 	BView*  		_BuildEncodeProgress();
 
 	void 			_BuildLine();
-	void			_SetParameter(BStringList& param_list, const BString& name, const BString& value);
-	void 			_RemoveParameter(BStringList& param_list, const BString& name);
+	void			_SetParameter(const BString& name, const BString& value);
+	void 			_RemoveParameter(const BString& name);
 
 
 	void 			_GetMediaInfo();
@@ -194,6 +194,7 @@ private:
 	// bstrings
 	BString 		fCommand;
 	BString 		fMediainfo;
+	BStringList		fCommandLineTokens;
 
 	// ffprobe stream tags
 	BString 		fVideoCodec;

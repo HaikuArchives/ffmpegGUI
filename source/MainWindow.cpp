@@ -46,7 +46,6 @@
 #include <StatusBar.h>
 #include <String.h>
 #include <StringFormat.h>
-#include <StringList.h>
 #include <StringView.h>
 #include <TabView.h>
 #include <TextControl.h>
@@ -1402,7 +1401,7 @@ MainWindow::_BuildLine() // update the ffmpeg commandline
 	fCommand.Split(" ", true, tokens_raw);
 
 	// consolidate parts of quoted strings into single tokens
-	BStringList tokens;
+	fCommandLineTokens.MakeEmpty();
 	for (int32 token_idx=0; token_idx<tokens_raw.CountStrings(); ++token_idx) {
 		BString token = tokens_raw.StringAt(token_idx);
 		if (token.StartsWith("\"")) {
@@ -1417,14 +1416,14 @@ MainWindow::_BuildLine() // update the ffmpeg commandline
 				}
 			}
 		}
-		tokens.Add(token);
+		fCommandLineTokens.Add(token);
 	}
 
 	BString value;
 
 	// make sure ffmpeg is at the start of the command
-	if (tokens.StringAt(0) != kFFMpeg) {
-		tokens.Add(kFFMpeg, 0);
+	if (fCommandLineTokens.StringAt(0) != kFFMpeg) {
+		fCommandLineTokens.Add(kFFMpeg, 0);
 	}
 
 	// input file
@@ -1432,32 +1431,32 @@ MainWindow::_BuildLine() // update the ffmpeg commandline
 	value.Trim();
 	value.Prepend("\"");
 	value.Append("\"");
-	_SetParameter(tokens, "-i", value);
+	_SetParameter("-i", value);
 
 	// container format
 	int32 option_index = fFileFormatPopup->FindMarkedIndex();
-	_SetParameter(tokens, "-f", fContainerFormats[option_index].Option);
+	_SetParameter("-f", fContainerFormats[option_index].Option);
 
 	// video options
 	if ((fEnableVideoBox->Value() == B_CONTROL_ON) and (fEnableVideoBox->IsEnabled())) {
 		option_index = fVideoFormatPopup->FindMarkedIndex();
-		_RemoveParameter(tokens, "-vn");
-		_SetParameter(tokens, "-vcodec", fVideoCodecs[option_index].Option);
+		_RemoveParameter("-vn");
+		_SetParameter("-vcodec", fVideoCodecs[option_index].Option);
 
 		if (option_index != 0) {
 			value = "";
 			value << fVideoBitrateSpinner->Value() << "k";
-			_SetParameter(tokens, "-b:v", value);
+			_SetParameter("-b:v", value);
 			value = "";
 			value << fFramerate->Value();
-			_SetParameter(tokens, "-r", value);
+			_SetParameter("-r", value);
 			if (fCustomResolutionBox->IsEnabled() && fCustomResolutionBox->Value()) {
 				value = "";
 				value << fXres->Value() << "x" << fYres->Value();
-				_SetParameter(tokens, "-s", value);
+				_SetParameter("-s", value);
 			}
 			else {
-				_RemoveParameter(tokens, "-s");
+				_RemoveParameter("-s");
 			}
 
 			// cropping options
@@ -1471,59 +1470,59 @@ MainWindow::_BuildLine() // update the ffmpeg commandline
 				value << "crop=iw-" << leftcrop + rightcrop << ":ih-"
 						<< topcrop + bottomcrop << ":" << leftcrop
 						<< ":" << topcrop;
-				_SetParameter(tokens, "-vf", value);
+				_SetParameter("-vf", value);
 			}
 			else {
-				_RemoveParameter(tokens, "-vf");
+				_RemoveParameter("-vf");
 			}
 		}
 		else {
-			_RemoveParameter(tokens, "-b:v");
-			_RemoveParameter(tokens, "-r");
-			_RemoveParameter(tokens, "-s");
-			_RemoveParameter(tokens, "-vf");
+			_RemoveParameter("-b:v");
+			_RemoveParameter("-r");
+			_RemoveParameter("-s");
+			_RemoveParameter("-vf");
 		}
 	}
 	else {
-		_RemoveParameter(tokens, "-vcodec");
-		_SetParameter(tokens, "-vn", "");
+		_RemoveParameter("-vcodec");
+		_SetParameter("-vn", "");
 	}
 
 	//audio options
 	if (fEnableAudioBox->Value() == B_CONTROL_ON) {
 		option_index = fAudioFormatPopup->FindMarkedIndex();
-		_RemoveParameter(tokens, "-an");
+		_RemoveParameter("-an");
 		value = fAudioCodecs[option_index].Option;
-		_SetParameter(tokens, "-acodec", value);
+		_SetParameter("-acodec", value);
 
 		if (option_index != 0) {
 			value = fAudioBitsPopup->FindMarked()->Label();
 			value << "k";
-			_SetParameter(tokens, "-b:a", value);
+			_SetParameter("-b:a", value);
 			value = fSampleratePopup->FindMarked()->Label();
-			_SetParameter(tokens, "-ar", value);
+			_SetParameter("-ar", value);
 			value = (fChannelCount->Value());
-			_SetParameter(tokens, "-ac", value);
-			_SetParameter(tokens, "-strict", "-2"); // enable 'experimental codecs' needed for dca (DTS)
+			_SetParameter("-ac", value);
+			_SetParameter("-strict", "-2"); // enable 'experimental codecs' needed for dca (DTS)
 		}
 		else {
-			_RemoveParameter(tokens, "-b:a");
-			_RemoveParameter(tokens, "-ar");
-			_RemoveParameter(tokens, "-ac");
+			_RemoveParameter("-b:a");
+			_RemoveParameter("-ar");
+			_RemoveParameter("-ac");
 		}
 	}
 	else {
-		_RemoveParameter(tokens, "-acodec");
-		_RemoveParameter(tokens, "-b:a");
-		_RemoveParameter(tokens, "-ar");
-		_RemoveParameter(tokens, "-ac");
-		_SetParameter(tokens, "-an", "");
+		_RemoveParameter("-acodec");
+		_RemoveParameter("-b:a");
+		_RemoveParameter("-ar");
+		_RemoveParameter("-ac");
+		_SetParameter("-an", "");
 
 		fCommand << (" -an");
 	}
 
 	//logging and output formatting
-	_SetParameter(tokens, "-loglevel", "error-stats");
+	_SetParameter("-loglevel", "error-stats");
 
 	// output file
 	BString output_filename = fOutputTextControl->Text();
@@ -1534,59 +1533,58 @@ MainWindow::_BuildLine() // update the ffmpeg commandline
 	// can´t use _SetParameter() here because the output file is specified without an option specifier
 	// for now we just assume that the output file is at the end of the command line and in double quotes
 	// this should definitely be improved in the future
-	int32 last_idx = tokens.CountStrings() - 1;
-	if (tokens.StringAt(last_idx).StartsWith("\"") and tokens.StringAt(last_idx).EndsWith("\"")) {
-		tokens.Replace(last_idx, output_filename);
+	int32 last_idx = fCommandLineTokens.CountStrings() - 1;
+	BString last_item = fCommandLineTokens.StringAt(last_idx);
+	if (last_item.StartsWith("\"") and last_item.EndsWith("\"")) {
+		fCommandLineTokens.Replace(last_idx, output_filename);
 	}
 	else {
-		tokens.Add(output_filename);
+		fCommandLineTokens.Add(output_filename);
 	}
 
 	// assemble the commandline from the token list and put it in the textcontrol
 	fCommand.SetTo("");
 
-	for (int32 i=0; i<tokens.CountStrings(); ++i)
-	{
-		printf("%d: %s\n", i, tokens.StringAt(i).String());
-		fCommand << tokens.StringAt(i) << " ";
+	for (int32 i=0; i<fCommandLineTokens.CountStrings(); ++i) {
+		printf("%d: %s\n", i, fCommandLineTokens.StringAt(i).String());
+		fCommand << fCommandLineTokens.StringAt(i) << " ";
 	}
 
-	fCommand.Trim();
 	fCommandlineTextControl->SetText(fCommand);
 }
 
 
 void
-MainWindow::_SetParameter(BStringList& param_list, const BString& name, const BString& value)
+MainWindow::_SetParameter(const BString& name, const BString& value)
 {
 	int32 param_index;
-	if (param_list.HasString(name)) {
-		param_index = param_list.IndexOf(name);
+	if (fCommandLineTokens.HasString(name)) {
+		param_index = fCommandLineTokens.IndexOf(name);
 	}
 	else {
-		param_index = param_list.CountStrings() - 1;
-		param_list.Add(name, param_index);
+		param_index = fCommandLineTokens.CountStrings() - 1;
+		fCommandLineTokens.Add(name, param_index);
 	}
 
-	if (param_list.StringAt(param_index + 1).StartsWith("-")) { // no parameter value
-		param_list.Add(value, param_index+1);
+	if (fCommandLineTokens.StringAt(param_index + 1).StartsWith("-")) { // no parameter value
+		fCommandLineTokens.Add(value, param_index+1);
 	}
 	else {
-		if (!param_list.Replace(param_index+1, value))
-			param_list.Add(value, param_index+1);
+		if (!fCommandLineTokens.Replace(param_index+1, value))
+			fCommandLineTokens.Add(value, param_index+1);
 	}
 }
 
 
 void
-MainWindow::_RemoveParameter(BStringList& param_list, const BString& name)
+MainWindow::_RemoveParameter(const BString& name)
 {
-	if (param_list.HasString(name)) {
-		int32 param_index = param_list.IndexOf(name);
-		if (!param_list.StringAt(param_index+1).StartsWith("-")) {
-			param_list.Remove(param_index+1);
+	if (fCommandLineTokens.HasString(name)) {
+		int32 param_index = fCommandLineTokens.IndexOf(name);
+		if (!fCommandLineTokens.StringAt(param_index+1).StartsWith("-")) {
+			fCommandLineTokens.Remove(param_index+1);
 		}
-		param_list.Remove(param_index);
+		fCommandLineTokens.Remove(param_index);
 	}
 }
 
