@@ -1417,7 +1417,6 @@ MainWindow::_BuildLine() // update the ffmpeg commandline
 				}
 			}
 		}
-
 		tokens.Add(token);
 	}
 
@@ -1429,7 +1428,7 @@ MainWindow::_BuildLine() // update the ffmpeg commandline
 	}
 
 	// input file
-	value = (fSourceTextControl->Text());
+	value = fSourceTextControl->Text();
 	value.Trim();
 	value.Prepend("\"");
 	value.Append("\"");
@@ -1521,13 +1520,27 @@ MainWindow::_BuildLine() // update the ffmpeg commandline
 		_SetParameter(tokens, "-an", "");
 
 		fCommand << (" -an");
-
 	}
 
 	//logging and output formatting
+	_SetParameter(tokens, "-loglevel", "error-stats");
 
 	// output file
+	BString output_filename = fOutputTextControl->Text();
+	output_filename.Trim();
+	output_filename.Prepend("\"");
+	output_filename.Append("\"");
 
+	// can´t use _SetParameter() here because the output file is specified without an option specifier
+	// for now we just assume that the output file is at the end of the command line and in double quotes
+	// this should definitely be improved in the future
+	int32 last_idx = tokens.CountStrings() - 1;
+	if (tokens.StringAt(last_idx).StartsWith("\"") and tokens.StringAt(last_idx).EndsWith("\"")) {
+		tokens.Replace(last_idx, output_filename);
+	}
+	else {
+		tokens.Add(output_filename);
+	}
 
 	// assemble the commandline from the token list and put it in the textcontrol
 	fCommand.SetTo("");
@@ -1540,64 +1553,6 @@ MainWindow::_BuildLine() // update the ffmpeg commandline
 
 	fCommand.Trim();
 	fCommandlineTextControl->SetText(fCommand);
-
-
-/*
-	BString source_filename(fSourceTextControl->Text());
-	BString output_filename(fOutputTextControl->Text());
-	source_filename.Trim();
-	output_filename.Trim();
-	fCommand = kFFMpeg;
-	fCommand << " -i \"" << source_filename << "\""; // append the input file name
-
-	// file format
-	int32 option_index = fFileFormatPopup->FindMarkedIndex();
-	BString fileformat_option = fContainerFormats[option_index].Option;
-	fCommand << " -f " << fileformat_option; // grab and set the file format
-
-	// is video enabled, add options
-	if ((fEnableVideoBox->Value() == B_CONTROL_ON) and (fEnableVideoBox->IsEnabled())) {
-		option_index = fVideoFormatPopup->FindMarkedIndex();
-		fCommand << " -vcodec " << fVideoCodecs[option_index].Option;
-		if (option_index != 0) {
-			fCommand << " -b:v " << fVideoBitrateSpinner->Value() << "k";
-			fCommand << " -r " << fFramerate->Value();
-			if (fCustomResolutionBox->IsEnabled() && fCustomResolutionBox->Value())
-				fCommand << " -s " << fXres->Value() << "x" << fYres->Value();
-
-			// cropping options
-			int32 topcrop = fTopCrop->Value();
-			int32 bottomcrop = fBottomCrop->Value();
-			int32 leftcrop = fLeftCrop->Value();
-			int32 rightcrop = fRightCrop->Value();
-
-			if ((topcrop + bottomcrop + leftcrop + rightcrop) > 0) {
-				fCommand << " -vf crop=iw-" << leftcrop + rightcrop << ":ih-"
-						<< topcrop + bottomcrop << ":" << leftcrop
-						<< ":" << topcrop;
-			}
-		}
-	} else
-		fCommand << " -vn";
-
-	// audio encoding enabled, grab the values
-	if (fEnableAudioBox->Value() == B_CONTROL_ON) {
-		option_index = fAudioFormatPopup->FindMarkedIndex();
-		fCommand << " -acodec " << fAudioCodecs[option_index].Option;
-		if (option_index != 0) {
-			fCommand << " -b:a " << std::atoi(fAudioBitsPopup->FindMarked()->Label()) << "k";
-			fCommand << " -ar " << std::atoi(fSampleratePopup->FindMarked()->Label());
-			fCommand << " -ac " << fChannelCount->Value();
-			fCommand << " -strict -2 "; // enable 'experimental codecs' needed for dca (DTS)
-		}
-	} else
-		fCommand << (" -an");
-
-	fCommand << " \"" << output_filename << "\"";
-	fCommand << " -loglevel error -stats";
-	*/
-
-	fCommandlineTextControl->SetText(fCommand.String());
 }
 
 
