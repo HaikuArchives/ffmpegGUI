@@ -1501,7 +1501,8 @@ MainWindow::_BuildLine() // update the ffmpeg commandline
 			_SetParameter("-b:a", value);
 			value = fSampleratePopup->FindMarked()->Label();
 			_SetParameter("-ar", value);
-			value = (fChannelCount->Value());
+			value = "";
+			value << fChannelCount->Value();
 			_SetParameter("-ac", value);
 			_SetParameter("-strict", "-2"); // enable 'experimental codecs' needed for dca (DTS)
 		}
@@ -1522,7 +1523,8 @@ MainWindow::_BuildLine() // update the ffmpeg commandline
 	}
 
 	//logging and output formatting
-	_SetParameter("-loglevel", "error-stats");
+	_SetParameter("-loglevel", "error");
+	_SetParameter("-stats","");
 
 	// output file
 	BString output_filename = fOutputTextControl->Text();
@@ -1546,7 +1548,7 @@ MainWindow::_BuildLine() // update the ffmpeg commandline
 	fCommand.SetTo("");
 
 	for (int32 i=0; i<fCommandLineTokens.CountStrings(); ++i) {
-		printf("%d: %s\n", i, fCommandLineTokens.StringAt(i).String());
+		//printf("%d: %s\n", i, fCommandLineTokens.StringAt(i).String());
 		fCommand << fCommandLineTokens.StringAt(i) << " ";
 	}
 
@@ -1557,23 +1559,31 @@ MainWindow::_BuildLine() // update the ffmpeg commandline
 void
 MainWindow::_SetParameter(const BString& name, const BString& value)
 {
-	int32 param_index;
-	if (fCommandLineTokens.HasString(name)) {
-		param_index = fCommandLineTokens.IndexOf(name);
-	}
-	else {
-		param_index = fCommandLineTokens.CountStrings() - 1;
-		fCommandLineTokens.Add(name, param_index);
+	if (!fCommandLineTokens.HasString(name)) {
+		BString last_token = fCommandLineTokens.Last();
+		if (last_token.StartsWith("\"") and last_token.EndsWith("\""))
+			fCommandLineTokens.Add(name, fCommandLineTokens.CountStrings() - 1);
+		else
+			fCommandLineTokens.Add(name);
 	}
 
-	BString next_token = fCommandLineTokens.StringAt(param_index + 1);
-	if (next_token.StartsWith("-") and !_IsDigit(next_token.ByteAt(1))) { // no parameter value
-		fCommandLineTokens.Add(value, param_index+1);
-	}
-	else {
-		if (!fCommandLineTokens.Replace(param_index+1, value))
+	if (!value.IsEmpty()) {
+		int32 param_index = fCommandLineTokens.IndexOf(name);
+		BString next_token = fCommandLineTokens.StringAt(param_index + 1);
+
+		if ((next_token.StartsWith("-") and !_IsDigit(next_token.ByteAt(1)))) { // no parameter value
 			fCommandLineTokens.Add(value, param_index+1);
+		}
+		else {
+			if (!fCommandLineTokens.Replace(param_index+1, value))
+				fCommandLineTokens.Add(value, param_index+1);
+		}
 	}
+
+
+	//for (int32 i=0; i<fCommandLineTokens.CountStrings(); ++i) {
+	//	printf("\t%d: %s\n", i, fCommandLineTokens.StringAt(i).String());
+	//}
 }
 
 
