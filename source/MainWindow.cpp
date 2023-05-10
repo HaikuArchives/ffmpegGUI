@@ -1224,6 +1224,7 @@ MainWindow::_BuildMainOptions()
 	fSampleratePopup->ItemAt(1)->SetMarked(true);
 	fSamplerate = new BMenuField(B_TRANSLATE("Sampling rate (Hz):"), fSampleratePopup);
 	fChannelCount = new Spinner("", B_TRANSLATE("Audio channels:"), new BMessage(M_CHANNELS));
+	fChannelCount->SetMinValue(1);
 
 	// _Build Audio Options layout
 	BBox* audiobox = new BBox("");
