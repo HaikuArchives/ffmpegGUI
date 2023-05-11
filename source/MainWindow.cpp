@@ -1404,8 +1404,8 @@ MainWindow::_BuildLine() // update the ffmpeg commandline
 	fCommandLineTokens.MakeEmpty();
 	for (int32 token_idx=0; token_idx<tokens_raw.CountStrings(); ++token_idx) {
 		BString token = tokens_raw.StringAt(token_idx);
-		if (token.StartsWith("\"")) {
-			if (!token.EndsWith("\"")) {
+		if (token.StartsWith("\""))
+			if (!token.EndsWith("\""))
 				for (int32 part_idx=token_idx+1; part_idx<tokens_raw.CountStrings(); ++part_idx) {
 					BString token_part = tokens_raw.StringAt(part_idx);
 					token << " " << token_part;
@@ -1414,17 +1414,15 @@ MainWindow::_BuildLine() // update the ffmpeg commandline
 						break;
 					}
 				}
-			}
-		}
+
 		fCommandLineTokens.Add(token);
 	}
 
 	BString value;
 
 	// make sure ffmpeg is at the start of the command
-	if (fCommandLineTokens.StringAt(0) != kFFMpeg) {
+	if (fCommandLineTokens.StringAt(0) != kFFMpeg)
 		fCommandLineTokens.Add(kFFMpeg, 0);
-	}
 
 	// input file
 	value = fSourceTextControl->Text();
@@ -1455,9 +1453,8 @@ MainWindow::_BuildLine() // update the ffmpeg commandline
 				value << fXres->Value() << "x" << fYres->Value();
 				_SetParameter("-s", value);
 			}
-			else {
+			else
 				_RemoveParameter("-s");
-			}
 
 			// cropping options
 			int32 topcrop = fTopCrop->Value();
@@ -1472,9 +1469,8 @@ MainWindow::_BuildLine() // update the ffmpeg commandline
 						<< ":" << topcrop;
 				_SetParameter("-vf", value);
 			}
-			else {
+			else
 				_RemoveParameter("-vf");
-			}
 		}
 		else {
 			_RemoveParameter("-b:v");
@@ -1518,8 +1514,6 @@ MainWindow::_BuildLine() // update the ffmpeg commandline
 		_RemoveParameter("-ar");
 		_RemoveParameter("-ac");
 		_SetParameter("-an", "");
-
-		fCommand << (" -an");
 	}
 
 	//logging and output formatting
@@ -1537,20 +1531,16 @@ MainWindow::_BuildLine() // update the ffmpeg commandline
 	// this should definitely be improved in the future
 	int32 last_idx = fCommandLineTokens.CountStrings() - 1;
 	BString last_item = fCommandLineTokens.StringAt(last_idx);
-	if (last_item.StartsWith("\"") and last_item.EndsWith("\"")) {
+	if (last_item.StartsWith("\"") and last_item.EndsWith("\""))
 		fCommandLineTokens.Replace(last_idx, output_filename);
-	}
-	else {
+	else
 		fCommandLineTokens.Add(output_filename);
-	}
 
 	// assemble the commandline from the token list and put it in the textcontrol
 	fCommand.SetTo("");
 
-	for (int32 i=0; i<fCommandLineTokens.CountStrings(); ++i) {
-		//printf("%d: %s\n", i, fCommandLineTokens.StringAt(i).String());
+	for (int32 i=0; i<fCommandLineTokens.CountStrings(); ++i)
 		fCommand << fCommandLineTokens.StringAt(i) << " ";
-	}
 
 	fCommandlineTextControl->SetText(fCommand);
 }
@@ -1571,19 +1561,12 @@ MainWindow::_SetParameter(const BString& name, const BString& value)
 		int32 param_index = fCommandLineTokens.IndexOf(name);
 		BString next_token = fCommandLineTokens.StringAt(param_index + 1);
 
-		if ((next_token.StartsWith("-") and !_IsDigit(next_token.ByteAt(1)))) { // no parameter value
+		if ((next_token.StartsWith("-") and !_IsDigit(next_token.ByteAt(1))))  // no parameter value
 			fCommandLineTokens.Add(value, param_index+1);
-		}
-		else {
+		else
 			if (!fCommandLineTokens.Replace(param_index+1, value))
 				fCommandLineTokens.Add(value, param_index+1);
-		}
 	}
-
-
-	//for (int32 i=0; i<fCommandLineTokens.CountStrings(); ++i) {
-	//	printf("\t%d: %s\n", i, fCommandLineTokens.StringAt(i).String());
-	//}
 }
 
 
@@ -1592,9 +1575,9 @@ MainWindow::_RemoveParameter(const BString& name)
 {
 	if (fCommandLineTokens.HasString(name)) {
 		int32 param_index = fCommandLineTokens.IndexOf(name);
-		if (!fCommandLineTokens.StringAt(param_index+1).StartsWith("-")) {
+		if (!fCommandLineTokens.StringAt(param_index+1).StartsWith("-"))
 			fCommandLineTokens.Remove(param_index+1);
-		}
+
 		fCommandLineTokens.Remove(param_index);
 	}
 }
