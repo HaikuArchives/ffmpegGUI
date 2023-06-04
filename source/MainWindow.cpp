@@ -1410,11 +1410,11 @@ MainWindow::_BuildLine() // update the ffmpeg commandline
 
 	// consolidate parts of quoted strings into single tokens
 	fCommandLineTokens.MakeEmpty();
-	for (int32 token_idx=0; token_idx<tokens_raw.CountStrings(); ++token_idx) {
+	for (int32 token_idx = 0; token_idx < tokens_raw.CountStrings(); ++token_idx) {
 		BString token = tokens_raw.StringAt(token_idx);
-		if (token.StartsWith("\""))
-			if (!token.EndsWith("\""))
-				for (int32 part_idx=token_idx+1; part_idx<tokens_raw.CountStrings(); ++part_idx) {
+		if (token.StartsWith("\"")) {
+			if (!token.EndsWith("\"")) {
+				for (int32 part_idx = token_idx+1; part_idx < tokens_raw.CountStrings(); ++part_idx) {
 					BString token_part = tokens_raw.StringAt(part_idx);
 					token << " " << token_part;
 					if (token_part.EndsWith("\"")) {
@@ -1422,7 +1422,8 @@ MainWindow::_BuildLine() // update the ffmpeg commandline
 						break;
 					}
 				}
-
+			}
+		}
 		fCommandLineTokens.Add(token);
 	}
 
@@ -1460,8 +1461,7 @@ MainWindow::_BuildLine() // update the ffmpeg commandline
 				value = "";
 				value << fXres->Value() << "x" << fYres->Value();
 				_SetParameter("-s", value);
-			}
-			else
+			} else
 				_RemoveParameter("-s");
 
 			// cropping options
@@ -1476,18 +1476,15 @@ MainWindow::_BuildLine() // update the ffmpeg commandline
 						<< topcrop + bottomcrop << ":" << leftcrop
 						<< ":" << topcrop;
 				_SetParameter("-vf", value);
-			}
-			else
+			} else
 				_RemoveParameter("-vf");
-		}
-		else {
+		} else {
 			_RemoveParameter("-b:v");
 			_RemoveParameter("-r");
 			_RemoveParameter("-s");
 			_RemoveParameter("-vf");
 		}
-	}
-	else {
+	} else {
 		_RemoveParameter("-vcodec");
 		_SetParameter("-vn", "");
 	}
@@ -1509,14 +1506,12 @@ MainWindow::_BuildLine() // update the ffmpeg commandline
 			value << fChannelCount->Value();
 			_SetParameter("-ac", value);
 			_SetParameter("-strict", "-2"); // enable 'experimental codecs' needed for dca (DTS)
-		}
-		else {
+		} else {
 			_RemoveParameter("-b:a");
 			_RemoveParameter("-ar");
 			_RemoveParameter("-ac");
 		}
-	}
-	else {
+	} else {
 		_RemoveParameter("-acodec");
 		_RemoveParameter("-b:a");
 		_RemoveParameter("-ar");
@@ -1547,7 +1542,7 @@ MainWindow::_BuildLine() // update the ffmpeg commandline
 	// assemble the commandline from the token list and put it in the textcontrol
 	fCommand.SetTo("");
 
-	for (int32 i=0; i<fCommandLineTokens.CountStrings(); ++i)
+	for (int32 i = 0; i < fCommandLineTokens.CountStrings(); ++i)
 		fCommand << fCommandLineTokens.StringAt(i) << " ";
 
 	fCommandlineTextControl->SetText(fCommand);
@@ -1570,10 +1565,11 @@ MainWindow::_SetParameter(const BString& name, const BString& value)
 		BString next_token = fCommandLineTokens.StringAt(param_index + 1);
 
 		if ((next_token.StartsWith("-") and !_IsDigit(next_token.ByteAt(1))))  // no parameter value
-			fCommandLineTokens.Add(value, param_index+1);
-		else
-			if (!fCommandLineTokens.Replace(param_index+1, value))
-				fCommandLineTokens.Add(value, param_index+1);
+			fCommandLineTokens.Add(value, param_index + 1);
+		else {
+			if (!fCommandLineTokens.Replace(param_index + 1, value))
+				fCommandLineTokens.Add(value, param_index + 1);
+		}
 	}
 }
 
@@ -1583,8 +1579,8 @@ MainWindow::_RemoveParameter(const BString& name)
 {
 	if (fCommandLineTokens.HasString(name)) {
 		int32 param_index = fCommandLineTokens.IndexOf(name);
-		if (!fCommandLineTokens.StringAt(param_index+1).StartsWith("-"))
-			fCommandLineTokens.Remove(param_index+1);
+		if (!fCommandLineTokens.StringAt(param_index + 1).StartsWith("-"))
+			fCommandLineTokens.Remove(param_index + 1);
 
 		fCommandLineTokens.Remove(param_index);
 	}
