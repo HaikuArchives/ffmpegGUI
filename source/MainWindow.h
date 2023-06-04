@@ -16,7 +16,6 @@
 #include <Path.h>
 #include <Window.h>
 #include <StringList.h>
-
 #include <vector>
 
 
