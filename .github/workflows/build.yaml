@@ -28,9 +28,9 @@ jobs:
           architecture: ${{ matrix.config.architecture }}
           run: |
             if [[ `uname -m` == BePC ]]; then
-              ssh user@localhost "pkgman update -y haiku_x86_devel cmd:gcc_x86 gcc_x86_syslibs_devel" &&
+              ssh user@localhost "pkgman update -y cmd:gcc_x86 gcc_x86_syslibs_devel" &&
               setarch x86 make && setarch x86 make bindcatalogs 
             else
-              ssh user@localhost "pkgman update -y haiku_devel cmd:gcc gcc_syslibs_devel" &&
+              ssh user@localhost "pkgman update -y cmd:gcc gcc_syslibs_devel" &&
               make && make bindcatalogs 
             fi
